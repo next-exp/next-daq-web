@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { Field, defaultsFor } from '../components/Fields';
 import { ChannelTable } from '../components/ChannelTable';
@@ -69,6 +69,22 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
   const [applied, setApplied] = useState<{ params: ParamValues | null; at: string | null }>();
   /** Per-channel values, keyed "cardIndex:channel", for grid panels. */
   const [channels, setChannels] = useState<Record<string, ParamValues>>({});
+  /**
+   * Bumped once a per-channel edit has been stored.
+   *
+   * The plan is computed server-side from the stored channel values, and a
+   * per-channel edit deliberately leaves the panel values alone — so without this
+   * the preview would not re-run and would show stale packets.
+   */
+  const [channelRev, setChannelRev] = useState(0);
+  /**
+   * Per-channel edits waiting to be stored.
+   *
+   * Typing fires one change per keystroke; sending each immediately means several
+   * in-flight writes whose completion order is not guaranteed, so a slower earlier
+   * write could land last and win. Edits are coalesced and sent once instead.
+   */
+  const pendingChannelEdits = useRef<ParamValues>({});
   const [error, setError] = useState<string>();
   const [result, setResult] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -120,7 +136,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
     return () => {
       cancelled = true;
     };
-  }, [selected, values]);
+  }, [selected, values, channelRev]);
 
   const gridSpec = selected?.params.find((p) => p.kind === 'grid');
   const cols = gridSpec && 'cols' in gridSpec ? gridSpec.cols : 0;
@@ -178,12 +194,48 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
     return () => clearTimeout(t);
   }, [selected, values]);
 
+  /**
+   * Store the coalesced per-channel edits, then re-plan.
+   *
+   * The plan is computed server-side from the stored values, so the preview can
+   * only be refreshed once the write has landed.
+   */
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>();
+  const queueChannelSave = () => {
+    if (!selected) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      const edits = pendingChannelEdits.current;
+      pendingChannelEdits.current = {};
+      if (Object.keys(edits).length === 0) return;
+      api
+        .setChannelSettings(selected.id, selectedKeys, edits)
+        .then(() => setChannelRev((n) => n + 1))
+        .catch((e) => setError((e as Error).message));
+    }, 250);
+  };
+
+  // Do not carry a half-typed edit into a different panel.
+  useEffect(() => {
+    return () => {
+      clearTimeout(saveTimer.current);
+      pendingChannelEdits.current = {};
+    };
+  }, [selected]);
+
   const apply = async () => {
     if (!selected) return;
     setBusy(true);
     setError(undefined);
     setResult(undefined);
     try {
+      // Flush any edit still waiting on the debounce.
+      clearTimeout(saveTimer.current);
+      const edits = pendingChannelEdits.current;
+      pendingChannelEdits.current = {};
+      if (Object.keys(edits).length > 0) {
+        await api.setChannelSettings(selected.id, selectedKeys, edits);
+      }
       const res = await api.applyAction(selected.id, values);
       if ('background' in res && res.background) {
         setResult(
@@ -287,9 +339,8 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                         for (const k of selectedKeys) next[k] = { ...next[k], [p.name]: v };
                         return next;
                       });
-                      api
-                        .setChannelSettings(selected.id, selectedKeys, { [p.name]: v })
-                        .catch(() => undefined);
+                      pendingChannelEdits.current[p.name] = v;
+                      queueChannelSave();
                     } else {
                       setValues((s) => ({ ...s, [p.name]: v }));
                     }

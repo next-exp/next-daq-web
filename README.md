@@ -125,6 +125,14 @@ change when it was flipped. `no-dead-params.test.ts` now perturbs every declared
 parameter of every panel and asserts the encoded packets change, so a field that
 does nothing fails the build.
 
+The preview re-plans whenever a value changes, including a per-channel one. That
+needs care: the plan is computed server-side from the *stored* channel values, and
+a per-channel edit deliberately leaves the panel values untouched, so the preview
+has to be refreshed after the edit is stored rather than when the form state
+changes. Edits are also coalesced before being sent — one write per keystroke
+leaves several in flight whose completion order is not guaranteed, so a slower
+earlier write could land last and win — and flushed before Apply.
+
 Below the form, a **Channel settings** table lists every channel that has its own
 values, one row each, with a column per parameter and differences from the panel
 value highlighted. The grid marker deliberately means "this channel has settings
