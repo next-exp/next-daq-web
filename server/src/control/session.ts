@@ -145,7 +145,7 @@ export class Session {
     writes: (PlannedWrite & { hexWords: string[]; targets: string[] })[];
   } {
     const action = getAction(id);
-    const writes = planAction(action, params);
+    const writes = planAction(action, params, this.settings.all());
     return {
       writes: writes.map((w) => {
         const def = getRegister(w.register);
@@ -178,15 +178,14 @@ export class Session {
     params: Params,
   ): Promise<{ applied: { register: string; hexWords: string[]; targets: string[] }[]; dryRun: boolean }> {
     const action = getAction(id);
-    const writes = planAction(action, params);
+    // Store first, so a plan reading this panel's own values sees what was just set.
+    this.settings.set(id, params);
+    const writes = planAction(action, params, this.settings.all());
     if (writes.length === 0) {
       throw new Error(`${id}: nothing to send — no channels or targets selected`);
     }
 
     const applied: { register: string; hexWords: string[]; targets: string[] }[] = [];
-    // Record what is being applied, so the saved configuration reflects the
-    // settings that actually reached the detector.
-    this.settings.set(id, params);
     await this.settings.saveToDisk();
     await this.log.info('action_started', { action: id, writes: writes.length });
 
@@ -245,7 +244,10 @@ export class Session {
 
   /** Total time a plan will spend waiting, used to decide whether to detach it. */
   planWaitMs(id: string, params: Params): number {
-    return planAction(getAction(id), params).reduce((t, w) => t + (w.waitAfterMs ?? 0), 0);
+    return planAction(getAction(id), params, this.settings.all()).reduce(
+      (t, w) => t + (w.waitAfterMs ?? 0),
+      0,
+    );
   }
 
   startFlash(opts: FlashOptions, mcsText: string): FlashSession {

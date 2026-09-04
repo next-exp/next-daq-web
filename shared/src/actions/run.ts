@@ -23,7 +23,9 @@ export const RUN_ACTIONS: ConfigAction[] = [
       uint('mode', 'Mode of operation', 4, 1),
       uint('run_code', 'RUN code', 4, 0),
       int('num_triggers', 'Number of triggers', 1_000_000, 0, {
-        help: 'Set to 0 for an unlimited number of triggers.',
+        help:
+          'Set to 0 for an unlimited number of triggers. Start Run, Stop Run and both ' +
+          'resets all use this value.',
       }),
       int('buffer_us', 'Circular buffer size, TRG1/Ext', 3200, 1300, {
         min: 20,
@@ -75,17 +77,15 @@ export const RUN_ACTIONS: ConfigAction[] = [
         [1, 'Start'],
         [0, 'Stop'],
       ]),
-      int('trg_events', 'Number of triggers', 65535, 0, {
-        help: 'Set to 0 for an unlimited number of triggers.',
-      }),
       bool('reset_counters', 'Reset counters'),
     ],
-    plan: (p): PlannedWrite[] => [
+    plan: (p, ctx): PlannedWrite[] => [
       {
         register: 'AcqCmd',
         note: p.int('on_off') === 1 ? 'Start acquisition' : 'Stop acquisition',
         params: {
-          trg_events: p.int('trg_events'),
+          // Owned by the general configuration, as the single main-window spinner was.
+          trg_events: ctx.panel('run.general').int('num_triggers'),
           on_off: p.int('on_off'),
           rst: p.bool('reset_counters') ? 1 : 0,
           timestamp_ms: 0,

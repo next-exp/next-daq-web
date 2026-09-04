@@ -1,4 +1,4 @@
-import type { ConfigAction, ActionSection, PlannedWrite } from './types.js';
+import type { ConfigAction, ActionSection, PlanContext, PlannedWrite } from './types.js';
 import type { Params } from '../types.js';
 import { makeAccess } from '../encode.js';
 import { RUN_ACTIONS } from './run.js';
@@ -41,7 +41,18 @@ export * from './reset.js';
  * Pure: it transmits nothing, so the console can show the operator exactly which
  * registers a panel will touch before the command leaves the machine.
  */
-export function planAction(action: ConfigAction, params: Params): PlannedWrite[] {
+export function planAction(
+  action: ConfigAction,
+  params: Params,
+  /** Current values of every panel, for plans that read a value another panel owns. */
+  allSettings: Record<string, Params> = {},
+): PlannedWrite[] {
   const access = makeAccess(params, action.params, action.id);
-  return action.plan(access);
+  const ctx: PlanContext = {
+    panel: (id) => {
+      const other = getAction(id);
+      return makeAccess(allSettings[id] ?? {}, other.params, id);
+    },
+  };
+  return action.plan(access, ctx);
 }

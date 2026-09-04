@@ -92,6 +92,16 @@ Ranges come from the original labels, which carried the real operating limits â€
 "Circular Buffer Size (us) [20-3200]", "Coincidence Window Size (25 ns Tbin)
 [1-63]", "# Events for trigger [1-40]".
 
+### Values owned by one panel
+
+A plan can read another panel's values, so a setting lives in exactly one place.
+The number of triggers is the case that forced this: the Swing main window had a
+single spinner that Start Run, Stop Run, RST SOFT and RST HARD all read. An
+earlier version of this rewrite gave each of those four panels its own copy,
+which meant a soft reset could send a different trigger count than the run was
+configured with. It is now owned by **General configuration** and read from
+there; the resets expose no trigger count at all.
+
 ### Reset and recovery
 
 The main window's three reset buttons are separate panels, because they are
@@ -248,7 +258,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 217 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 223 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

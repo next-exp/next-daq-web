@@ -20,6 +20,20 @@ describe('soft reset', () => {
     expect(writes[0].params).toMatchObject({ on_off: 0, rst: 1 });
   });
 
+  /**
+   * The Swing main window had one "Number of triggers" spinner that Start Run,
+   * Stop Run and both resets read. The resets must not carry their own copy.
+   */
+  it('takes the trigger count from the general configuration', () => {
+    const settings = { 'run.general': { num_triggers: 5000 } };
+    const [w] = planAction(getAction('run.softReset'), {}, settings);
+    expect(w.params.trg_events).toBe(5000);
+  });
+
+  it('exposes no trigger count of its own', () => {
+    expect(getAction('run.softReset').params.map((p) => p.name)).not.toContain('trg_events');
+  });
+
   it('reprograms nothing', () => {
     expect(planAction(getAction('run.softReset'), {}).map((w) => w.register)).not.toContain(
       'ProgCmd',
@@ -90,5 +104,40 @@ describe('hard reset', () => {
   it('allows a longer wait for a slower crate', () => {
     const writes = planAction(getAction('run.hardReset'), { reload_wait_s: 120 });
     expect(writes[1].waitAfterMs).toBe(120_000);
+  });
+
+  it('uses the configured trigger count for both soft resets', () => {
+    const settings = { 'run.general': { num_triggers: 1234 } };
+    const writes = planAction(getAction('run.hardReset'), {}, settings);
+    expect(writes[0].params.trg_events).toBe(1234);
+    expect(writes[2].params.trg_events).toBe(1234);
+  });
+
+  it('exposes no trigger count of its own', () => {
+    expect(getAction('run.hardReset').params.map((p) => p.name)).not.toContain('trg_events');
+  });
+});
+
+describe('one trigger count, shared', () => {
+  /**
+   * Start Run, Stop Run and both resets must agree, because the original read a
+   * single spinner. Four copies of the value could silently drift apart.
+   */
+  it('is read from run.general by every command that sends it', () => {
+    const settings = { 'run.general': { num_triggers: 777 } };
+    const counts = [
+      planAction(getAction('run.acquisition'), { on_off: 1 }, settings)[0].params.trg_events,
+      planAction(getAction('run.acquisition'), { on_off: 0 }, settings)[0].params.trg_events,
+      planAction(getAction('run.softReset'), {}, settings)[0].params.trg_events,
+      planAction(getAction('run.hardReset'), {}, settings)[0].params.trg_events,
+    ];
+    expect(counts).toEqual([777, 777, 777, 777]);
+  });
+
+  it('is owned by exactly one panel', () => {
+    const owners = ['run.general', 'run.acquisition', 'run.softReset', 'run.hardReset'].filter(
+      (id) => getAction(id).params.some((p) => /num_triggers|trg_events/.test(p.name)),
+    );
+    expect(owners).toEqual(['run.general']);
   });
 });

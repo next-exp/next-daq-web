@@ -1,5 +1,5 @@
-import { bool, choice, int, mask } from '../registers/spec.js';
-import type { ConfigAction, PlannedWrite } from './types.js';
+import { choice, int, mask } from '../registers/spec.js';
+import type { ConfigAction, PlanContext, PlannedWrite } from './types.js';
 
 /**
  * Reset and recovery panels.
@@ -28,6 +28,14 @@ export const FLASH_RELOAD_WAIT_MS = 60_000;
 /** `ProgCmd` parameters that trigger a reload from flash. */
 const RELOAD_FROM_FLASH = { flash_sel: true, prog_wron: false, prog_on: true };
 
+/**
+ * The number of triggers is owned by the general run configuration, matching the
+ * single spinner the Swing main window had. Start Run, Stop Run and both resets
+ * read that one value rather than keeping copies that can drift apart.
+ */
+const configuredTriggers = (ctx: PlanContext): number =>
+  ctx.panel('run.general').int('num_triggers');
+
 const softResetWrite = (trgEvents: number, note: string): PlannedWrite => ({
   register: 'AcqCmd',
   note,
@@ -45,13 +53,9 @@ export const RESET_ACTIONS: ConfigAction[] = [
       'Stops acquisition with the reset flag set and clears the configured state, so ' +
       'the planes must be set up again before the next run. Does not reprogram anything.',
     origin: 'Starter JULIETT — RST SOFT',
-    params: [
-      int('trg_events', 'Number of triggers', 65535, 0, {
-        help: 'Sent with the stop command; 0 for an unlimited run.',
-      }),
-    ],
-    plan: (p): PlannedWrite[] => [
-      softResetWrite(p.int('trg_events'), 'Stop acquisition with the reset bit set'),
+    params: [],
+    plan: (_p, ctx): PlannedWrite[] => [
+      softResetWrite(configuredTriggers(ctx), 'Stop acquisition with the reset bit set'),
     ],
   },
   {
@@ -116,15 +120,14 @@ export const RESET_ACTIONS: ConfigAction[] = [
       'not respond.',
     origin: 'Starter JULIETT — RST HARD',
     params: [
-      int('trg_events', 'Number of triggers', 65535, 0),
       int('reload_wait_s', 'Wait for cards to return', 300, FLASH_RELOAD_WAIT_MS / 1000, {
         min: 1,
         unit: 's',
         help: 'The original waited a fixed 60 seconds.',
       }),
     ],
-    plan: (p): PlannedWrite[] => {
-      const trgEvents = p.int('trg_events');
+    plan: (p, ctx): PlannedWrite[] => {
+      const trgEvents = configuredTriggers(ctx);
       return [
         softResetWrite(trgEvents, 'Soft reset before reloading'),
         {

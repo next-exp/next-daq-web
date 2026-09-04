@@ -35,6 +35,20 @@ export interface PlannedWrite {
   waitAfterMs?: number;
 }
 
+/**
+ * Read access to other panels while planning.
+ *
+ * Some values belong to one panel but are needed by several. The number of
+ * triggers is the clearest case: the Swing main window had a single
+ * "Number of triggers" spinner that Start Run, Stop Run, RST SOFT and RST HARD
+ * all read. Copying it into each panel would let four values drift apart, so the
+ * owning panel keeps it and the others read it from here.
+ */
+export interface PlanContext {
+  /** Current values of another panel, with its declared defaults applied. */
+  panel(id: string): ParamAccess;
+}
+
 export interface ConfigAction {
   id: string;
   /** Panel this action belongs to in the console. */
@@ -46,7 +60,7 @@ export interface ConfigAction {
   group: Group;
   params: ParamSpec[];
   /** Expand the operator parameters into the register writes to perform. */
-  plan: (p: ParamAccess) => PlannedWrite[];
+  plan: (p: ParamAccess, ctx: PlanContext) => PlannedWrite[];
   /** Named after the corresponding tab in the Swing application. */
   origin?: string;
 }
