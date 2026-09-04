@@ -245,6 +245,34 @@ Two panels differ usefully from the original:
 
 The **Registers** tab remains underneath for direct single-register access.
 
+## Run state
+
+The state is shown, not set. It follows what the operator does:
+
+| Event | State |
+|---|---|
+| Link open, awaiting configuration | CONFIGURING |
+| Required panels applied | READY |
+| Start Run | RUNNING |
+| Stop Run | STOPPING, then READY |
+| Soft reset, hard reset, flash recovery | DISCONNECTED |
+| A datagram could not be transmitted | ERROR |
+
+ERROR is reachable from anywhere and leaves only by acknowledging it, so a fault
+has to be seen rather than run through. A reset likewise always lands in
+DISCONNECTED, including from RUNNING, because it stops acquisition and discards
+the configured state. Applying a panel mid-run does not drop the state out of
+RUNNING.
+
+An earlier version let the operator click the states directly and nothing else
+moved them, so RUNNING meant "someone pressed RUNNING" rather than "acquisition is
+under way" — misleading for the most prominent indicator in the console. They are
+now read-only, with acknowledging an error the one transition still asked for.
+
+STOPPING settles straight back to READY: the cards are told to stop, but nothing
+reports when they have drained, so the state does not wait on a signal that does
+not exist.
+
 ## Before starting a run
 
 The Swing application would not enable Start Run until the operator had pressed
@@ -368,7 +396,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 499 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 508 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

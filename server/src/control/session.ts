@@ -70,7 +70,7 @@ export class Session {
       cards: this.topology.cards.length,
       port: this.topology.ports.java,
     });
-    this.control.moveTo('CONFIGURING', 'Server started');
+    this.control.moveTo('CONFIGURING', this.dryRun ? 'Started in dry-run mode' : 'Detector link open');
   }
 
   private onMessage(msg: RxMessage): void {
@@ -245,6 +245,8 @@ export class Session {
           total: writes.length,
           error: message,
         });
+        // The datagram could not be transmitted: the link, not the request, failed.
+        this.control.fail(`${getAction(id).title}: ${message}`);
         throw new Error(
           `${id}: failed on ${w.register} after ${applied.length} of ${writes.length} writes: ${message}`,
         );
@@ -261,9 +263,51 @@ export class Session {
       await this.log.info('configuration_invalidated', { by: id });
     }
 
+    this.advanceState(id, params);
     await this.log.info('action_completed', { action: id, writes: applied.length });
     this.publish({ type: 'action', action: id, step: writes.length, total: writes.length, done: true });
     return { applied, dryRun: this.dryRun };
+  }
+
+  /**
+   * Move the run state to match what just happened.
+   *
+   * The state used to be set only by the operator clicking it, so RUNNING meant
+   * "someone pressed RUNNING" rather than "acquisition is under way" — misleading
+   * for the most prominent indicator in the console.
+   */
+  private advanceState(id: string, params: Params): void {
+    const state = this.control.current;
+
+    if (id === 'run.softReset' || id === 'run.hardReset' || id === 'fec.recover') {
+      this.control.reset(`Applied ${getAction(id).title}`);
+      return;
+    }
+
+    if (id === 'run.acquisition') {
+      if (Number(params.on_off) === 1) {
+        if (state === 'READY') this.control.moveTo('RUNNING', 'Acquisition started');
+        return;
+      }
+      // Stopping: the cards are told to stop, but nothing reports when they have
+      // drained, so this settles straight back to READY rather than waiting on a
+      // signal that does not exist.
+      if (state === 'RUNNING') this.control.moveTo('STOPPING', 'Acquisition stop sent');
+      if (this.control.current === 'STOPPING') {
+        this.control.moveTo('READY', 'Acquisition stopped');
+      }
+      return;
+    }
+
+    // Any other panel is configuration: follow the interlock.
+    if (state === 'RUNNING' || state === 'STOPPING' || state === 'ERROR') return;
+    const ready = this.readiness().ready;
+    if (ready && state !== 'READY') {
+      if (state === 'DISCONNECTED') this.control.moveTo('CONFIGURING', 'Configuration applied');
+      this.control.moveTo('READY', 'Required configuration applied');
+    } else if (!ready && state !== 'CONFIGURING') {
+      this.control.moveTo('CONFIGURING', 'Configuration applied');
+    }
   }
 
   /** Whether the panels a run depends on have been applied since the last reset. */

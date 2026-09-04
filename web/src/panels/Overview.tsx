@@ -2,7 +2,18 @@ import { api } from '../api';
 import { RunControls } from '../components/RunControls';
 import type { ActionProgress, Status } from '../types';
 
-const STATES = ['DISCONNECTED', 'CONFIGURING', 'READY', 'RUNNING', 'STOPPING', 'ERROR'];
+/** What each run state means, shown beside the current one. */
+const STATE_MEANING: Record<string, string> = {
+  DISCONNECTED: 'No configured session with the cards.',
+  CONFIGURING: 'Configuration applied; the run interlock is not yet satisfied.',
+  READY: 'Configured and idle, waiting to start.',
+  RUNNING: 'Acquisition under way.',
+  STOPPING: 'Stop sent, cards still draining.',
+  ERROR: 'A fault was reported and must be acknowledged.',
+};
+
+/** Order the run normally passes through, for the progress display. */
+const STATE_FLOW = ['DISCONNECTED', 'CONFIGURING', 'READY', 'RUNNING'];
 
 /** Detector overview: run state, card health and link counters. */
 export function Overview({
@@ -16,9 +27,9 @@ export function Overview({
 }) {
   if (!status) return <div className="panel"><div className="body">Connecting…</div></div>;
 
-  const move = async (to: string) => {
+  const acknowledge = async () => {
     try {
-      await api.setState(to, 'Operator request from the web console');
+      await api.acknowledgeError();
       onChanged();
     } catch (e) {
       alert((e as Error).message);
@@ -29,6 +40,9 @@ export function Overview({
     status.counters.rejectedUnknownSource +
     Object.values(status.counters.rejectedMalformed).reduce((a, b) => a + b, 0);
 
+  const state = status.state.state;
+  const reached = STATE_FLOW.indexOf(state);
+
   return (
     <div style={{ display: 'grid', gap: 16 }}>
       <RunControls status={status} progress={progress} onChanged={onChanged} />
@@ -36,7 +50,14 @@ export function Overview({
       <div className="panel">
         <h2>Run state</h2>
         <div className="body">
-          {status.state.lastError && <div className="error-box">{status.state.lastError}</div>}
+          {status.state.lastError && (
+            <div className="error-box">
+              <div style={{ marginBottom: 8 }}>{status.state.lastError}</div>
+              <button className="action" onClick={acknowledge}>
+                Acknowledge and reset
+              </button>
+            </div>
+          )}
           {status.trigger.failed && (
             <div className="error-box">
               Trigger failure: {status.trigger.consecutiveInvalid} consecutive invalid
@@ -44,22 +65,26 @@ export function Overview({
               {(status.trigger.lastValue ?? 0).toString(16).padStart(4, '0')}).
             </div>
           )}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {STATES.map((s) => (
-              <button
+
+          {/* Read-only: the state follows what you do, it is not something you set. */}
+          <div className="state-flow">
+            {STATE_FLOW.map((s, i) => (
+              <div
                 key={s}
-                className={`action${s === status.state.state ? ' primary' : ''}`}
-                onClick={() => move(s)}
-                disabled={s === status.state.state}
+                className={`state-step${s === state ? ' current' : i <= reached ? ' past' : ''}`}
               >
                 {s}
-              </button>
+              </div>
             ))}
+            {(state === 'STOPPING' || state === 'ERROR') && (
+              <div className={`state-step current ${state === 'ERROR' ? 'err' : ''}`}>{state}</div>
+            )}
           </div>
+
           <p className="note" style={{ marginTop: 12 }}>
-            In state <strong>{status.state.state}</strong> since{' '}
-            {new Date(status.state.since).toLocaleTimeString()}. Transitions are validated: an
-            invalid one is refused rather than silently applied.
+            <strong>{state}</strong> — {STATE_MEANING[state]} Since{' '}
+            {new Date(status.state.since).toLocaleTimeString()}. The state follows what you do:
+            applying configuration, starting or stopping a run, and resetting all move it.
           </p>
         </div>
       </div>

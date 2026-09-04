@@ -84,14 +84,32 @@ export class RunControl extends EventEmitter<{ change: [ControlSnapshot] }> {
   }
 
   /**
+   * Return to DISCONNECTED from wherever we are.
+   *
+   * A reset is an operator-initiated recovery that always lands here, including
+   * from RUNNING: it stops acquisition and discards the configured state, so the
+   * normal RUNNING -> STOPPING path does not apply.
+   */
+  reset(reason: string): ControlSnapshot {
+    return this.force('DISCONNECTED', reason);
+  }
+
+  /**
    * Move to ERROR from wherever we are. Always permitted — a fault must never be
    * swallowed because the state machine disallowed reporting it.
    */
   fail(reason: string): ControlSnapshot {
-    const t: Transition = { from: this.state, to: 'ERROR', reason, at: Date.now() };
-    this.state = 'ERROR';
-    this.since = t.at;
+    const snap = this.force('ERROR', reason);
     this.lastError = reason;
+    return this.snapshot();
+  }
+
+  /** Transition without consulting ALLOWED, for faults and operator resets. */
+  private force(to: RunState, reason: string): ControlSnapshot {
+    const t: Transition = { from: this.state, to, reason, at: Date.now() };
+    this.state = to;
+    this.since = t.at;
+    if (to !== 'ERROR') this.lastError = undefined;
     this.history.push(t);
     if (this.history.length > RunControl.HISTORY_LIMIT) this.history.shift();
     const snap = this.snapshot();

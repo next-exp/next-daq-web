@@ -140,14 +140,20 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
     },
   );
 
-  /** Run-state transitions. */
-  app.post<{ Body: { to: string; reason?: string } }>('/api/state', async (req, reply) => {
-    const { to, reason = 'Operator request' } = req.body ?? {};
-    try {
-      return session.control.moveTo(to as never, reason);
-    } catch (err) {
-      return reply.code(409).send({ error: (err as Error).message });
+  /**
+   * Clear a fault and return to DISCONNECTED.
+   *
+   * The run state is otherwise driven by what the operator actually does —
+   * applying configuration, starting and stopping a run, resetting — so this is
+   * the only transition that needs asking for: acknowledging an error.
+   */
+  app.post<{ Body: { reason?: string } }>('/api/state/acknowledge', async (req, reply) => {
+    const reason = req.body?.reason ?? 'Fault acknowledged by the operator';
+    if (session.control.current !== 'ERROR') {
+      return reply.code(409).send({ error: 'There is no error to acknowledge' });
     }
+    await session.log.info('error_acknowledged', { reason });
+    return session.control.reset(reason);
   });
 
   app.get('/api/log', async (req) => {

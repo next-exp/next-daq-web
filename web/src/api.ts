@@ -60,8 +60,9 @@ export const api = {
       body: JSON.stringify({ register, params, host }),
     }),
 
-  setState: (to: string, reason: string) =>
-    json<Status['state']>('/api/state', { method: 'POST', body: JSON.stringify({ to, reason }) }),
+  /** Clear a fault; the only run-state transition an operator asks for directly. */
+  acknowledgeError: () =>
+    json<Status['state']>('/api/state/acknowledge', { method: 'POST', body: '{}' }),
 
   log: (limit = 200) =>
     json<{ at: string; level: string; event: string; detail?: Record<string, unknown> }[]>(

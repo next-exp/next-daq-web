@@ -342,3 +342,17 @@ button.link:hover { color: var(--accent); }
 .readiness-list .what { font-weight: 600; min-width: 190px; }
 .readiness-list .why { color: var(--muted); flex: 1; }
 .readiness-list .when { color: var(--muted); font: 11px var(--mono); }
+
+/* Run state, shown as progress rather than as buttons: it follows what the
+   operator does, so it is not something to be set directly. */
+.state-flow { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.state-step {
+  padding: 6px 12px; border-radius: 5px; font: 600 11px var(--mono);
+  letter-spacing: .6px; border: 1px solid var(--border);
+  background: var(--panel-2); color: var(--muted);
+}
+.state-step.past { color: var(--text); border-color: color-mix(in srgb, var(--ok) 35%, var(--border)); }
+.state-step.current {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+.state-step.current.err { background: var(--err); border-color: var(--err); }
