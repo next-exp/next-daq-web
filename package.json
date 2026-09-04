@@ -1,0 +1,25 @@
+{
+  "name": "next-daq-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Web control application for the NEXT experiment DAQ electronics (rewrite of the Envio_Comandos and ATCAFlashProgramming Java/Swing applications).",
+  "workspaces": [
+    "shared",
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run build -w shared && npm run build -w server && npm run build -w web",
+    "dev": "npm run dev -w server & npm run dev -w web",
+    "start": "node server/dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc -b shared server",
+    "clean": "rm -rf shared/dist server/dist web/dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4",
+    "@types/node": "^22.9.0"
+  }
+}

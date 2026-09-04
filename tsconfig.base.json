@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "composite": true,
+    // Keep build info inside outDir so removing dist/ fully resets the incremental
+    // build; leaving it outside makes `tsc -b` silently skip emitting after a clean.
+    "tsBuildInfoFile": "${configDir}/dist/.tsbuildinfo",
+    "sourceMap": true
+  }
+}
