@@ -55,6 +55,19 @@ rejected at startup rather than surfacing later as a card that never replies.
 the network — useful for training, for reviewing a configuration change, and for
 running the console on a machine with no detector attached.
 
+## The console
+
+**Overview** carries the controls an operator reaches for without hunting: Start
+Run, Stop Run, RST SOFT and RST HARD, above the run state, link counters and card
+table. These were plain buttons on the Swing main window, always visible, and they
+are always visible here for the same reason. Each uses the parameters set in its
+Setup panel, so the two never disagree. Hard reset is confirmed before it runs,
+because it takes the whole detector down for about a minute.
+
+**Setup** holds the configuration panels; **Registers** gives direct
+single-register access; **Configuration**, **Flash** and **Log** cover saved
+setups, firmware and history.
+
 ## Operator panels
 
 The console's **Setup** tab reproduces the task-oriented panels of the Swing

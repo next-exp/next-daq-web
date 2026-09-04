@@ -98,7 +98,9 @@ export function App() {
       </nav>
 
       <main>
-        {tab === 'overview' && <Overview status={status} onChanged={refresh} />}
+        {tab === 'overview' && (
+          <Overview status={status} progress={actionProgress} onChanged={refresh} />
+        )}
         {tab === 'setup' && <Setup status={status} progress={actionProgress} />}
         {tab === 'registers' && <Registers status={status} />}
         {tab === 'config' && <Config />}

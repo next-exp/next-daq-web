@@ -1,10 +1,19 @@
 import { api } from '../api';
-import type { Status } from '../types';
+import { RunControls } from '../components/RunControls';
+import type { ActionProgress, Status } from '../types';
 
 const STATES = ['DISCONNECTED', 'CONFIGURING', 'READY', 'RUNNING', 'STOPPING', 'ERROR'];
 
 /** Detector overview: run state, card health and link counters. */
-export function Overview({ status, onChanged }: { status?: Status; onChanged: () => void }) {
+export function Overview({
+  status,
+  progress,
+  onChanged,
+}: {
+  status?: Status;
+  progress?: ActionProgress;
+  onChanged: () => void;
+}) {
   if (!status) return <div className="panel"><div className="body">Connecting…</div></div>;
 
   const move = async (to: string) => {
@@ -22,8 +31,10 @@ export function Overview({ status, onChanged }: { status?: Status; onChanged: ()
 
   return (
     <div style={{ display: 'grid', gap: 16 }}>
+      <RunControls status={status} progress={progress} onChanged={onChanged} />
+
       <div className="panel">
-        <h2>Run control</h2>
+        <h2>Run state</h2>
         <div className="body">
           {status.state.lastError && <div className="error-box">{status.state.lastError}</div>}
           {status.trigger.failed && (
