@@ -107,6 +107,13 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
 
   app.get('/api/topology', async () => session.topology);
 
+  /** Which run-boundary hooks this deployment has configured. */
+  app.get('/api/hooks', async () => ({
+    onRunStart: session.hooks.configured('onRunStart'),
+    onRunStop: session.hooks.configured('onRunStop'),
+    commands: session.topology.hooks ?? {},
+  }));
+
   /** Which panels a run depends on, and whether each has been applied. */
   app.get('/api/readiness', async () => session.readiness());
 

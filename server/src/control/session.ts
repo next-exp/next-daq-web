@@ -16,6 +16,7 @@ import { RunControl } from './state.js';
 import { RunLog } from '../store/log.js';
 import { SettingsStore } from '../store/settings.js';
 import { computeReadiness, type Readiness } from './readiness.js';
+import { Hooks, type HookResult } from './hooks.js';
 import { FlashSession, type FlashOptions, type FlashProgress } from './flash.js';
 
 /**
@@ -28,6 +29,7 @@ export class Session {
   readonly monitor: CardMonitor;
   readonly control = new RunControl();
   readonly log: RunLog;
+  readonly hooks: Hooks;
   /** Current values of every operator panel — the saveable configuration. */
   readonly settings: SettingsStore;
 
@@ -47,6 +49,7 @@ export class Session {
     this.monitor = new CardMonitor(topology);
     this.log = new RunLog(topology.paths.dataDir);
     this.settings = new SettingsStore(topology.paths.dataDir);
+    this.hooks = new Hooks(topology, this.log);
 
     this.link.on('message', (msg) => this.onMessage(msg));
     this.link.on('rejected', (info) => {
@@ -264,7 +267,9 @@ export class Session {
     }
 
     this.advanceState(id, params);
+    const hook = await this.runHooks(id, params);
     await this.log.info('action_completed', { action: id, writes: applied.length });
+    if (hook.ran) this.publish({ type: 'hook', ...hook });
     this.publish({ type: 'action', action: id, step: writes.length, total: writes.length, done: true });
     return { applied, dryRun: this.dryRun };
   }
@@ -308,6 +313,18 @@ export class Session {
     } else if (!ready && state !== 'CONFIGURING') {
       this.control.moveTo('CONFIGURING', 'Configuration applied');
     }
+  }
+
+  /**
+   * Run the external hook for a run boundary, if one is configured and the
+   * operator has left auto-stop enabled.
+   */
+  private async runHooks(id: string, params: Params): Promise<HookResult> {
+    if (id !== 'run.acquisition' || this.dryRun) return { ran: false };
+    if (Number(params.on_off) === 1) return this.hooks.run('onRunStart');
+    // The original gated only the stop on its checkbox.
+    if (params.stop_external === false) return { ran: false };
+    return this.hooks.run('onRunStop');
   }
 
   /** Whether the panels a run depends on have been applied since the last reset. */
@@ -394,6 +411,7 @@ export type ServerEvent =
   | { type: 'rx'; card?: string; address: string; statusAddr: number; data: number[]; at: number }
   | { type: 'rejected'; reason: string; address: string; port: number; length: number }
   | { type: 'flash'; progress: FlashProgress }
+  | { type: 'hook'; ran: boolean; command?: string; ok?: boolean; message?: string }
   | {
       type: 'action';
       action: string;

@@ -245,6 +245,35 @@ Two panels differ usefully from the original:
 
 The **Registers** tab remains underneath for direct single-register access.
 
+## External hooks — "AutoStop DUCK"
+
+Stopping acquisition in the original also stopped the DATE run, by shelling out to
+`/home/next/scripts/stopDate.sh` when the "AutoStop DUCK" checkbox was ticked; a
+run start similarly ran `elog_client.sh start`. Both are configuration here:
+
+```json
+"hooks": {
+  "onRunStart": ["/home/next/scripts/elog_client.sh", "start"],
+  "onRunStop":  ["/home/next/scripts/stopDate.sh"]
+}
+```
+
+The **Start / stop acquisition** panel carries the checkbox as *"Also stop the
+external DAQ"*, on by default as it was. A deployment that configures no hooks
+cannot run anything, and the option then has no effect.
+
+Two differences from the original, both because this console is reachable over
+HTTP rather than being a local Swing window:
+
+- **Only what the configuration file names can run.** Nothing from a request
+  reaches a command line; the API decides *whether* to invoke a hook, never *what*.
+- **No shell.** Each hook is `[program, ...arguments]` run with `execFile`, so
+  quoting and substitution are not interpreted. A malformed hook is rejected when
+  the configuration loads, not when a run ends.
+
+A failing hook is reported and logged but does not fail the run — an external
+script that exits non-zero must not take down run control.
+
 ## Run state
 
 The state is shown, not set. It follows what the operator does:
@@ -417,7 +446,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 521 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 529 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

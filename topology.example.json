@@ -73,5 +73,14 @@
     "template": "10.0.{}.1",
     "offset": 128,
     "maxBoard": 55
+  },
+  "hooks": {
+    "onRunStart": [
+      "/home/next/scripts/elog_client.sh",
+      "start"
+    ],
+    "onRunStop": [
+      "/home/next/scripts/stopDate.sh"
+    ]
   }
 }
