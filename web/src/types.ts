@@ -50,6 +50,14 @@ type ParamSpec_ =
       help?: string;
       /** 'settings' = the other fields are per channel; 'mask' = they are card-level. */
       selects?: 'settings' | 'mask';
+    }
+  | {
+      kind: 'card';
+      name: string;
+      label: string;
+      plane: string;
+      options?: { index: number; id: string; label: string }[];
+      help?: string;
     };
 
 export interface RegisterInfo {

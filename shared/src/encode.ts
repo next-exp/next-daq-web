@@ -15,6 +15,7 @@ export function makeAccess(p: Params, specs: readonly ParamSpec[], label: string
     if (spec && 'default' in spec && spec.default !== undefined) return spec.default;
     if (spec?.kind === 'mask') return new Array<boolean>(spec.count).fill(false);
     if (spec?.kind === 'grid') return [] as boolean[];
+    if (spec?.kind === 'card') return 0;
     if (spec?.kind === 'bool') return false;
     if (spec?.kind === 'coefArray') return [0, 0];
     if (spec) return 0;

@@ -91,6 +91,23 @@ type ParamSpec_ =
        *   BFDaqConfReg16 carries the mask and the flags in one word).
        */
       selects: 'settings' | 'mask';
+    }
+  /**
+   * One card of a plane, chosen from those configured.
+   *
+   * Some registers are written to a single card and carry that card's own flags —
+   * `BFDaqConfReg16` is the trigger sum, which the original configured one FEC at
+   * a time through a drop-down. A grid spanning the plane would imply the flags
+   * are shared, which they are not.
+   */
+  | {
+      name: string;
+      label: string;
+      kind: 'card';
+      plane: 'trg' | 'pmt' | 'bf' | 'sipm';
+      /** Filled in from the configured topology when the catalogue is served. */
+      options?: { index: number; id: string; label: string }[];
+      help?: string;
     };
 
 export type Params = Record<string, number | boolean | boolean[] | number[]>;

@@ -1,5 +1,5 @@
 import { nsToTbins, usToSamples } from '../units.js';
-import { bool, choice, grid, int, mask, section, uint } from '../registers/spec.js';
+import { bool, card, choice, grid, int, mask, section, uint } from '../registers/spec.js';
 import type { ConfigAction, PlanContext, PlannedWrite } from './types.js';
 import type { ParamAccess } from '../types.js';
 
@@ -336,38 +336,33 @@ export const BF_ACTIONS: ConfigAction[] = [
     group: 'BF',
     title: 'Trigger sum / data channels',
     description:
-      'Enables the trigger sum and selects which channels take part, per FEC. This is ' +
-      'what "Activate TRG SUM" did: it wrote BFDaqConfReg16 to each selected FEC in turn.',
+      'Enables the trigger sum and selects which channels take part, for one FEC. ' +
+      'BFDaqConfReg16 is written to a single card and carries that card\u2019s own ' +
+      'flags, so the original configured one FEC at a time through a drop-down; ' +
+      '"Activate TRG SUM" then repeated it for each selected FEC.',
     origin: 'BF Conf tab + CH TRG Conf A — Activate TRG SUM',
     params: [
-      grid('channels', 'Channels in the sum', 'bf', 12, 'BF', 'mask'),
+      card('card', 'FEC', 'bf'),
+      mask('channels', 'Channels in the sum', 12, 'high', 'BF'),
       bool('on', 'Trigger sum on'),
       bool('data_send', 'Send data'),
       bool('lg_hg', 'Sum high gain (off = low gain)'),
     ],
     plan: (p): PlannedWrite[] => {
-      const selected = p.mask('channels');
-      const cols = 12;
-      const cards = Math.ceil(selected.length / cols);
-      const writes: PlannedWrite[] = [];
-
-      // One write per card, carrying that card's twelve channel bits.
-      for (let card = 0; card < cards; card++) {
-        const channels = selected.slice(card * cols, card * cols + cols);
-        if (!channels.some(Boolean)) continue;
-        writes.push({
+      const cardIndex = p.int('card');
+      return [
+        {
           register: 'BFDaqConfReg16',
-          cardIndex: card,
-          note: `Card ${card + 1} — ${channels.filter(Boolean).length} channel(s) in the sum`,
+          cardIndex,
+          note: `Card ${cardIndex + 1}`,
           params: {
-            channels,
+            channels: p.mask('channels'),
             on: p.bool('on'),
             data_send: p.bool('data_send'),
             lg_hg: p.bool('lg_hg'),
           },
-        });
-      }
-      return writes;
+        },
+      ];
     },
   },
   {

@@ -72,3 +72,11 @@ export const grid = (
 /** Tag a group of parameters with the section they belong to in the console. */
 export const section = (name: string, specs: ParamSpec[]): ParamSpec[] =>
   specs.map((s) => ({ ...s, section: name }));
+
+/** A single card of a plane, chosen from those configured. */
+export const card = (
+  name: string,
+  label: string,
+  plane: 'trg' | 'pmt' | 'bf' | 'sipm',
+  help?: string,
+): ParamSpec => ({ kind: 'card', name, label, plane, help });

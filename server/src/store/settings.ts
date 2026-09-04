@@ -71,6 +71,8 @@ export class SettingsStore {
         // Rows depend on the configured topology, so an unset grid is empty and
         // the console fills it in once it knows the card list.
         out[spec.name] = [];
+      } else if (spec.kind === 'card') {
+        out[spec.name] = 0;
       } else if (spec.kind === 'coefArray') {
         out[spec.name] = [0, 0];
       } else if (spec.kind === 'bool') {

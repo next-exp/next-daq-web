@@ -54,16 +54,22 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
       origin: a.origin,
       // Grid parameters get their rows from the configured cards, so a crate with
       // a different number of FECs needs no code change.
-      params: a.params.map((p) =>
-        p.kind === 'grid'
-          ? {
-              ...p,
-              rows: session.topology.cards
-                .filter((c) => c.plane === p.plane)
-                .map((c) => ({ id: c.id, label: c.label })),
-            }
-          : p,
-      ),
+      params: a.params.map((p) => {
+        // Grid rows and card choices both come from the configured cards, so a
+        // crate with a different number of FECs needs no code change.
+        const cards = (plane: string) =>
+          session.topology.cards.filter((c) => c.plane === plane);
+        if (p.kind === 'grid') {
+          return { ...p, rows: cards(p.plane).map((c) => ({ id: c.id, label: c.label })) };
+        }
+        if (p.kind === 'card') {
+          return {
+            ...p,
+            options: cards(p.plane).map((c, index) => ({ index, id: c.id, label: c.label })),
+          };
+        }
+        return p;
+      }),
     })),
   }));
 

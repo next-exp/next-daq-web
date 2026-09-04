@@ -11,7 +11,8 @@ import type { ParamSpec, ParamValue, ParamValues } from '../types';
 export function defaultsFor(params: ParamSpec[]): ParamValues {
   const out: ParamValues = {};
   for (const p of params) {
-    if (p.kind === 'grid') out[p.name] = new Array((p.rows?.length ?? 0) * p.cols).fill(false);
+    if (p.kind === 'card') out[p.name] = 0;
+    else if (p.kind === 'grid') out[p.name] = new Array((p.rows?.length ?? 0) * p.cols).fill(false);
     else if (p.kind === 'mask') out[p.name] = new Array(p.count).fill(false);
     else if (p.kind === 'coefArray') out[p.name] = [0, 0];
     else if (p.kind === 'bool') out[p.name] = p.default ?? false;
@@ -56,6 +57,35 @@ export function Field({ spec, value, onChange, applied, mixed }: FieldProps) {
             {mixed ? 'MIXED' : on ? 'ON' : 'OFF'}
           </span>
         </div>
+        {spec.help && <div className="help">{spec.help}</div>}
+      </div>
+    );
+  }
+
+  if (spec.kind === 'card') {
+    const options = spec.options ?? [];
+    if (options.length === 0) {
+      return (
+        <div className="field">
+          <label>{spec.label}</label>
+          <div className="help">No cards of this plane are configured.</div>
+        </div>
+      );
+    }
+    return (
+      <div className="field">
+        <label htmlFor={spec.name}>{spec.label}</label>
+        <select
+          id={spec.name}
+          value={String(Number(value) || 0)}
+          onChange={(e) => onChange(Number(e.target.value))}
+        >
+          {options.map((o) => (
+            <option key={o.index} value={o.index}>
+              {o.id} — {o.label}
+            </option>
+          ))}
+        </select>
         {spec.help && <div className="help">{spec.help}</div>}
       </div>
     );

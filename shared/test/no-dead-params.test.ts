@@ -44,6 +44,7 @@ function baseParams(action: ConfigAction): Params {
   for (const spec of action.params) {
     if (spec.kind === 'mask') p[spec.name] = new Array(spec.count).fill(true);
     else if (spec.kind === 'grid') p[spec.name] = new Array(3 * spec.cols).fill(true);
+    else if (spec.kind === 'card') p[spec.name] = 0;
     else if (spec.kind === 'coefArray') p[spec.name] = [1, 1];
     // Every flag on, so fields gated behind one are actually exercised.
     else if (spec.kind === 'bool') p[spec.name] = true;
@@ -87,6 +88,7 @@ describe('no dead parameters', () => {
         if (spec.kind === 'bool') changed[spec.name] = !base[spec.name];
         else if (spec.kind === 'mask') changed[spec.name] = new Array(spec.count).fill(false);
         else if (spec.kind === 'grid') changed[spec.name] = new Array(3 * spec.cols).fill(false);
+        else if (spec.kind === 'card') changed[spec.name] = 1;
         else if (spec.kind === 'coefArray') changed[spec.name] = [2, 3];
         else if (spec.kind === 'enum') {
           const other = spec.options.find((o) => o.value !== base[spec.name]);
@@ -127,11 +129,16 @@ describe('grid role is declared', () => {
     }
   });
 
-  it('the trigger sum is a card-level mask, not per-channel settings', () => {
-    const spec = ALL_ACTIONS.find((a) => a.id === 'bf.triggerSum')!.params.find(
-      (p) => p.name === 'channels',
-    );
-    expect(spec && 'selects' in spec && spec.selects).toBe('mask');
+  /**
+   * BFDaqConfReg16 is written to a single card and carries that card's own flags,
+   * so the panel selects one FEC rather than spanning the plane — a grid would
+   * imply the flags are shared across cards, which they are not.
+   */
+  it('the trigger sum selects one card rather than spanning the plane', () => {
+    const params = ALL_ACTIONS.find((a) => a.id === 'bf.triggerSum')!.params;
+    expect(params.find((p) => p.kind === 'grid')).toBeUndefined();
+    expect(params.find((p) => p.name === 'card')?.kind).toBe('card');
+    expect(params.find((p) => p.name === 'channels')?.kind).toBe('mask');
   });
 
   it('the channel trigger and BLR panels are per-channel', () => {

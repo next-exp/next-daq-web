@@ -438,3 +438,36 @@ describe('per-channel settings', () => {
     expect(writes.map((w) => w.params.mau_thr)).toEqual([7, 9]);
   });
 });
+
+describe('trigger sum addresses one card', () => {
+  /**
+   * BFDaqConfReg16 goes to a single card with that card's own flags. The original
+   * picked the FEC from a drop-down and "Activate TRG SUM" repeated the write for
+   * each selected one, so a panel spanning the plane would misrepresent it.
+   */
+  it('emits exactly one write, to the selected card', () => {
+    const channels = new Array(12).fill(true);
+    for (const card of [0, 1, 2]) {
+      const writes = planAction(getAction('bf.triggerSum'), { card, channels, on: true });
+      expect(writes).toHaveLength(1);
+      expect(writes[0].cardIndex).toBe(card);
+      expect(writes[0].register).toBe('BFDaqConfReg16');
+    }
+  });
+
+  it('carries the selected card’s own flags', () => {
+    const [w] = planAction(getAction('bf.triggerSum'), {
+      card: 1,
+      channels: new Array(12).fill(false),
+      on: true,
+      lg_hg: true,
+    });
+    expect(w.params).toMatchObject({ on: true, lg_hg: true });
+  });
+
+  it('still writes when no channel is selected, to turn the sum off', () => {
+    const writes = planAction(getAction('bf.triggerSum'), { card: 0, on: false });
+    expect(writes).toHaveLength(1);
+    expect(writes[0].params.on).toBe(false);
+  });
+});

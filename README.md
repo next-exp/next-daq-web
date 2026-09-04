@@ -116,7 +116,14 @@ An earlier version applied one shared threshold set to every ticked channel, whi
 silently overwrote per-channel configuration and could display values belonging to
 no channel at all.
 
-A grid means one of two things, and each panel declares which:
+Not every per-card register wants a grid. `BFDaqConfReg16` — the trigger sum — is
+written to a **single card** and carries that card's own flags, so the panel picks
+one FEC from a drop-down and emits one write, as the original did through
+`jComboBox6`; "Activate TRG SUM" then repeated it for each selected FEC. A grid
+spanning the plane would imply the flags are shared across cards, which they are
+not.
+
+Where a grid *is* right, it means one of two things, and each panel declares which:
 
 - **`settings`** — each ticked channel gets its own register write and its own
   values, so the panel's other fields are per channel (channel trigger, BLR).
@@ -463,7 +470,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 536 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 540 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.
