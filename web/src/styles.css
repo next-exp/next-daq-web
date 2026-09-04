@@ -388,9 +388,16 @@ button.action.primary.attention {
   padding: 8px 12px; margin-left: 4px;
   border: 1px solid var(--border); border-radius: 6px;
   background: var(--panel-2); font-size: 12px; cursor: pointer;
-  max-width: 320px;
+  max-width: 360px;
 }
 .stop-hook small {
   display: block; color: var(--muted); font: 10px var(--mono);
-  margin-top: 2px; word-break: break-all;
+  /* Break between words, not inside them: a path or a config key split
+     mid-token is harder to read than one that wraps. */
+  margin-top: 2px; overflow-wrap: anywhere; word-break: normal;
 }
+
+/* Shown but inert when the deployment configures no stop hook, so a missing
+   control is distinguishable from an unconfigured one. */
+.stop-hook.inert { opacity: .55; cursor: not-allowed; }
+.stop-hook.inert input { cursor: not-allowed; }

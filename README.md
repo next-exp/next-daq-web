@@ -260,9 +260,12 @@ run start similarly ran `elog_client.sh start`. Both are configuration here:
 
 The checkbox keeps its original name, **Auto-stop DUCK**, and sits beside Stop Run
 on Overview rather than only on the acquisition panel — it changes what that button
-does. It is on by default, as it was, and appears only when the deployment
-configures a stop hook, with the command it will run shown beneath it. A
-deployment that configures none cannot run anything.
+does. It is on by default, as it was, and shows the command it will run.
+
+With no stop hook configured it is shown greyed out and says so, rather than being
+hidden: an absent control cannot be told apart from an unconfigured one, and the
+original had the checkbox present regardless. A deployment that configures no hooks
+cannot run anything.
 
 Two differences from the original, both because this console is reachable over
 HTTP rather than being a local Swing window:

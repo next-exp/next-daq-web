@@ -142,28 +142,40 @@ export function RunControls({ status, progress, onChanged }: Props) {
             Stop<br />Run
           </button>
 
-          {stopHook?.configured && (
-            <label
-              className="stop-hook"
-              title={`Runs: ${stopHook.command}`}
-            >
-              <input
-                type="checkbox"
-                checked={stopExternal}
-                onChange={(e) => {
-                  setStopExternal(e.target.checked);
-                  // Store it so the acquisition panel shows the same thing.
-                  api
-                    .saveSettings('run.acquisition', { stop_external: e.target.checked })
-                    .catch(() => undefined);
-                }}
-              />
-              <span>
-                Auto-stop DUCK
-                <small>{stopHook.command}</small>
-              </span>
-            </label>
-          )}
+          {/*
+            Always shown, even with no hook configured. Hiding it left no way to
+            tell a missing control from an unconfigured one, and the original had
+            the checkbox present regardless.
+          */}
+          <label
+            className={`stop-hook${stopHook && !stopHook.configured ? ' inert' : ''}`}
+            title={
+              stopHook?.configured
+                ? `Runs: ${stopHook.command}`
+                : 'No stop hook is configured for this deployment'
+            }
+          >
+            <input
+              type="checkbox"
+              checked={stopExternal}
+              disabled={stopHook ? !stopHook.configured : true}
+              onChange={(e) => {
+                setStopExternal(e.target.checked);
+                // Store it so the acquisition panel shows the same thing.
+                api
+                  .saveSettings('run.acquisition', { stop_external: e.target.checked })
+                  .catch(() => undefined);
+              }}
+            />
+            <span>
+              Auto-stop DUCK
+              <small>
+                {stopHook?.configured
+                  ? stopHook.command
+                  : 'no stop hook configured — set hooks.onRunStop'}
+              </small>
+            </span>
+          </label>
           <span className="run-controls-gap" />
           <button
             className="action big"
