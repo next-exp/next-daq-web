@@ -68,6 +68,17 @@ export type ParamSpec =
       rows?: { id: string; label: string }[];
       colLabel?: string;
       help?: string;
+      /**
+       * What the grid selects, which decides where the panel's other fields belong.
+       *
+       * 'settings' — each ticked channel gets its own register write and its own
+       *   values, so the other fields are per channel (the channel trigger and BLR
+       *   panels, where the hardware takes one write per channel).
+       * 'mask' — the ticked bits are a channel mask inside a per-card write, so the
+       *   other fields are card-level and shared (the trigger sum, where
+       *   BFDaqConfReg16 carries the mask and the flags in one word).
+       */
+      selects: 'settings' | 'mask';
     };
 
 export type Params = Record<string, number | boolean | boolean[] | number[]>;

@@ -303,7 +303,7 @@ export const BF_ACTIONS: ConfigAction[] = [
       'what "Activate TRG SUM" did: it wrote BFDaqConfReg16 to each selected FEC in turn.',
     origin: 'BF Conf tab + CH TRG Conf A — Activate TRG SUM',
     params: [
-      grid('channels', 'Channels in the sum', 'bf', 12, 'BF'),
+      grid('channels', 'Channels in the sum', 'bf', 12, 'BF', 'mask'),
       bool('on', 'Trigger sum on'),
       bool('data_send', 'Send data'),
       bool('lg_hg', 'Sum high gain (off = low gain)'),

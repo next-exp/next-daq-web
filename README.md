@@ -111,6 +111,20 @@ An earlier version applied one shared threshold set to every ticked channel, whi
 silently overwrote per-channel configuration and could display values belonging to
 no channel at all.
 
+A grid means one of two things, and each panel declares which:
+
+- **`settings`** — each ticked channel gets its own register write and its own
+  values, so the panel's other fields are per channel (channel trigger, BLR).
+- **`mask`** — the ticked bits are a channel mask inside a per-card write, so the
+  other fields are card-level and shared (the trigger sum, where `BFDaqConfReg16`
+  carries the mask and the flags in one word).
+
+Getting this wrong is invisible: the trigger-sum "on" toggle routed its edits into
+per-channel storage that its plan never reads, so the register writes did not
+change when it was flipped. `no-dead-params.test.ts` now perturbs every declared
+parameter of every panel and asserts the encoded packets change, so a field that
+does nothing fails the build.
+
 Below the form, a **Channel settings** table lists every channel that has its own
 values, one row each, with a column per parameter and differences from the panel
 value highlighted. The grid marker deliberately means "this channel has settings
@@ -291,7 +305,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 250 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 483 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

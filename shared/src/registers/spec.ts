@@ -64,5 +64,7 @@ export const grid = (
   plane: 'trg' | 'pmt' | 'bf' | 'sipm',
   cols: number,
   colLabel = 'CH',
+  /** See `selects` on the grid spec: per-channel settings, or a card-level mask. */
+  selects: 'settings' | 'mask' = 'settings',
   help?: string,
-): ParamSpec => ({ kind: 'grid', name, label, plane, cols, colLabel, help });
+): ParamSpec => ({ kind: 'grid', name, label, plane, cols, colLabel, selects, help });

@@ -124,17 +124,24 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
 
   const gridSpec = selected?.params.find((p) => p.kind === 'grid');
   const cols = gridSpec && 'cols' in gridSpec ? gridSpec.cols : 0;
+  /**
+   * Whether this panel's other fields belong to the selected channels or to the
+   * card. A trigger-sum flag is card-level even though the panel has a grid, so
+   * routing its edits per channel would store them where nothing reads them.
+   */
+  const perChannel =
+    !!gridSpec && 'selects' in gridSpec && gridSpec.selects !== 'mask';
 
   /** Keys of the currently ticked channels, as "cardIndex:channel". */
   const selectedKeys = useMemo(() => {
-    if (!gridSpec) return [];
+    if (!gridSpec || !perChannel) return [];
     const bits = (values[gridSpec.name] as boolean[] | undefined) ?? [];
     const out: string[] = [];
     bits.forEach((on, i) => {
       if (on) out.push(`${Math.floor(i / cols)}:${i % cols}`);
     });
     return out;
-  }, [gridSpec, values, cols]);
+  }, [gridSpec, perChannel, values, cols]);
 
   /**
    * The value each field should show for the current selection: the shared value
@@ -246,6 +253,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                   ? `Last sent to the cards ${new Date(applied.at).toLocaleString()}.`
                   : 'Never sent to the cards from this console.'}
                 {gridSpec &&
+                  perChannel &&
                   (selectedKeys.length === 0
                     ? ' Select channels to see and edit their settings.'
                     : selectedKeys.length === 1
@@ -265,7 +273,9 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                   }
                   mixed={p.kind !== 'grid' && channelView.mixed.has(p.name)}
                   applied={
-                    p.kind === 'grid' ? channelConfiguredMask(channels, cols, p) : undefined
+                    p.kind === 'grid' && perChannel
+                      ? channelConfiguredMask(channels, cols, p)
+                      : undefined
                   }
                   onChange={(v) => {
                     if (p.kind !== 'grid' && selectedKeys.length > 0) {
@@ -291,7 +301,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
             </div>
           </div>
 
-          {gridSpec && 'rows' in gridSpec && (
+          {gridSpec && perChannel && 'rows' in gridSpec && (
             <div className="panel">
               <h2>Channel settings</h2>
               <div className="body">
