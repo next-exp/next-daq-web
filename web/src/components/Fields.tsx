@@ -184,7 +184,7 @@ export function Field({ spec, value, onChange, applied, mixed }: FieldProps) {
         </div>
         {live.length > 0 && (
           <div className="help" style={{ marginBottom: 6 }}>
-            A dot marks a channel enabled by the last configuration sent to the cards.
+            A dot marks a channel that has settings of its own; the table below shows them.
           </div>
         )}
         <div className="chgrid">
@@ -209,7 +209,7 @@ export function Field({ spec, value, onChange, applied, mixed }: FieldProps) {
                   onClick={() => toggle(r, c)}
                   title={
                     `${row.label} — ${spec.colLabel ?? 'CH'} ${c}` +
-                    (isLive(r, c) ? ' · currently enabled' : '')
+                    (isLive(r, c) ? ' · has its own settings' : '')
                   }
                 >
                   {c}

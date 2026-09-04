@@ -221,3 +221,52 @@ button.action.danger:hover:not(:disabled) {
   color: var(--warn);
   border-color: color-mix(in srgb, var(--warn) 45%, var(--border));
 }
+
+/* Compact form layout: pack short controls several to a row rather than
+   giving every parameter a full line. */
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 4px 18px;
+  margin-bottom: 8px;
+}
+.field-grid .field { margin-bottom: 4px; }
+.field-full { margin-bottom: 12px; }
+
+/* Tighter spacing inside a packed row. */
+.field-grid .field > label { margin-bottom: 2px; }
+.field-grid .field .help { margin-top: 2px; line-height: 1.35; }
+.field-grid .field input[type="number"],
+.field-grid .field input[type="text"],
+.field-grid .field select { padding: 5px 7px; }
+.field-grid .toggle-row { min-height: 32px; }
+
+/* Per-channel settings table. Wide tables scroll inside their panel rather than
+   forcing the page to scroll sideways. */
+.table-scroll { overflow-x: auto; max-width: 100%; }
+.channel-table { font-size: 11px; white-space: nowrap; }
+.channel-table th { font-size: 10px; }
+.channel-table th, .channel-table td { padding: 4px 8px; }
+.channel-table tbody tr { cursor: pointer; }
+.channel-table tbody tr:hover { background: var(--panel-2); }
+.channel-table tbody tr.sel { background: color-mix(in srgb, var(--accent) 14%, var(--panel)); }
+.channel-table td.differs {
+  color: var(--accent);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* Panel header with a primary action, so Apply is reachable without scrolling
+   past a long form. */
+.panel-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 14px; background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 2;
+}
+.panel-head > h2 {
+  flex: 1; margin: 0; padding: 0; border: none; background: none;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .7px; color: var(--muted);
+}
+.panel-head .action { padding: 6px 12px; font-size: 12px; white-space: nowrap; }

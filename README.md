@@ -111,6 +111,17 @@ An earlier version applied one shared threshold set to every ticked channel, whi
 silently overwrote per-channel configuration and could display values belonging to
 no channel at all.
 
+Below the form, a **Channel settings** table lists every channel that has its own
+values, one row each, with a column per parameter and differences from the panel
+value highlighted. The grid marker deliberately means "this channel has settings
+of its own" rather than tracking one particular field — singling out, say, the
+trigger-1 enable would misrepresent the other nineteen. Clicking a row selects
+that channel.
+
+Forms pack several fields to a row, and Apply sits in the panel header rather than
+below the form, so a twenty-field panel stays on one screen and the button is
+reachable without scrolling.
+
 The marker reflects the last configuration this console sent, not a hardware
 readback — a card power-cycled since will not be reflected.
 

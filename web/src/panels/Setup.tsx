@@ -1,27 +1,52 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
 import { Field, defaultsFor } from '../components/Fields';
+import { ChannelTable } from '../components/ChannelTable';
 import type { ActionInfo, ActionProgress, ParamValues, Status } from '../types';
 
 const SECTION_ORDER = ['run', 'trigger', 'pmt', 'bf', 'sipm', 'fec', 'test'];
 
 /**
- * Which channels are enabled according to their own stored settings, so the grid
- * shows per-channel state rather than only what is ticked for the next write.
+ * Group parameters into rows for display.
+ *
+ * Grids and masks need the full width; numeric, enum and boolean fields are packed
+ * several to a row. A panel like the channel trigger has twenty numeric fields, and
+ * one per line made it several screens tall.
  */
-function channelEnabledMask(
-  action: ActionInfo | undefined,
+function groupForLayout(
+  params: ActionInfo['params'],
+): { wide: boolean; items: ActionInfo['params'] }[] {
+  const rows: { wide: boolean; items: ActionInfo['params'] }[] = [];
+  for (const p of params) {
+    const wide = p.kind === 'grid' || p.kind === 'mask' || p.kind === 'coefArray';
+    const last = rows[rows.length - 1];
+    if (wide) {
+      rows.push({ wide: true, items: [p] });
+    } else if (last && !last.wide) {
+      last.items.push(p);
+    } else {
+      rows.push({ wide: false, items: [p] });
+    }
+  }
+  return rows;
+}
+
+/**
+ * Which channels carry settings of their own.
+ *
+ * The marker deliberately does not track one particular field: a channel has
+ * twenty parameters, and singling one out would misrepresent the rest. The table
+ * below the form shows the actual values.
+ */
+function channelConfiguredMask(
   channels: Record<string, ParamValues>,
   cols: number,
-  spec: { kind: string; rows?: { id: string }[] },
+  spec: { rows?: { id: string }[] },
 ): boolean[] | undefined {
-  if (!action || !cols || !spec.rows) return undefined;
-  // The field that means "this channel is on" differs between panels.
-  const onField = action.params.find((p) => ['on1', 'on'].includes(p.name))?.name;
-  if (!onField) return undefined;
+  if (!cols || !spec.rows) return undefined;
   return Array.from({ length: spec.rows.length * cols }, (_, i) => {
     const key = `${Math.floor(i / cols)}:${i % cols}`;
-    return Boolean(channels[key]?.[onField]);
+    return Object.keys(channels[key] ?? {}).length > 0;
   });
 }
 
@@ -198,8 +223,23 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
       {selected && (
         <div style={{ display: 'grid', gap: 16 }}>
           <div className="panel">
-            <h2>{selected.title}</h2>
+            <div className="panel-head">
+              <h2>{selected.title}</h2>
+              <button
+                className="action primary"
+                onClick={apply}
+                disabled={busy || plan.length === 0 || !!error}
+              >
+                {busy
+                  ? 'Applying…'
+                  : status?.dryRun
+                    ? `Apply (dry run) — ${plan.length}`
+                    : `Config registers — send ${plan.length}`}
+              </button>
+            </div>
             <div className="body">
+              {error && <div className="error-box">{error}</div>}
+              {result && <div className="ok-box">{result}</div>}
               {selected.description && <p className="note">{selected.description}</p>}
               <p className="note">
                 {applied?.at
@@ -212,7 +252,9 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                       ? ` Showing channel ${selectedKeys[0].replace(':', ', channel ')}.`
                       : ` Editing ${selectedKeys.length} channels — fields they disagree on show "Mixed", and changing one sets it for all of them.`)}
               </p>
-              {selected.params.map((p) => (
+              {groupForLayout(selected.params).map((row, ri) => (
+                <div key={ri} className={row.wide ? 'field-full' : 'field-grid'}>
+                  {row.items.map((p) => (
                 <Field
                   key={p.name}
                   spec={p}
@@ -223,25 +265,56 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                   }
                   mixed={p.kind !== 'grid' && channelView.mixed.has(p.name)}
                   applied={
-                    p.kind === 'grid' ? channelEnabledMask(selected, channels, cols, p) : undefined
+                    p.kind === 'grid' ? channelConfiguredMask(channels, cols, p) : undefined
                   }
                   onChange={(v) => {
-                    setValues((s) => ({ ...s, [p.name]: v }));
                     if (p.kind !== 'grid' && selectedKeys.length > 0) {
-                      // The edit belongs to the ticked channels, not the panel.
+                      // The edit belongs to the ticked channels only. Writing it to
+                      // the panel value as well would make it the fallback for every
+                      // unset channel, so nothing would ever read as "Mixed".
                       setChannels((c) => {
                         const next = { ...c };
                         for (const k of selectedKeys) next[k] = { ...next[k], [p.name]: v };
                         return next;
                       });
-                      api.setChannelSettings(selected.id, selectedKeys, { [p.name]: v })
+                      api
+                        .setChannelSettings(selected.id, selectedKeys, { [p.name]: v })
                         .catch(() => undefined);
+                    } else {
+                      setValues((s) => ({ ...s, [p.name]: v }));
                     }
                   }}
                 />
+                  ))}
+                </div>
               ))}
             </div>
           </div>
+
+          {gridSpec && 'rows' in gridSpec && (
+            <div className="panel">
+              <h2>Channel settings</h2>
+              <div className="body">
+                <ChannelTable
+                  action={selected}
+                  channels={channels}
+                  base={values}
+                  rows={gridSpec.rows ?? []}
+                  cols={cols}
+                  selectedKeys={selectedKeys}
+                  onSelect={(keys) => {
+                    const size = (gridSpec.rows?.length ?? 0) * cols;
+                    const bits = new Array(size).fill(false);
+                    for (const k of keys) {
+                      const [card, ch] = k.split(':').map(Number);
+                      bits[card * cols + ch] = true;
+                    }
+                    setValues((v) => ({ ...v, [gridSpec.name]: bits }));
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="panel">
             <h2>
@@ -292,17 +365,6 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                 </div>
               ))}
 
-              <button
-                className="action primary"
-                onClick={apply}
-                disabled={busy || plan.length === 0 || !!error}
-              >
-                {busy
-                  ? 'Applying…'
-                  : status?.dryRun
-                    ? 'Apply (dry run)'
-                    : `Config registers — send ${plan.length} write${plan.length === 1 ? '' : 's'}`}
-              </button>
             </div>
           </div>
         </div>
