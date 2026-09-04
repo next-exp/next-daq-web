@@ -2,6 +2,7 @@ import { channelMask, flag } from '../words.js';
 import { CMD_CONFIG } from '../encode.js';
 import type { RegisterDef } from '../types.js';
 import { bool, choice, int, mask, uint } from './spec.js';
+import { RUN_CODE_BITS } from '../runcodes.js';
 
 /** General (GEN) registers — memory buffer and link configuration. */
 export const GEN_REGISTERS: RegisterDef[] = [
@@ -20,7 +21,7 @@ export const GEN_REGISTERS: RegisterDef[] = [
       bool('testmem_on1', 'Test memory (PMT)'),
       bool('testmem_on2', 'Test memory (SiPM)'),
       uint('mode', 'Mode of operation', 4, 1),
-      uint('run_code', 'Run code', 4),
+      uint('run_code', 'Run code', RUN_CODE_BITS),
       uint('times_MH', 'Multi-hit times', 2),
     ],
     payload: (p, w) => {
@@ -60,7 +61,7 @@ export const GEN_REGISTERS: RegisterDef[] = [
       bool('testmem_on2', 'Test memory (SiPM)'),
       bool('bs2_on', 'Same buffer for writing'),
       uint('mode', 'Mode of operation', 4, 1),
-      uint('run_code', 'Run code', 4),
+      uint('run_code', 'Run code', RUN_CODE_BITS),
     ],
     payload: (p, w) => {
       const buff = p.int('buff_size');

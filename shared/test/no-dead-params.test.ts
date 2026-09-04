@@ -60,6 +60,9 @@ const CONDITIONAL: Record<string, string> = {
   // Owned here but read by start/stop and the resets through the plan context;
   // see the "one trigger count, shared" tests in reset.test.ts.
   'run.general:num_triggers': 'read by other panels, not by this one',
+  // Controls a side effect rather than a register write: whether stopping the run
+  // also runs the configured external hook. Covered by server/test/hooks.test.ts.
+  'run.acquisition:stop_external': 'runs the external stop hook, not a register write',
   // Selects which plane/boards to reload; covered by reset.test.ts.
   'fec.recover:boards': 'only read when scope selects front-end boards',
   // Gates timepulseoff, so it only shows on the wire when that value is non-zero.

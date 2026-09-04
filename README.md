@@ -304,6 +304,18 @@ STOPPING settles straight back to READY: the cards are told to stop, but nothing
 reports when they have drained, so the state does not wait on a signal that does
 not exist.
 
+## Run codes
+
+The RUN code is a drop-down carrying the 23 codes the Swing main window offered,
+each with what the detector is set up for and the source position where there is
+one — "21 — Kr-83 + Th-228 (source at lateral port)". The code goes into the run
+header, so picking a description rather than typing a number is the difference
+between a correctly labelled dataset and one that is not.
+
+The field occupies bits 4-11 of the flags word, so it is eight bits wide. An
+earlier version of this rewrite declared four, which would have rejected every
+code above 15 — most of the calibration and source runs.
+
 ## Unapplied changes
 
 A panel can be edited without being sent, so the console marks the difference
@@ -448,7 +460,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 529 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 536 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

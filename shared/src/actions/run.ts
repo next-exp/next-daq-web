@@ -1,4 +1,5 @@
 import { hzToTrgMask, nsToTbins, usToSamples } from '../units.js';
+import { RUN_CODE_OPTIONS } from '../runcodes.js';
 import { bool, choice, int, mask, section, uint } from '../registers/spec.js';
 import type { ConfigAction, PlannedWrite } from './types.js';
 
@@ -22,7 +23,7 @@ export const RUN_ACTIONS: ConfigAction[] = [
     params: [
       ...section('Run', [
         uint('mode', 'Mode of operation', 4, 1),
-        uint('run_code', 'RUN code', 4, 0),
+        choice('run_code', 'RUN code', RUN_CODE_OPTIONS, 0),
         int('num_triggers', 'Number of triggers', 1_000_000, 0, {
           help:
             'Set to 0 for an unlimited number of triggers. Start Run, Stop Run and both ' +
