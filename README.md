@@ -91,6 +91,24 @@ so quoting and substitution are not interpreted. Only what this file names can e
 run; nothing from an HTTP request reaches a command line. A deployment that
 configures no hooks cannot run anything.
 
+### Where things are saved
+
+Everything the console persists goes under `paths.dataDir`:
+
+| File | Contents |
+|---|---|
+| `current-settings.json` | Live panel state — what each panel holds, what was last applied and when, and per-channel values. This is what survives a restart. |
+| `<name>.txt` | Named setups from **Save current setup**, one `key:value` line per setting |
+| `run.log.jsonl` | Run log, one JSON object per line |
+
+The default `./data` is relative to the directory the server is started from, so
+starting it from elsewhere gives a different, empty data directory and saved setups
+appear to have vanished. Use an absolute path for anything long-lived:
+
+```json
+"paths": { "dataDir": "/var/lib/next-daq" }
+```
+
 ## The console
 
 **Overview** carries the controls you reach for without hunting — Start Run, Stop
