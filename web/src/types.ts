@@ -130,3 +130,17 @@ export interface ActionProgress {
   error?: string;
   done?: boolean;
 }
+
+/** Mirrors GET /api/readiness — the pre-run configuration interlock. */
+export interface Readiness {
+  ready: boolean;
+  missing: string[];
+  items: {
+    id: string;
+    title: string;
+    required: boolean;
+    applied: boolean;
+    at?: string;
+    note?: string;
+  }[];
+}

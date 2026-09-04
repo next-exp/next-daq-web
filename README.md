@@ -245,6 +245,30 @@ Two panels differ usefully from the original:
 
 The **Registers** tab remains underneath for direct single-register access.
 
+## Before starting a run
+
+The Swing application would not enable Start Run until the operator had pressed
+"Config Registers" on its panels, and cleared that state on a soft reset. Overview
+carries the same interlock as a checklist:
+
+- **General configuration** and **Trigger configuration** are required. Start Run
+  is disabled until both have been applied, with a "Start anyway" override.
+- The plane panels — PMT data channels, energy-plane trigger sum, SiPM front-end —
+  are listed as advisory with their applied time, since a plane that was never
+  configured will not produce data even though the run starts.
+- A soft reset, hard reset or flash recovery clears the applied state, so the
+  checklist has to be satisfied again. Panel *values* are kept; only the record of
+  what the cards were told is discarded.
+
+Only two of the original's three interlock counters actually worked. `jButton1_var8`
+(trigger) and `jButton1_var10` (general) gated the button; the third,
+`jButton1_var4`, is read and reset but never incremented, and the `setup_PMT == 1`
+branch that consults it is unreachable because `setup_PMT` is only ever assigned 0.
+So that arm never had any effect, and only the two that did are required here.
+
+This tracks what the console has sent, not the hardware — a card power-cycled
+outside the console will still show as configured until a reset.
+
 ## Saving and restoring a configuration
 
 Panel values live server-side, so a setup survives navigating between tabs, a
@@ -344,7 +368,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 491 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 499 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

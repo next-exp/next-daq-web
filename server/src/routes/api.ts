@@ -107,6 +107,9 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
 
   app.get('/api/topology', async () => session.topology);
 
+  /** Which panels a run depends on, and whether each has been applied. */
+  app.get('/api/readiness', async () => session.readiness());
+
   /** Encode without sending — the packet inspector. */
   app.post<{ Body: { register: string; params?: Record<string, unknown> } }>(
     '/api/encode',

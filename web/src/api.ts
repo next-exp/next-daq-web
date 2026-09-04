@@ -1,4 +1,11 @@
-import type { ActionInfo, FlashProgress, ParamValues, RegisterInfo, Status } from './types';
+import type {
+  ActionInfo,
+  FlashProgress,
+  ParamValues,
+  Readiness,
+  RegisterInfo,
+  Status,
+} from './types';
 
 async function json<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -15,6 +22,9 @@ export const api = {
     json<{ groups: Record<string, string>; registers: RegisterInfo[] }>('/api/registers'),
 
   status: () => json<Status>('/api/status'),
+
+  /** Which panels a run depends on, and whether each has been applied. */
+  readiness: () => json<Readiness>('/api/readiness'),
 
   actions: () =>
     json<{ sections: Record<string, string>; actions: ActionInfo[] }>('/api/actions'),

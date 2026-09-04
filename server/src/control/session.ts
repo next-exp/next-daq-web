@@ -15,6 +15,7 @@ import { CardMonitor } from './monitor.js';
 import { RunControl } from './state.js';
 import { RunLog } from '../store/log.js';
 import { SettingsStore } from '../store/settings.js';
+import { computeReadiness, type Readiness } from './readiness.js';
 import { FlashSession, type FlashOptions, type FlashProgress } from './flash.js';
 
 /**
@@ -253,9 +254,21 @@ export class Session {
     // Only now is this the state the cards were actually told.
     this.settings.markApplied(id, params);
     await this.settings.saveToDisk();
+    // A reset clears the cards' configured state, so previously applied panels no
+    // longer describe the hardware and the run interlock must be re-satisfied.
+    if (id === 'run.softReset' || id === 'run.hardReset' || id === 'fec.recover') {
+      this.settings.clearApplied();
+      await this.log.info('configuration_invalidated', { by: id });
+    }
+
     await this.log.info('action_completed', { action: id, writes: applied.length });
     this.publish({ type: 'action', action: id, step: writes.length, total: writes.length, done: true });
     return { applied, dryRun: this.dryRun };
+  }
+
+  /** Whether the panels a run depends on have been applied since the last reset. */
+  readiness(): Readiness {
+    return computeReadiness(this.settings, this.topology);
   }
 
   /** Total time a plan will spend waiting, used to decide whether to detach it. */

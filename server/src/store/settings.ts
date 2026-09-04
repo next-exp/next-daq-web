@@ -108,6 +108,18 @@ export class SettingsStore {
     this.appliedAt[actionId] = new Date().toISOString();
   }
 
+  /**
+   * Forget which panels have been applied.
+   *
+   * A reset clears the cards' configured state, so what the console previously
+   * sent no longer describes the hardware. The original did the same, zeroing its
+   * setup flags in RST SOFT and disabling Start Run.
+   */
+  clearApplied(): void {
+    this.applied = {};
+    this.appliedAt = {};
+  }
+
   /** Values last applied for one panel, or undefined if it has never been applied. */
   getApplied(actionId: string): { params: Params; at: string } | undefined {
     const params = this.applied[actionId];

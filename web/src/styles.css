@@ -323,3 +323,22 @@ button.link:hover { color: var(--accent); }
   transition: transform .12s;
 }
 .chev.open { transform: rotate(90deg); }
+
+/* Pre-run configuration checklist. */
+.readiness { margin-top: 14px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.readiness-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; background: var(--panel-2); border-bottom: 1px solid var(--border);
+}
+.readiness-list { list-style: none; margin: 0; padding: 4px 0; }
+.readiness-list li {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 4px 12px; font-size: 12px;
+}
+.readiness-list .mark { width: 12px; font: 600 12px var(--mono); }
+.readiness-list li.done .mark { color: var(--ok); }
+.readiness-list li.missing .mark { color: var(--warn); }
+.readiness-list li.optional .mark { color: var(--muted); }
+.readiness-list .what { font-weight: 600; min-width: 190px; }
+.readiness-list .why { color: var(--muted); flex: 1; }
+.readiness-list .when { color: var(--muted); font: 11px var(--mono); }
