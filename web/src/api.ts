@@ -26,6 +26,12 @@ export const api = {
   /** Which panels a run depends on, and whether each has been applied. */
   readiness: () => json<Readiness>('/api/readiness'),
 
+  /** Which run-boundary hooks this deployment has configured. */
+  hooks: () =>
+    json<{ onRunStart: boolean; onRunStop: boolean; commands: Record<string, string[]> }>(
+      '/api/hooks',
+    ),
+
   actions: () =>
     json<{ sections: Record<string, string>; actions: ActionInfo[] }>('/api/actions'),
 

@@ -96,10 +96,10 @@ export const RUN_ACTIONS: ConfigAction[] = [
       bool('reset_counters', 'Reset counters'),
       bool(
         'stop_external',
-        'Also stop the external DAQ',
+        'Auto-stop DUCK',
         true,
-        'Runs the configured stop hook when acquisition stops — the original\u2019s ' +
-          '"AutoStop DUCK", which called stopDate.sh. Has no effect if no hook is configured.',
+        'Also stops the external DAQ when acquisition stops, by running the configured ' +
+          'stop hook. Has no effect if the deployment configures none.',
       ),
     ],
     plan: (p, ctx): PlannedWrite[] => [

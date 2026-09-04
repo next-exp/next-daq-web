@@ -380,3 +380,17 @@ button.link:hover { color: var(--accent); }
 button.action.primary.attention {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--warn) 55%, transparent);
 }
+
+/* The external-DAQ option sits beside Stop Run, because it changes what that
+   button does. Shown only when the deployment configures a stop hook. */
+.stop-hook {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 12px; margin-left: 4px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--panel-2); font-size: 12px; cursor: pointer;
+  max-width: 320px;
+}
+.stop-hook small {
+  display: block; color: var(--muted); font: 10px var(--mono);
+  margin-top: 2px; word-break: break-all;
+}

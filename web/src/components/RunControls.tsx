@@ -33,6 +33,13 @@ export function RunControls({ status, progress, onChanged }: Props) {
   const [error, setError] = useState<string>();
   const [confirming, setConfirming] = useState<string>();
   const [readiness, setReadiness] = useState<Readiness>();
+  /**
+   * Whether this deployment runs anything when acquisition stops, and whether the
+   * operator wants it to. The option belongs beside Stop Run: it changes what that
+   * button does, and on the acquisition panel alone it was easy to miss.
+   */
+  const [stopHook, setStopHook] = useState<{ configured: boolean; command?: string }>();
+  const [stopExternal, setStopExternal] = useState(true);
   /** Lets an operator start a run the interlock would otherwise block. */
   const [override, setOverride] = useState(false);
 
@@ -40,6 +47,20 @@ export function RunControls({ status, progress, onChanged }: Props) {
   useEffect(() => {
     api.readiness().then(setReadiness).catch(() => undefined);
   }, [status?.state.state, status?.state.since, progress?.done]);
+
+  useEffect(() => {
+    api
+      .hooks()
+      .then((h) =>
+        setStopHook({ configured: h.onRunStop, command: h.commands.onRunStop?.join(' ') }),
+      )
+      .catch(() => undefined);
+    // Keep in step with the acquisition panel, so the two never disagree.
+    api
+      .settings('run.acquisition')
+      .then((v) => setStopExternal(v.stop_external !== false))
+      .catch(() => undefined);
+  }, []);
 
   const run = async (actionId: string, label: string, overrides: ParamValues = {}) => {
     setBusy(actionId);
@@ -111,10 +132,38 @@ export function RunControls({ status, progress, onChanged }: Props) {
           <button
             className="action big"
             disabled={disabled}
-            onClick={() => click('run.acquisition', 'Stop run', { on_off: 0 })}
+            onClick={() =>
+              click('run.acquisition', 'Stop run', {
+                on_off: 0,
+                stop_external: stopExternal,
+              })
+            }
           >
             Stop<br />Run
           </button>
+
+          {stopHook?.configured && (
+            <label
+              className="stop-hook"
+              title={`Runs: ${stopHook.command}`}
+            >
+              <input
+                type="checkbox"
+                checked={stopExternal}
+                onChange={(e) => {
+                  setStopExternal(e.target.checked);
+                  // Store it so the acquisition panel shows the same thing.
+                  api
+                    .saveSettings('run.acquisition', { stop_external: e.target.checked })
+                    .catch(() => undefined);
+                }}
+              />
+              <span>
+                Auto-stop DUCK
+                <small>{stopHook.command}</small>
+              </span>
+            </label>
+          )}
           <span className="run-controls-gap" />
           <button
             className="action big"
