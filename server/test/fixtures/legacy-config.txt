@@ -1,0 +1,1740 @@
+PMT FEC 1 PMTs TRG A:CH 0  PMT  0 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 1  PMT  1 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 2  PMT  2 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 3  PMT  3 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 4  PMT  4 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 5  PMT  5 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 6  PMT  6 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 7  PMT  7 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 8  PMT  8 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 9  PMT  9 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 10 PMT  x selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 11 PMT  x selected TRG 1:1
+
+PMT FEC 1 PMTs TRG A:CH 0  PMT  0 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 1  PMT  1 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 2  PMT  2 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 3  PMT  3 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 4  PMT  4 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 5  PMT  5 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 6  PMT  6 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 7  PMT  7 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 8  PMT  8 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 9  PMT  9 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 10 PMT  x selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:CH 11 PMT  x selected TRG 2:1
+
+PMT FEC 1 PMTs TRG A:Trigger 1 ON/OFF:0
+
+PMT FEC 1 PMTs TRG A:Trigger 2 ON/OFF:0
+
+PMT FEC 1 PMTs TRG B:CH 0  PMT  0 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 1  PMT  1 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 2  PMT  2 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 3  PMT  3 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 4  PMT  4 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 5  PMT  5 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 6  PMT  6 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 7  PMT  7 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 8  PMT  8 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 9  PMT  9 selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 10 PMT  x selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 11 PMT  x selected TRG 1:1
+
+PMT FEC 1 PMTs TRG B:CH 0  PMT  0 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 1  PMT  1 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 2  PMT  2 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 3  PMT  3 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 4  PMT  4 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 5  PMT  5 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 6  PMT  6 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 7  PMT  7 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 8  PMT  8 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 9  PMT  9 selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 10 PMT  x selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:CH 11 PMT  x selected TRG 2:1
+
+PMT FEC 1 PMTs TRG B:Trigger 1 ON/OFF:0
+
+PMT FEC 1 PMTs TRG B:Trigger 2 ON/OFF:0
+
+PMT FEC 1 PMTs TRG A:Config PMT FEC 1 PMTs TRG:1
+
+PMT FEC 1 PMTs TRG B:Config PMT FEC 1 PMTs TRG:1
+
+PMT FEC 1 PMTs TRG Ext:Trigger 1 ON/OFF:0
+
+PMT FEC 1 PMTs TRG Ext:Trigger 2 ON/OFF:0
+
+PMT FEC 1 PMTs TRG A:CH 0  PMT  0 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 1  PMT  1 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 2  PMT  2 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 3  PMT  3 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 4  PMT  4 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 5  PMT  5 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 6  PMT  6 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 7  PMT  7 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 8  PMT  8 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 9  PMT  9 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 10 PMT  x selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 11 PMT  x selected TRG 1:0
+
+PMT FEC 1 PMTs TRG A:CH 0  PMT  0 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 1  PMT  1 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 2  PMT  2 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 3  PMT  3 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 4  PMT  4 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 5  PMT  5 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 6  PMT  6 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 7  PMT  7 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 8  PMT  8 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 9  PMT  9 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 10 PMT  x selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:CH 11 PMT  x selected TRG 2:0
+
+PMT FEC 1 PMTs TRG A:Trigger 1 ON/OFF:0
+
+PMT FEC 1 PMTs TRG A:Trigger 2 ON/OFF:0
+
+PMT FEC 1 PMTs TRG B:CH 0  PMT  0 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 1  PMT  1 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 2  PMT  2 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 3  PMT  3 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 4  PMT  4 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 5  PMT  5 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 6  PMT  6 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 7  PMT  7 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 8  PMT  8 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 9  PMT  9 selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 10 PMT  x selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 11 PMT  x selected TRG 1:0
+
+PMT FEC 1 PMTs TRG B:CH 0  PMT  0 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 1  PMT  1 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 2  PMT  2 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 3  PMT  3 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 4  PMT  4 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 5  PMT  5 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 6  PMT  6 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 7  PMT  7 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 8  PMT  8 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 9  PMT  9 selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 10 PMT  x selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:CH 11 PMT  x selected TRG 2:0
+
+PMT FEC 1 PMTs TRG B:Trigger 1 ON/OFF:0
+
+PMT FEC 1 PMTs TRG B:Trigger 2 ON/OFF:0
+
+PMT FEC 1 PMTs TRG Ext:Trigger 1 ON/OFF:0
+
+PMT FEC 1 PMTs TRG Ext:Trigger 2 ON/OFF:0
+
+PMT FEC 1 PMTs BLR:CH 0  PMT  0 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 1  PMT  1 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 2  PMT  2 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 3  PMT  3 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 4  PMT  4 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 5  PMT  5 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 6  PMT  6 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 7  PMT  7 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 8  PMT  8 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 9  PMT  9 selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 10 PMT  x selected BLR:0
+
+PMT FEC 1 PMTs BLR:CH 11 PMT  x selected BLR:0
+
+BF FEC 1 TRG HG:CH0 connected:0
+
+BF FEC 1 TRG HG:CH1 connected:0
+
+BF FEC 1 TRG HG:CH2 connected:0
+
+BF FEC 1 TRG HG:CH3 connected:0
+
+BF FEC 1 TRG HG:CH4 connected:0
+
+BF FEC 1 TRG HG:CH5 connected:0
+
+BF FEC 1 TRG HG:CH6 connected:0
+
+BF FEC 1 TRG HG:CH7 connected:0
+
+BF FEC 1 TRG HG:CH8 connected:0
+
+BF FEC 1 TRG HG:CH9 connected:0
+
+BF FEC 1 TRG HG:CH10 connected:0
+
+BF FEC 1 TRG HG:CH11 connected:0
+
+BF FEC 2 TRG HG:CH0 connected:0
+
+BF FEC 2 TRG HG:CH1 connected:0
+
+BF FEC 2 TRG HG:CH2 connected:0
+
+BF FEC 2 TRG HG:CH3 connected:0
+
+BF FEC 2 TRG HG:CH4 connected:0
+
+BF FEC 2 TRG HG:CH5 connected:0
+
+BF FEC 2 TRG HG:CH6 connected:0
+
+BF FEC 2 TRG HG:CH7 connected:0
+
+BF FEC 2 TRG HG:CH8 connected:0
+
+BF FEC 2 TRG HG:CH9 connected:0
+
+BF FEC 2 TRG HG:CH10 connected:0
+
+BF FEC 2 TRG HG:CH11 connected:0
+
+BF FEC 3 TRG HG:CH0 connected:0
+
+BF FEC 3 TRG HG:CH1 connected:0
+
+BF FEC 3 TRG HG:CH2 connected:0
+
+BF FEC 3 TRG HG:CH3 connected:0
+
+BF FEC 3 TRG HG:CH4 connected:0
+
+BF FEC 3 TRG HG:CH5 connected:0
+
+BF FEC 3 TRG HG:CH6 connected:0
+
+BF FEC 3 TRG HG:CH7 connected:0
+
+BF FEC 3 TRG HG:CH8 connected:0
+
+BF FEC 3 TRG HG:CH9 connected:0
+
+BF FEC 3 TRG HG:CH10 connected:0
+
+BF FEC 3 TRG HG:CH11 connected:0
+
+BF FEC 1 BFs TRG A:CH 0  BF  0 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 1  BF  1 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 2  BF  2 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 3  BF  3 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 4  BF  4 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 5  BF  5 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 6  BF  6 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 7  BF  7 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 8  BF  8 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 9  BF  9 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 10 BF 10 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 11 BF 11 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 0  BF  0 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 1  BF  1 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 2  BF  2 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 3  BF  3 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 4  BF  4 selected TRG 2.1
+
+BF FEC 1 BFs TRG A:CH 5  BF  5 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 6  BF  6 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 7  BF  7 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 8  BF  8 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 9  BF  9 selected TRG 2.1
+
+BF FEC 1 BFs TRG A:CH 10 BF 10 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:CH 11 BF 11 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 0  BF 12 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 1  BF 13 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 2  BF 14 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 3  BF 15 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 4  BF 16 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 5  BF 17 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 6  BF 18 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 7  BF 19 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 8  BF 20 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 9  BF 21 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 10 BF 22 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 11 BF 23 selected TRG 1:1
+
+BF FEC 2 BFs TRG A:CH 0  BF 12 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 1  BF 13 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 2  BF 14 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 3  BF 15 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 4  BF 16 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 5  BF 17 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 6  BF 18 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 7  BF 19 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 8  BF 20 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 9  BF 21 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 10 BF 22 selected TRG 2:1
+
+BF FEC 2 BFs TRG A:CH 11 BF 23 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 0  BF 24 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 1  BF 25 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 2  BF 26 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 3  BF 27 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 4  BF 28 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 5  BF 29 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 6  BF 30 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 7  BF 31 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 8  BF 32 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 9  BF 33 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 10 BF 34 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 11 BF 35 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 0  BF 24 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 1  BF 25 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 2  BF 26 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 3  BF 27 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 4  BF 28 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 5  BF 29 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 6  BF 30 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 7  BF 31 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 8  BF 32 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 9  BF 33 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 10 BF 34 selected TRG 2:1
+
+BF FEC 3 BFs TRG A:CH 11 BF 35 selected TRG 2:1
+
+BF FEC 1 BFs TRG A:Trigger 1 ON/OFF:0
+
+BF FEC 1 BFs TRG A:Trigger 2 ON/OFF:0
+
+BF FEC 2 BFs TRG A:Trigger 1 ON/OFF:0
+
+BF FEC 2 BFs TRG A:Trigger 2 ON/OFF:0
+
+BF FEC 3 BFs TRG A:Trigger 1 ON/OFF:0
+
+BF FEC 3 BFs TRG A:Trigger 2 ON/OFF:0
+
+BF FEC 1 BFs TRG A:Config BF FEC 1 BFs TRG:1
+
+BF FEC 1 BFs TRG A:CH 0  BF  0 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 1  BF  1 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 2  BF  2 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 3  BF  3 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 4  BF  4 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 5  BF  5 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 6  BF  6 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 7  BF  7 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 8  BF  8 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 9  BF  9 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 10 BF 10 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 11 BF 11 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 0  BF  0 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 1  BF  1 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 2  BF  2 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 3  BF  3 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 4  BF  4 selected TRG 2.0
+
+BF FEC 1 BFs TRG A:CH 5  BF  5 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 6  BF  6 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 7  BF  7 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 8  BF  8 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 9  BF  9 selected TRG 2.0
+
+BF FEC 1 BFs TRG A:CH 10 BF 10 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 11 BF 11 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 0  BF 12 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 1  BF 13 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 2  BF 14 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 3  BF 15 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 4  BF 16 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 5  BF 17 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 6  BF 18 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 7  BF 19 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 8  BF 20 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 9  BF 21 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 10 BF 22 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 11 BF 23 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 0  BF 12 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 1  BF 13 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 2  BF 14 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 3  BF 15 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 4  BF 16 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 5  BF 17 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 6  BF 18 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 7  BF 19 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 8  BF 20 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 9  BF 21 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 10 BF 22 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 11 BF 23 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 0  BF 24 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 1  BF 25 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 2  BF 26 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 3  BF 27 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 4  BF 28 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 5  BF 29 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 6  BF 30 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 7  BF 31 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 8  BF 32 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 9  BF 33 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 10 BF 34 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 11 BF 35 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 0  BF 24 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 1  BF 25 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 2  BF 26 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 3  BF 27 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 4  BF 28 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 5  BF 29 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 6  BF 30 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 7  BF 31 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 8  BF 32 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 9  BF 33 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 10 BF 34 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 11 BF 35 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:Trigger 1 ON/OFF:1
+
+BF FEC 1 BFs TRG A:Trigger 2 ON/OFF:1
+
+BF FEC 2 BFs TRG A:Trigger 1 ON/OFF:1
+
+BF FEC 2 BFs TRG A:Trigger 2 ON/OFF:1
+
+BF FEC 3 BFs TRG A:Trigger 1 ON/OFF:1
+
+BF FEC 3 BFs TRG A:Trigger 2 ON/OFF:1
+
+BF FEC 1 TRG HG:CH0 connected:0
+
+BF FEC 1 TRG HG:CH1 connected:0
+
+BF FEC 1 TRG HG:CH2 connected:0
+
+BF FEC 1 TRG HG:CH3 connected:0
+
+BF FEC 1 TRG HG:CH4 connected::0
+
+BF FEC 1 TRG HG:CH5 connected:0
+
+BF FEC 1 TRG HG:CH6 connected:0
+
+BF FEC 1 TRG HG:CH7 connected:0
+
+BF FEC 1 TRG HG:CH8 connected:0
+
+BF FEC 1 TRG HG:CH9 connected:0
+
+BF FEC 1 TRG HG:CH10 connected:0
+
+BF FEC 1 TRG HG:CH11 connected:0
+
+BF FEC 2 TRG HG:CH0 connected:0
+
+BF FEC 2 TRG HG:CH1 connected:0
+
+BF FEC 2 TRG HG:CH2 connected:0
+
+BF FEC 2 TRG HG:CH3 connected:0
+
+BF FEC 2 TRG HG:CH4 connected::0
+
+BF FEC 2 TRG HG:CH5 connected:0
+
+BF FEC 2 TRG HG:CH6 connected:0
+
+BF FEC 2 TRG HG:CH7 connected:0
+
+BF FEC 2 TRG HG:CH8 connected:0
+
+BF FEC 2 TRG HG:CH9 connected:0
+
+BF FEC 2 TRG HG:CH10 connected:0
+
+BF FEC 2 TRG HG:CH11 connected:0
+
+BF FEC 3 TRG HG:CH0 connected:0
+
+BF FEC 3 TRG HG:CH1 connected:0
+
+BF FEC 3 TRG HG:CH2 connected:0
+
+BF FEC 3 TRG HG:CH3 connected:0
+
+BF FEC 3 TRG HG:CH4 connected::0
+
+BF FEC 3 TRG HG:CH5 connected:0
+
+BF FEC 3 TRG HG:CH6 connected:0
+
+BF FEC 3 TRG HG:CH7 connected:0
+
+BF FEC 3 TRG HG:CH8 connected:0
+
+BF FEC 3 TRG HG:CH9 connected:0
+
+BF FEC 3 TRG HG:CH10 connected:0
+
+BF FEC 3 TRG HG:CH11 connected:0
+
+BF FEC 1 TRG:MAU RST:1
+
+BF FEC 2 TRG:MAU RST:1
+
+BF FEC 3 TRG:MAU RST:1
+
+BF FECs TRG:MAU Size:2
+
+BF FECs TRG:Config BF FECs TRG:1
+
+BF FEC 1 TRG HG:CH0 connected:0
+
+BF FEC 1 TRG HG:CH1 connected:0
+
+BF FEC 1 TRG HG:CH2 connected:0
+
+BF FEC 1 TRG HG:CH3 connected:0
+
+BF FEC 1 TRG HG:CH4 connected::0
+
+BF FEC 1 TRG HG:CH5 connected:0
+
+BF FEC 1 TRG HG:CH6 connected:0
+
+BF FEC 1 TRG HG:CH7 connected:0
+
+BF FEC 1 TRG HG:CH8 connected:0
+
+BF FEC 1 TRG HG:CH9 connected:0
+
+BF FEC 1 TRG HG:CH10 connected:0
+
+BF FEC 1 TRG HG:CH11 connected:0
+
+BF FEC 2 TRG HG:CH0 connected:0
+
+BF FEC 2 TRG HG:CH1 connected:0
+
+BF FEC 2 TRG HG:CH2 connected:0
+
+BF FEC 2 TRG HG:CH3 connected:0
+
+BF FEC 2 TRG HG:CH4 connected::0
+
+BF FEC 2 TRG HG:CH5 connected:0
+
+BF FEC 2 TRG HG:CH6 connected:0
+
+BF FEC 2 TRG HG:CH7 connected:0
+
+BF FEC 2 TRG HG:CH8 connected:0
+
+BF FEC 2 TRG HG:CH9 connected:0
+
+BF FEC 2 TRG HG:CH10 connected:0
+
+BF FEC 2 TRG HG:CH11 connected:0
+
+BF FEC 3 TRG HG:CH0 connected:0
+
+BF FEC 3 TRG HG:CH1 connected:0
+
+BF FEC 3 TRG HG:CH2 connected:0
+
+BF FEC 3 TRG HG:CH3 connected:0
+
+BF FEC 3 TRG HG:CH4 connected::0
+
+BF FEC 3 TRG HG:CH5 connected:0
+
+BF FEC 3 TRG HG:CH6 connected:0
+
+BF FEC 3 TRG HG:CH7 connected:0
+
+BF FEC 3 TRG HG:CH8 connected:0
+
+BF FEC 3 TRG HG:CH9 connected:0
+
+BF FEC 3 TRG HG:CH10 connected:0
+
+BF FEC 3 TRG HG:CH11 connected:0
+
+BF FEC 1 TRG:MAU RST:0
+
+BF FEC 2 TRG:MAU RST:0
+
+BF FEC 3 TRG:MAU RST:0
+
+BF FECs TRG:MAU Size:2
+
+BF FECs TRG:Config BF FECs TRG:1
+
+GEN:Config GEN:1
+
+BF FEC 1 BFs TRG A:CH 0  BF  0 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 0  BF  0 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 1  BF  1 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 1  BF  1 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 2  BF  2 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 2  BF  2 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 3  BF  3 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 3  BF  3 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 4  BF  4 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 4  BF  4 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 5  BF  5 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 5  BF  5 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 6  BF  6 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 6  BF  6 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 7  BF  7 selected TRG 1:1
+
+BF FEC 1 BFs TRG A:CH 7  BF  7 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 8  BF  8 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 8  BF  8 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 9  BF  9 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 9  BF  9 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 10 BF 10 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 10 BF 10 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:CH 11 BF 11 selected TRG 1:0
+
+BF FEC 1 BFs TRG A:CH 11 BF 11 selected TRG 2:0
+
+BF FEC 1 BFs TRG A:Trigger 1 ON/OFF:1
+
+BF FEC 1 BFs TRG A:Trigger 2 ON/OFF:0
+
+BF FEC 1 BFs TRG A:Trigger 1 FT on fall:0
+
+BF FEC 1 BFs TRG A:Trigger 2 FT on fall:0
+
+BF FEC 1 BFs TRG A:Inv Polarity:0
+
+BF FEC 1 BFs TRG A:TRGA/B:0
+
+BF FEC 1 BFs TRG A:Baseline dev. 1:6
+
+BF FEC 1 BFs TRG A:Max Amplitude 1:3500
+
+BF FEC 1 BFs TRG A:Min Time Thr 1:3200
+
+BF FEC 1 BFs TRG A:Max Time Thr 1:35000
+
+BF FEC 1 BFs TRG A:Q min 1:400
+
+BF FEC 1 BFs TRG A:Q max 1:220000
+
+BF FEC 1 BFs TRG A:Pulse Valid Ext. 1:100
+
+BF FEC 1 BFs TRG A:Baseline dev. 2:5
+
+BF FEC 1 BFs TRG A:Max Amplitude 2:4095
+
+BF FEC 1 BFs TRG A:Min Time Thr 2:50
+
+BF FEC 1 BFs TRG A:Max Time Thr 2:25000
+
+BF FEC 1 BFs TRG A:Q min 2:100000
+
+BF FEC 1 BFs TRG A:Q max 2:130000000
+
+BF FEC 1 BFs TRG A:Pulse Valid Ext. 2:100
+
+BF FEC 1 BFs TRG A:Config BF FEC 1 BFs TRG:1
+
+BF FEC 2 BFs TRG A:CH 0  BF 24 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 0  BF 24 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 1  BF 25 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 1  BF 25 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 2  BF 26 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 2  BF 26 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 3  BF 27 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 3  BF 27 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 4  BF 28 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 4  BF 28 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 5  BF 29 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 5  BF 29 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 6  BF 30 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 6  BF 30 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 7  BF 31 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 7  BF 31 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 8  BF 32 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 8  BF 32 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 9  BF 33 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 9  BF 33 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 10 BF 34 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 10 BF 34 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:CH 11 BF 35 selected TRG 1:0
+
+BF FEC 2 BFs TRG A:CH 11 BF 35 selected TRG 2:0
+
+BF FEC 2 BFs TRG A:Trigger 1 ON/OFF:1
+
+BF FEC 2 BFs TRG A:Trigger 2 ON/OFF:0
+
+BF FEC 2 BFs TRG A:Trigger 1 FT on fall:0
+
+BF FEC 2 BFs TRG A:Trigger 2 FT on fall:0
+
+BF FEC 2 BFs TRG A:Inv Polarity:0
+
+BF FEC 2 BFs TRG A:TRGA/B:0
+
+BF FEC 2 BFs TRG A:Baseline dev. 1:6
+
+BF FEC 2 BFs TRG A:Max Amplitude 1:3500
+
+BF FEC 2 BFs TRG A:Min Time Thr 1:3200
+
+BF FEC 2 BFs TRG A:Max Time Thr 1:35000
+
+BF FEC 2 BFs TRG A:Q min 1:400
+
+BF FEC 2 BFs TRG A:Q max 1:220000
+
+BF FEC 2 BFs TRG A:Pulse Valid Ext. 1:100
+
+BF FEC 2 BFs TRG A:Baseline dev. 2:5
+
+BF FEC 2 BFs TRG A:Max Amplitude 2:4095
+
+BF FEC 2 BFs TRG A:Min Time Thr 2:50
+
+BF FEC 2 BFs TRG A:Max Time Thr 2:25000
+
+BF FEC 2 BFs TRG A:Q min 2:100000
+
+BF FEC 2 BFs TRG A:Q max 2:130000000
+
+BF FEC 2 BFs TRG A:Pulse Valid Ext. 2:100
+
+BF FEC 2 BFs TRG A:Config BF FEC 2 BFs TRG:1
+
+BF FEC 3 BFs TRG A:CH 0  BF 48 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 0  BF 48 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 1  BF 49 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 1  BF 49 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 2  BF 50 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 2  BF 50 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 3  BF 51 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 3  BF 51 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 4  BF 52 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 4  BF 52 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 5  BF 53 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 5  BF 53 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 6  BF 54 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 6  BF 54 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 7  BF 55 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 7  BF 55 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 8  BF 56 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 8  BF 56 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 9  BF 57 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 9  BF 57 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 10 BF 58 selected TRG 1:0
+
+BF FEC 3 BFs TRG A:CH 10 BF 58 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:CH 11 BF 59 selected TRG 1:1
+
+BF FEC 3 BFs TRG A:CH 11 BF 59 selected TRG 2:0
+
+BF FEC 3 BFs TRG A:Trigger 1 ON/OFF:1
+
+BF FEC 3 BFs TRG A:Trigger 2 ON/OFF:0
+
+BF FEC 3 BFs TRG A:Trigger 1 FT on fall:0
+
+BF FEC 3 BFs TRG A:Trigger 2 FT on fall:0
+
+BF FEC 3 BFs TRG A:Inv Polarity:0
+
+BF FEC 3 BFs TRG A:TRGA/B:0
+
+BF FEC 3 BFs TRG A:Baseline dev. 1:6
+
+BF FEC 3 BFs TRG A:Max Amplitude 1:3500
+
+BF FEC 3 BFs TRG A:Min Time Thr 1:3200
+
+BF FEC 3 BFs TRG A:Max Time Thr 1:35000
+
+BF FEC 3 BFs TRG A:Q min 1:400
+
+BF FEC 3 BFs TRG A:Q max 1:220000
+
+BF FEC 3 BFs TRG A:Pulse Valid Ext. 1:100
+
+BF FEC 3 BFs TRG A:Baseline dev. 2:5
+
+BF FEC 3 BFs TRG A:Max Amplitude 2:4095
+
+BF FEC 3 BFs TRG A:Min Time Thr 2:50
+
+BF FEC 3 BFs TRG A:Max Time Thr 2:25000
+
+BF FEC 3 BFs TRG A:Q min 2:100000
+
+BF FEC 3 BFs TRG A:Q max 2:130000000
+
+BF FEC 3 BFs TRG A:Pulse Valid Ext. 2:100
+
+BF FEC 3 BFs TRG A:Config BF FEC 3 BFs TRG:1
+
+TRG:BF FEC 1 disconnected:0
+
+TRG:BF FEC 2 disconnected:0
+
+TRG:BF FEC 3 disconnected:0
+
+TRG:PMT FEC 4 disconnected:1
+
+TRG:SiPM FEC 1 disconnected:0
+
+TRG:SiPM FEC 2 disconnected:0
+
+TRG:Trigger Mask ON/OFF:0
+
+TRG:Trigger 1 Lost Mask ON/OFF:1
+
+TRG:Trigger 2 Lost Mask ON/OFF:1
+
+TRG:Trigger 1/2 Lost Mask ON/OFF:0
+
+TRG:Trigger freq:10
+
+TRG:Auto External Trigger ON/OFF:0
+
+TRG:External Trigger ON/OFF:0
+
+TRG:TRG 1 Double Trigger ON/OFF:0
+
+TRG:TRG 2 Double Trigger ON/OFF:0
+
+TRG:TRG 1 Max Time Trg A and B:0
+
+TRG:TRG 1 CW size Trg A:50
+
+TRG:TRG 1 CW size Trg B:1
+
+TRG:TRG 1 Events for Trg A:4
+
+TRG:TRG 1 Events for Trg B:1
+
+TRG:TRG 2 Max Time Trg A and B:0
+
+TRG:TRG 2 CW size Trg A:2
+
+TRG:TRG 2 CW size Trg B:1
+
+TRG:TRG 2 Events for Trg A:1
+
+TRG:TRG 2 Events for Trg B:1
+
+TRG:Config TRG:1
+
+TRG:TRG1/2 Same Process Delay:0
+
+FE general:ZS TRG 1 ON/OFF:0
+
+FE general:ZS TRG 2 ON/OFF:0
+
+FE general:ZS Threshold:10
+
+FE general:Pre-samples:50
+
+FE general:Post-samples:50
+
+FE general:Filt-samples:1
+
+FE general:Sample-delay:0
+
+FE general:Config FE general:1
+
+FE general:Compr ON/OFF:1
+
+FE general:Config Compression:1
+
+GEN:Mode of Operation:1
+
+GEN:Dual Mode RAW/ZS:0
+
+GEN:Buffer Size 1:350
+
+GEN:Pretrigger 1:250
+
+GEN:Buffer Size 2:3200
+
+GEN:Pretrigger 2:1600
+
+GEN:RUN Code:2
+
+GEN:Ramp Test:0
+
+GEN:Number of Triggers:20
+
+GEN:Config GEN:1
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 BLR coefficient:5.219200E-04
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 BLR HPF A1:0.9999976024635574
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 BLR HPF G:0.99999880123177864
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 BLR coefficient:5.243800E-04
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 BLR HPF A1:0.99999860347439107
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 BLR HPF G:0.99999930173719553
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 BLR coefficient:5.252500E-04
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 BLR HPF A1:0.9999990754422351
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 BLR HPF G:0.99999953772111749
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 BLR coefficient:5.194100E-04
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 BLR HPF A1:0.99999833374095459
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 BLR HPF G:0.9999991668704773
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 BLR coefficient:5.227600E-04
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 BLR HPF A1:0.99999918346511629
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 BLR HPF G:0.99999959173255815
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 BLR coefficient:5.208400E-04
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 BLR HPF A1:0.99999834247926433
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 BLR HPF G:0.99999917123963211
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 BLR coefficient:5.219000E-04
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 BLR HPF A1:0.99999847810497433
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 BLR HPF G:0.99999923905248722
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 BLR coefficient:5.220700E-04
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 BLR HPF A1:0.99999896426979928
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 BLR HPF G:0.99999948213489964
+
+PMT FEC 4 PMTs BLR:CH 8  PMT  x selected BLR:0
+
+PMT FEC 4 PMTs BLR:CH 9  PMT  x selected BLR:0
+
+PMT FEC 4 PMTs BLR:CH 10 PMT  x selected BLR:0
+
+PMT FEC 4 PMTs BLR:CH 11 PMT x selected BLR:0
+
+PMT FEC ALL PMTs BLR:BLR ON/OFF:0
+
+PMT FEC ALL PMTs BLR:BLR Reset:1
+
+PMT FEC ALL PMTs BLR:BLR DM:0
+
+PMT FEC ALL PMTs BLR:BLR TRGM:0
+
+PMT FEC ALL PMTs BLR:BLR HPF:1
+
+PMT FEC ALL PMTs BLR:BLR DWI:1
+
+PMT FEC ALL PMTs BLR:MAU size:1024
+
+PMT FEC ALL PMTs BLR:MAU threshold:5
+
+PMT FEC ALL PMTs BLR:BLR Acum thr H:4000
+
+PMT FEC ALL PMTs BLR:BLR Acum thr L:1
+
+PMT FEC ALL PMTs BLR:BLR Time to Abort:400
+
+PMT FEC ALL PMTs BLR:BLR discharge coefficient:0.9995
+
+PMT FEC ALL PMTs BLR:BLR discharge slope:1
+
+PMT FEC ALL PMTs BLR:BLR discharge line:2
+
+PMT FEC ALL PMTs BLR:Config PMT FEC ALL PMTs BLR:1
+
+PMT FEC ALL PMTs BLR:BLR SAT Time to Abort:250
+
+PMT FEC ALL PMTs BLR:BLR SAT CH thr H:4090
+
+PMT FEC ALL PMTs BLR:BLR SAT CH thr L:250
+
+PMT FEC 1:CH 0  PMT  0 connected:1
+
+PMT FEC 1:CH 1  PMT  1 connected:1
+
+PMT FEC 1:CH 2  PMT  2 connected:1
+
+PMT FEC 1:CH 3  PMT  3 connected:1
+
+PMT FEC 1:CH 4  PMT  4 connected:1
+
+PMT FEC 1:CH 5  PMT  5 connected:1
+
+PMT FEC 1:CH 6  PMT  6 connected:1
+
+PMT FEC 1:CH 7  PMT  7 connected:1
+
+PMT FEC 1:CH 8  PMT  x connected:0
+
+PMT FEC 1:CH 9  PMT  x connected:0
+
+PMT FEC 1:CH 10 PMT  x connected:0
+
+PMT FEC 1:CH 11 PMT x connected:0
+
+PMT FEC ALL:Trg1 Data Comp:1
+
+PMT FEC ALL:Trg2 Data Comp:1
+
+PMT FEC ALL:Config PMTs:1
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 BLR coefficient:5.219200E-04
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 BLR HPF A1:0.9999976024635574
+
+PMT FEC 4 PMTs BLR:CH 0  PMT  0 BLR HPF G:0.99999880123177864
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 BLR coefficient:5.243800E-04
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 BLR HPF A1:0.99999860347439107
+
+PMT FEC 4 PMTs BLR:CH 1  PMT  1 BLR HPF G:0.99999930173719553
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 BLR coefficient:5.252500E-04
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 BLR HPF A1:0.9999990754422351
+
+PMT FEC 4 PMTs BLR:CH 2  PMT  2 BLR HPF G:0.99999953772111749
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 BLR coefficient:5.194100E-04
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 BLR HPF A1:0.99999833374095459
+
+PMT FEC 4 PMTs BLR:CH 3  PMT  3 BLR HPF G:0.9999991668704773
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 BLR coefficient:5.227600E-04
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 BLR HPF A1:0.99999918346511629
+
+PMT FEC 4 PMTs BLR:CH 4  PMT  4 BLR HPF G:0.99999959173255815
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 BLR coefficient:5.208400E-04
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 BLR HPF A1:0.99999834247926433
+
+PMT FEC 4 PMTs BLR:CH 5  PMT  5 BLR HPF G:0.99999917123963211
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 BLR coefficient:5.219000E-04
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 BLR HPF A1:0.99999847810497433
+
+PMT FEC 4 PMTs BLR:CH 6  PMT  6 BLR HPF G:0.99999923905248722
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 selected BLR:1
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 BLR coefficient:5.220700E-04
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 BLR HPF A1:0.99999896426979928
+
+PMT FEC 4 PMTs BLR:CH 7  PMT  7 BLR HPF G:0.99999948213489964
+
+PMT FEC 4 PMTs BLR:CH 8  PMT  x selected BLR:0
+
+PMT FEC 4 PMTs BLR:CH 9  PMT  x selected BLR:0
+
+PMT FEC 4 PMTs BLR:CH 10 PMT  x selected BLR:0
+
+PMT FEC 4 PMTs BLR:CH 11 PMT x selected BLR:0
+
+PMT FEC ALL PMTs BLR:BLR ON/OFF:0
+
+PMT FEC ALL PMTs BLR:BLR Reset:1
+
+PMT FEC ALL PMTs BLR:BLR DM:0
+
+PMT FEC ALL PMTs BLR:BLR TRGM:1
+
+PMT FEC ALL PMTs BLR:BLR HPF:1
+
+PMT FEC ALL PMTs BLR:BLR DWI:1
+
+PMT FEC ALL PMTs BLR:MAU size:1024
+
+PMT FEC ALL PMTs BLR:MAU threshold:5
+
+PMT FEC ALL PMTs BLR:BLR Acum thr H:4000
+
+PMT FEC ALL PMTs BLR:BLR Acum thr L:1
+
+PMT FEC ALL PMTs BLR:BLR Time to Abort:400
+
+PMT FEC ALL PMTs BLR:BLR discharge coefficient:0.9995
+
+PMT FEC ALL PMTs BLR:BLR discharge slope:1
+
+PMT FEC ALL PMTs BLR:BLR discharge line:2
+
+PMT FEC ALL PMTs BLR:Config PMT FEC ALL PMTs BLR:1
+
+PMT FEC ALL PMTs BLR:BLR SAT Time to Abort:250
+
+PMT FEC ALL PMTs BLR:BLR SAT CH thr H:4090
+
+PMT FEC ALL PMTs BLR:BLR SAT CH thr L:250
+
+BF FEC 1:CH 0  BF  0 connected:1
+
+BF FEC 1:CH 1  BF  1 connected:1
+
+BF FEC 1:CH 2  BF  2 connected:1
+
+BF FEC 1:CH 3  BF  3 connected:1
+
+BF FEC 1:CH 4  BF  4 connected:1
+
+BF FEC 1:CH 5  BF  5 connected:1
+
+BF FEC 1:CH 6  BF  6 connected:1
+
+BF FEC 1:CH 7  BF  7 connected:1
+
+BF FEC 1:CH 8  BF  8 connected:1
+
+BF FEC 1:CH 9  BF  9 connected:1
+
+BF FEC 1:CH 10 BF 10 connected:1
+
+BF FEC 1:CH 11 BF 11 connected:1
+
+BF FEC 1:CH 12 BF 12 connected:1
+
+BF FEC 1:CH 13 BF 13 connected:1
+
+BF FEC 1:CH 14 BF 14 connected:1
+
+BF FEC 1:CH 15 BF 15 connected:1
+
+BF FEC 1:CH 16 BF 16 connected:1
+
+BF FEC 1:CH 17 BF 17 connected:1
+
+BF FEC 1:CH 18 BF 18 connected:1
+
+BF FEC 1:CH 19 BF 19 connected:1
+
+BF FEC 1:CH 20 BF 20 connected:1
+
+BF FEC 1:CH 21 BF 21 connected:1
+
+BF FEC 1:CH 22 BF 22 connected:1
+
+BF FEC 1:CH 23 BF 23 connected:1
+
+BF FEC 2:CH 0  BF 24 connected:1
+
+BF FEC 2:CH 1  BF 25 connected:1
+
+BF FEC 2:CH 2  BF 26 connected:1
+
+BF FEC 2:CH 3  BF 27 connected:1
+
+BF FEC 2:CH 4  BF 28 connected:1
+
+BF FEC 2:CH 5  BF 29 connected:1
+
+BF FEC 2:CH 6  BF 30 connected:1
+
+BF FEC 2:CH 7  BF 31 connected:1
+
+BF FEC 2:CH 8  BF 32 connected:1
+
+BF FEC 2:CH 9  BF 33 connected:1
+
+BF FEC 2:CH 10 BF 34 connected:1
+
+BF FEC 2:CH 11 BF 35 connected:1
+
+BF FEC 2:CH 12 BF 36 connected:1
+
+BF FEC 2:CH 12 BF 37 connected:1
+
+BF FEC 2:CH 14 BF 38 connected:1
+
+BF FEC 2:CH 15 BF 39 connected:1
+
+BF FEC 2:CH 16 BF 40 connected:1
+
+BF FEC 2:CH 17 BF 41 connected:1
+
+BF FEC 2:CH 18 BF 42 connected:1
+
+BF FEC 2:CH 19 BF 43 connected:1
+
+BF FEC 2:CH 20 BF 44 connected:1
+
+BF FEC 2:CH 21 BF 45 connected:1
+
+BF FEC 2:CH 22 BF 46 connected:1
+
+BF FEC 2:CH 23 BF 47 connected:1
+
+BF FEC 3:CH 0  BF 48 connected:1
+
+BF FEC 3:CH 1  BF 49 connected:1
+
+BF FEC 3:CH 2  BF 50 connected:1
+
+BF FEC 3:CH 3  BF 51 connected:1
+
+BF FEC 3:CH 4  BF 52 connected:1
+
+BF FEC 3:CH 5  BF 53 connected:1
+
+BF FEC 3:CH 6  BF 54 connected:1
+
+BF FEC 3:CH 7  BF 55 connected:1
+
+BF FEC 3:CH 8  BF 56 connected:1
+
+BF FEC 3:CH 9  BF 57 connected:1
+
+BF FEC 3:CH 10 BF 58 connected:1
+
+BF FEC 3:CH 11 BF 59 connected:1
+
+BF FEC 3:CH 12 BF 65 connected:1
+
+BF FEC 3:CH 13 BF 61 connected:1
+
+BF FEC 3:CH 14 BF 62 connected:1
+
+BF FEC 3:CH 15 BF 63 connected:1
+
+BF FEC 3:CH 16 BF 64 connected:1
+
+BF FEC 3:CH 17 BF 65 connected:1
+
+BF FEC 3:CH 18 BF 66 connected:1
+
+BF FEC 3:CH 19 BF 67 connected:1
+
+BF FEC 3:CH 20 BF 68 connected:1
+
+BF FEC 3:CH 21 BF 69 connected:1
+
+BF FEC 3:CH 22 BF 70 connected:1
+
+BF FEC 3:CH 23 BF 71 connected:1
+
+BF FEC ALL:Trg1 Data Comp:1
+
+BF FEC ALL:Trg2 Data Comp:1
+
+BF FEC ALL:Config BFs:1
+
+GEN:Throughput Limit ON TRG2:0
+
+GEN:Throughput Limit ON BF 1:0
+
+GEN:Throughput Limit ON BF 2:0
+
+GEN:Throughput Limit ON BF 3:0
+
+GEN:Throughput Limit ON PMT 4:0
+
+GEN:Throughput Limit ON SiPM 1:0
+
+GEN:Throughput Limit ON SiPM 2:0
+
+GEN:Throughput Limit BF 1:75000000
+
+GEN:Throughput Limit BF 2:75000000
+
+GEN:Throughput Limit FB 3:75000000
+
+GEN:Throughput Limit PMT 4:75000000
+
+GEN:Throughput Limit SiPM 1:75000000
+
+GEN:Throughput Limit SiPM 2:75000000
+
+GEN:Config Throughput:1
+
+TRG:BF FEC 1 disconnected:0
+
+TRG:BF FEC 2 disconnected:0
+
+TRG:BF FEC 3 disconnected:0
+
+TRG:PMT FEC 4 disconnected:1
+
+TRG:SiPM FEC 1 disconnected:0
+
+TRG:SiPM FEC 2 disconnected:0
+
+TRG:Trigger Mask ON/OFF:0
+
+TRG:Trigger 1 Lost Mask ON/OFF:1
+
+TRG:Trigger 2 Lost Mask ON/OFF:1
+
+TRG:Trigger 1/2 Lost Mask ON/OFF:0
+
+TRG:Trigger freq:10
+
+TRG:Auto External Trigger ON/OFF:0
+
+TRG:External Trigger ON/OFF:0
+
+TRG:TRG 1 Double Trigger ON/OFF:0
+
+TRG:TRG 2 Double Trigger ON/OFF:0
+
+TRG:TRG 1 Max Time Trg A and B:0
+
+TRG:TRG 1 CW size Trg A:50
+
+TRG:TRG 1 CW size Trg B:1
+
+TRG:TRG 1 Events for Trg A:4
+
+TRG:TRG 1 Events for Trg B:1
+
+TRG:TRG 2 Max Time Trg A and B:0
+
+TRG:TRG 2 CW size Trg A:2
+
+TRG:TRG 2 CW size Trg B:1
+
+TRG:TRG 2 Events for Trg A:1
+
+TRG:TRG 2 Events for Trg B:1
+
+TRG:Config TRG:1
+
+TRG:BF FEC 1 disconnected:0
+
+TRG:BF FEC 2 disconnected:0
+
+TRG:BF FEC 3 disconnected:0
+
+TRG:PMT FEC 4 disconnected:1
+
+TRG:SiPM FEC 1 disconnected:0
+
+TRG:SiPM FEC 2 disconnected:0
+
+TRG:Trigger Mask ON/OFF:0
+
+TRG:Trigger 1 Lost Mask ON/OFF:1
+
+TRG:Trigger 2 Lost Mask ON/OFF:1
+
+TRG:Trigger 1/2 Lost Mask ON/OFF:0
+
+TRG:Trigger freq:10
+
+TRG:Auto External Trigger ON/OFF:0
+
+TRG:External Trigger ON/OFF:0
+
+TRG:TRG 1 Double Trigger ON/OFF:0
+
+TRG:TRG 2 Double Trigger ON/OFF:0
+
+TRG:TRG 1 Max Time Trg A and B:0
+
+TRG:TRG 1 CW size Trg A:50
+
+TRG:TRG 1 CW size Trg B:1
+
+TRG:TRG 1 Events for Trg A:4
+
+TRG:TRG 1 Events for Trg B:1
+
+TRG:TRG 2 Max Time Trg A and B:0
+
+TRG:TRG 2 CW size Trg A:2
+
+TRG:TRG 2 CW size Trg B:1
+
+TRG:TRG 2 Events for Trg A:1
+
+TRG:TRG 2 Events for Trg B:1
+
+TRG:Config TRG:1
+
+TRG:BF FEC 1 disconnected:0
+
+TRG:BF FEC 2 disconnected:0
+
+TRG:BF FEC 3 disconnected:0
+
+TRG:PMT FEC 4 disconnected:1
+
+TRG:SiPM FEC 1 disconnected:0
+
+TRG:SiPM FEC 2 disconnected:0
+
+TRG:Trigger Mask ON/OFF:0
+
+TRG:Trigger 1 Lost Mask ON/OFF:1
+
+TRG:Trigger 2 Lost Mask ON/OFF:1
+
+TRG:Trigger 1/2 Lost Mask ON/OFF:0
+
+TRG:Trigger freq:10
+
+TRG:Auto External Trigger ON/OFF:0
+
+TRG:External Trigger ON/OFF:0
+
+TRG:TRG 1 Double Trigger ON/OFF:0
+
+TRG:TRG 2 Double Trigger ON/OFF:0
+
+TRG:TRG 1 Max Time Trg A and B:0
+
+TRG:TRG 1 CW size Trg A:50
+
+TRG:TRG 1 CW size Trg B:1
+
+TRG:TRG 1 Events for Trg A:4
+
+TRG:TRG 1 Events for Trg B:1
+
+TRG:TRG 2 Max Time Trg A and B:0
+
+TRG:TRG 2 CW size Trg A:2
+
+TRG:TRG 2 CW size Trg B:1
+
+TRG:TRG 2 Events for Trg A:1
+
+TRG:TRG 2 Events for Trg B:1
+
+TRG:Config TRG:1
+

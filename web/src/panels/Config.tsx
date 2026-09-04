@@ -14,6 +14,9 @@ export function Config() {
   const [entries, setEntries] = useState<Record<string, string>>({});
   const [malformed, setMalformed] = useState<{ line: number; text: string }[]>([]);
   const [skipped, setSkipped] = useState<string[]>([]);
+  const [unrecognised, setUnrecognised] = useState<
+    { shape: string; count: number; example: string }[]
+  >([]);
   const [filter, setFilter] = useState('');
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
@@ -65,10 +68,14 @@ export function Config() {
     try {
       const r = await api.restoreConfig(f);
       setMessage(
-        `Loaded ${r.applied} settings from ${r.file} into the panels.` +
-          (r.skipped.length ? ` ${r.skipped.length} could not be read.` : ''),
+        r.format === 'legacy'
+          ? `Imported ${r.applied} settings from ${r.file} into ${r.panels} panels. ` +
+            'This file came from the DATE-era application and was translated.'
+          : `Loaded ${r.applied} settings from ${r.file} into the panels.` +
+            (r.skipped.length ? ` ${r.skipped.length} could not be read.` : ''),
       );
       setSkipped(r.skipped);
+      setUnrecognised(r.unrecognised ?? []);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -141,6 +148,36 @@ export function Config() {
           </p>
         </div>
       </div>
+
+      {unrecognised.length > 0 && (
+        <div className="panel">
+          <h2>Settings with no equivalent ({unrecognised.length} kinds)</h2>
+          <div className="body">
+            <p className="note">
+              These have no panel to import into and were left out. Everything else was
+              imported.
+            </p>
+            <table className="data">
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th style={{ width: 90 }}>Count</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                {unrecognised.map((u) => (
+                  <tr key={u.shape}>
+                    <td className="mono">{u.shape}</td>
+                    <td className="mono">{u.count}</td>
+                    <td className="mono">{u.example}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {skipped.length > 0 && (
         <div className="panel">

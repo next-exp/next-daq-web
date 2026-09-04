@@ -115,7 +115,14 @@ export const api = {
 
   /** Load a configuration file back into the panels. */
   restoreConfig: (name: string) =>
-    json<{ file: string; applied: number; skipped: string[] }>(
+    json<{
+      file: string;
+      format?: 'legacy' | 'native';
+      applied: number;
+      panels?: number;
+      skipped: string[];
+      unrecognised?: { shape: string; count: number; example: string }[];
+    }>(
       `/api/configs/${encodeURIComponent(name)}/restore`,
       { method: 'POST' },
     ),

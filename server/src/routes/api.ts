@@ -10,6 +10,7 @@ import {
 } from '@next-daq/shared';
 import type { Session } from '../control/session.js';
 import { ConfigStore, parseGains, serialiseConfig } from '../store/config.js';
+import { importLegacyConfig, looksLegacy } from '../store/legacy.js';
 
 /**
  * HTTP API.
@@ -259,6 +260,35 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
   app.post<{ Params: { name: string } }>('/api/configs/:name/restore', async (req, reply) => {
     try {
       const parsed = await configs.load(req.params.name);
+
+      // Files written by the DATE-era application key settings by description
+      // rather than by panel, so they are translated rather than read directly.
+      if (looksLegacy(parsed)) {
+        const imported = importLegacyConfig(parsed);
+        for (const [id, params] of Object.entries(imported.settings)) {
+          session.settings.set(id, params);
+        }
+        for (const [id, byChannel] of Object.entries(imported.channels)) {
+          session.settings.replaceChannels(id, byChannel);
+        }
+        await session.settings.saveToDisk();
+        await session.log.info('configuration_imported', {
+          file: req.params.name,
+          format: 'legacy',
+          applied: imported.imported,
+          unrecognised: imported.unrecognised.length,
+        });
+        return {
+          file: req.params.name,
+          format: 'legacy',
+          applied: imported.imported,
+          panels: Object.keys(imported.settings).length,
+          skipped: [],
+          unrecognised: imported.unrecognised,
+          malformed: parsed.malformed,
+        };
+      }
+
       const result = session.settings.fromEntries(parsed.entries);
       await session.settings.saveToDisk();
       await session.log.info('configuration_restored', {
@@ -266,7 +296,7 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
         applied: result.applied,
         skipped: result.skipped.length,
       });
-      return { file: req.params.name, ...result, malformed: parsed.malformed };
+      return { file: req.params.name, format: 'native', ...result, malformed: parsed.malformed };
     } catch (err) {
       return reply.code(400).send({ error: (err as Error).message });
     }

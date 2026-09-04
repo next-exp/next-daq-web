@@ -171,6 +171,12 @@ export class SettingsStore {
     );
   }
 
+  /** Replace the per-channel values of one panel wholesale. */
+  replaceChannels(actionId: string, values: Record<string, Params>): void {
+    getAction(actionId);
+    this.channels[actionId] = { ...(this.channels[actionId] ?? {}), ...values };
+  }
+
   /** Panels whose current values differ from what was last applied. */
   pendingPanels(): string[] {
     return ALL_ACTIONS.filter((a) => this.isPending(a.id)).map((a) => a.id);
