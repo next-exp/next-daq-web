@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { Field, defaultsFor } from '../components/Fields';
 import { ChannelTable } from '../components/ChannelTable';
+import { SectionList } from '../components/SectionList';
 import { differsFromPanel } from '../lib/channels';
 import type { ActionInfo, ActionProgress, ParamValues, Status } from '../types';
 
@@ -286,19 +287,25 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
       <div className="panel">
         <h2>Panels ({actions.length})</h2>
         <div className="reg-list">
-          {SECTION_ORDER.filter((s) => grouped[s]).map((s) => (
-            <div key={s}>
-              <h3>{sections[s] ?? s}</h3>
-              {grouped[s].map((a) => (
-                <button key={a.id} aria-selected={a.id === selectedId} onClick={() => setSelectedId(a.id)}>
-                  <div className="id" style={{ fontFamily: 'inherit', fontWeight: 600 }}>
-                    {a.title}
-                  </div>
-                  {a.origin && <div className="title">{a.origin}</div>}
-                </button>
-              ))}
-            </div>
-          ))}
+          <SectionList
+            storageKey="next-daq.setup.collapsed"
+            groups={SECTION_ORDER.filter((s) => grouped[s]).map((s) => ({
+              id: s,
+              title: sections[s] ?? s,
+              items: grouped[s],
+            }))}
+            itemId={(a) => a.id}
+            selectedId={selectedId}
+            onSelect={(a) => setSelectedId(a.id)}
+            renderItem={(a) => (
+              <>
+                <div className="id" style={{ fontFamily: 'inherit', fontWeight: 600 }}>
+                  {a.title}
+                </div>
+                {a.origin && <div className="title">{a.origin}</div>}
+              </>
+            )}
+          />
         </div>
       </div>
 

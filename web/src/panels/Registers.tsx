@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
 import { Field, Words, defaultsFor } from '../components/Fields';
+import { SectionList } from '../components/SectionList';
 import type { ParamValues, RegisterInfo, Status } from '../types';
 
 const GROUP_ORDER = ['GEN', 'TRG', 'PMT', 'BF', 'SIPM_DAQ', 'SIPM_FE', 'CMD'];
@@ -83,21 +84,23 @@ export function Registers({ status }: { status?: Status }) {
       <div className="panel">
         <h2>Registers ({registers.length})</h2>
         <div className="reg-list">
-          {GROUP_ORDER.filter((g) => grouped[g]).map((g) => (
-            <div key={g}>
-              <h3>{groups[g] ?? g}</h3>
-              {grouped[g].map((r) => (
-                <button
-                  key={r.id}
-                  aria-selected={r.id === selectedId}
-                  onClick={() => setSelectedId(r.id)}
-                >
-                  <div className="id">{r.id}</div>
-                  <div className="title">{r.title}</div>
-                </button>
-              ))}
-            </div>
-          ))}
+          <SectionList
+            storageKey="next-daq.registers.collapsed"
+            groups={GROUP_ORDER.filter((g) => grouped[g]).map((g) => ({
+              id: g,
+              title: groups[g] ?? g,
+              items: grouped[g],
+            }))}
+            itemId={(r) => r.id}
+            selectedId={selectedId}
+            onSelect={(r) => setSelectedId(r.id)}
+            renderItem={(r) => (
+              <>
+                <div className="id">{r.id}</div>
+                <div className="title">{r.title}</div>
+              </>
+            )}
+          />
         </div>
       </div>
 

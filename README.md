@@ -64,6 +64,11 @@ are always visible here for the same reason. Each uses the parameters set in its
 Setup panel, so the two never disagree. Hard reset is confirmed before it runs,
 because it takes the whole detector down for about a minute.
 
+Both navigators group their entries into collapsible categories, each showing how
+many it holds, with a collapse-all toggle. The state is remembered per list, so a
+console set up for one plane comes back that way. A category holding the current
+selection stays open regardless, so choosing an entry never leaves it hidden.
+
 **Setup** holds the configuration panels; **Registers** gives direct
 single-register access; **Configuration**, **Flash** and **Log** cover saved
 setups, firmware and history.
