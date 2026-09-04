@@ -68,3 +68,7 @@ export const grid = (
   selects: 'settings' | 'mask' = 'settings',
   help?: string,
 ): ParamSpec => ({ kind: 'grid', name, label, plane, cols, colLabel, selects, help });
+
+/** Tag a group of parameters with the section they belong to in the console. */
+export const section = (name: string, specs: ParamSpec[]): ParamSpec[] =>
+  specs.map((s) => ({ ...s, section: name }));

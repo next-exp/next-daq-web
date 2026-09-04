@@ -1,5 +1,5 @@
 import { usToSamples } from '../units.js';
-import { bool, choice, int, mask, uint } from '../registers/spec.js';
+import { bool, choice, int, mask, section, uint } from '../registers/spec.js';
 import type { ConfigAction, PlannedWrite } from './types.js';
 
 /**
@@ -17,25 +17,27 @@ export const SIPM_ACTIONS: ConfigAction[] = [
       'boards. Issues the baseline, zero-suppression and power registers together.',
     origin: 'FE Conf tab',
     params: [
-      // BS register
-      bool('ref', 'Reference on'),
-      bool('init', 'Initialise DAC'),
-      bool('rst', 'Reset DAC'),
-      int('bs_ref', 'Baseline reference', 4095, 0, { unit: 'counts' }),
-      int('min_thr', 'Minimum adjust threshold', 255, 0, { unit: 'counts' }),
-      int('steph', 'Step H', 15, 0, { unit: 'counts' }),
-      int('stepl', 'Step L', 15, 0, { unit: 'counts' }),
-      int('init_value', 'DAC init value', 3000, 0, { unit: 'counts' }),
-      int('thrh', 'Threshold H', 255, 0, { unit: 'counts' }),
-      int('thrl', 'Threshold L', 255, 0, { unit: 'counts' }),
-      // ZS register
-      bool('zstrg1_on', 'TRG1 zero suppression on'),
-      bool('zstrg2_on', 'TRG2 zero suppression on'),
-      int('thrs', 'ZS threshold, relative to baseline', 4095, 0, { unit: 'counts' }),
-      int('filts', 'Filter samples', 15, 0, { unit: 'samples' }),
-      int('pres', 'Pre-samples', 255, 0, { unit: 'samples' }),
-      int('posts', 'Post-samples', 255, 0, { unit: 'samples' }),
-      int('delay_us', 'Sample delay', 7, 0, { unit: 'µs' }),
+      ...section('Baseline (BS register)', [
+        bool('ref', 'Reference on'),
+        bool('init', 'Initialise DAC'),
+        bool('rst', 'Reset DAC'),
+        int('bs_ref', 'Baseline reference', 4095, 0, { unit: 'counts' }),
+        int('min_thr', 'Minimum adjust threshold', 255, 0, { unit: 'counts' }),
+        int('steph', 'Step H', 15, 0, { unit: 'counts' }),
+        int('stepl', 'Step L', 15, 0, { unit: 'counts' }),
+        int('init_value', 'DAC init value', 3000, 0, { unit: 'counts' }),
+        int('thrh', 'Threshold H', 255, 0, { unit: 'counts' }),
+        int('thrl', 'Threshold L', 255, 0, { unit: 'counts' }),
+      ]),
+      ...section('Zero suppression (ZS register)', [
+        bool('zstrg1_on', 'TRG1 zero suppression on'),
+        bool('zstrg2_on', 'TRG2 zero suppression on'),
+        int('thrs', 'Threshold, relative to baseline', 4095, 0, { unit: 'counts' }),
+        int('filts', 'Filter samples', 15, 0, { unit: 'samples' }),
+        int('pres', 'Pre-samples', 255, 0, { unit: 'samples' }),
+        int('posts', 'Post-samples', 255, 0, { unit: 'samples' }),
+        int('delay_us', 'Sample delay', 7, 0, { unit: 'µs' }),
+      ]),
     ],
     plan: (p): PlannedWrite[] => [
       {

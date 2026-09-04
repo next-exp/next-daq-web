@@ -1,5 +1,5 @@
 import { nsToTbins, usToSamples } from '../units.js';
-import { bool, choice, grid, int, mask, uint } from '../registers/spec.js';
+import { bool, choice, grid, int, mask, section, uint } from '../registers/spec.js';
 import type { ConfigAction, PlanContext, PlannedWrite } from './types.js';
 import type { ParamAccess } from '../types.js';
 
@@ -18,33 +18,70 @@ function triggerThresholdParams(
   channels: number,
   itemLabel: string,
 ) {
+  /** The same six thresholds exist for each trigger, under different field names. */
+  const thresholds = (
+    trigger: 1 | 2,
+    /**
+     * Largest time threshold the register can hold. Trigger 1's fields share their
+     * words with other values and are 12 bits; trigger 2's occupy whole words and
+     * are 16 bits, so they are not equally restricted.
+     */
+    maxTimeNs: number,
+    names: {
+      on: string;
+      rf: string;
+      athrDev: string;
+      athrMax: string;
+      tthrMin: string;
+      tthrMax: string;
+      qMin: string;
+      qMax: string;
+      mask: string;
+    },
+  ) =>
+    section(`Trigger ${trigger}`, [
+      bool(names.on, 'Enabled'),
+      bool(names.rf, 'Full time at end'),
+      int(names.athrDev, 'Baseline deviation', 4095, 0, { unit: 'counts' }),
+      int(names.athrMax, 'Max amplitude', 4095, 0, { unit: 'counts' }),
+      int(names.tthrMin, 'Min time threshold', maxTimeNs, 0, { unit: 'ns' }),
+      int(names.tthrMax, 'Max time threshold', maxTimeNs, 0, { unit: 'ns' }),
+      int(names.qMin, 'Q min', 4_194_303, 0, { unit: 'counts acc.' }),
+      int(names.qMax, 'Q max', 134_217_727, 0, { unit: 'counts acc.' }),
+      // Packed as two 8-bit fields, so 255 time bins each.
+      int(names.mask, 'Pulse valid extension', 6_375, 0, { unit: 'ns' }),
+    ]);
+
   return [
     grid('channels', 'Channels selected to trigger', plane, channels, itemLabel),
-    bool('on1', 'Trigger 1 on'),
-    bool('on2', 'Trigger 2 on'),
-    bool('pol', 'Invert polarity'),
-    bool('chtrg_type', 'Trigger B'),
-    bool('rf1', 'Trigger 1 — full time at end'),
-    bool('rf2', 'Trigger 2 — full time at end'),
-
-    int('athr1', 'Trigger 1 — baseline deviation', 4095, 0, { unit: 'counts' }),
-    int('athr2', 'Trigger 1 — max amplitude', 4095, 0, { unit: 'counts' }),
-    // tthr1/tthr2 are 12-bit register fields packed beside other values, so the
-    // panel maximum is 4095 time bins. tthr3/tthr4 below are 16-bit and can go higher.
-    int('tthr1_ns', 'Trigger 1 — min time threshold', 102_375, 0, { unit: 'ns' }),
-    int('tthr2_ns', 'Trigger 1 — max time threshold', 102_375, 0, { unit: 'ns' }),
-    int('qthr1', 'Trigger 1 — Q min', 4_194_303, 0, { unit: 'counts acc.' }),
-    int('qthr2', 'Trigger 1 — Q max', 134_217_727, 0, { unit: 'counts acc.' }),
-    // Packed as (maskthr1 << 8) | maskthr2: two 8-bit fields, so 255 time bins each.
-    int('maskthr1', 'Trigger 1 — pulse valid extension', 6_375, 0, { unit: 'ns' }),
-
-    int('athr3', 'Trigger 2 — baseline deviation', 4095, 0, { unit: 'counts' }),
-    int('athr4', 'Trigger 2 — max amplitude', 4095, 0, { unit: 'counts' }),
-    int('tthr3_ns', 'Trigger 2 — min time threshold', 1_600_000, 0, { unit: 'ns' }),
-    int('tthr4_ns', 'Trigger 2 — max time threshold', 1_600_000, 0, { unit: 'ns' }),
-    int('qthr4', 'Trigger 2 — Q min', 4_194_303, 0, { unit: 'counts acc.' }),
-    int('qthr5', 'Trigger 2 — Q max', 134_217_727, 0, { unit: 'counts acc.' }),
-    int('maskthr2', 'Trigger 2 — pulse valid extension', 6_375, 0, { unit: 'ns' }),
+    ...section('Common', [
+      bool('pol', 'Invert polarity'),
+      bool('chtrg_type', 'Trigger B'),
+    ]),
+    // 4095 time bins x 25 ns.
+    ...thresholds(1, 102_375, {
+      on: 'on1',
+      rf: 'rf1',
+      athrDev: 'athr1',
+      athrMax: 'athr2',
+      tthrMin: 'tthr1_ns',
+      tthrMax: 'tthr2_ns',
+      qMin: 'qthr1',
+      qMax: 'qthr2',
+      mask: 'maskthr1',
+    }),
+    // 65535 time bins x 25 ns.
+    ...thresholds(2, 1_638_375, {
+      on: 'on2',
+      rf: 'rf2',
+      athrDev: 'athr3',
+      athrMax: 'athr4',
+      tthrMin: 'tthr3_ns',
+      tthrMax: 'tthr4_ns',
+      qMin: 'qthr4',
+      qMax: 'qthr5',
+      mask: 'maskthr2',
+    }),
   ];
 }
 

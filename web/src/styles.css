@@ -270,3 +270,21 @@ button.action.danger:hover:not(:disabled) {
   letter-spacing: .7px; color: var(--muted);
 }
 .panel-head .action { padding: 6px 12px; font-size: 12px; white-space: nowrap; }
+
+/* Parameter sections: keep related settings together instead of letting them
+   flow into whatever row the declaration order produces. */
+.param-section {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px 4px;
+  margin-bottom: 12px;
+  background: color-mix(in srgb, var(--panel-2) 45%, transparent);
+}
+.param-section-title {
+  margin: 0 0 8px;
+  font: 600 11px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  color: var(--muted);
+}
+.param-section .field-grid { margin-bottom: 4px; }

@@ -2,7 +2,14 @@
 
 export type Group = 'GEN' | 'TRG' | 'PMT' | 'BF' | 'SIPM_DAQ' | 'SIPM_FE' | 'CMD';
 
-export type ParamSpec =
+/** Optional heading a parameter is grouped under in the console. */
+export interface ParamSection {
+  section?: string;
+}
+
+export type ParamSpec = ParamSpec_ & ParamSection;
+
+type ParamSpec_ =
   | { kind: 'bool'; name: string; label: string; default?: boolean; help?: string }
   | {
       kind: 'int';

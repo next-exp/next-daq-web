@@ -33,6 +33,27 @@ function groupForLayout(
 }
 
 /**
+ * Split a panel's parameters into the sections it declares, preserving order.
+ *
+ * Without this the fields flow in declaration order into whatever row fits, so a
+ * panel carrying per-trigger copies of the same nine settings interleaves them —
+ * "Trigger 1 pulse valid extension" ends up beside "Trigger 2 baseline deviation"
+ * and the two sets are impossible to read apart.
+ */
+function sectionsOf(
+  params: ActionInfo['params'],
+): { title?: string; params: ActionInfo['params'] }[] {
+  const out: { title?: string; params: ActionInfo['params'] }[] = [];
+  for (const p of params) {
+    const title = p.section;
+    const last = out[out.length - 1];
+    if (last && last.title === title) last.params.push(p);
+    else out.push({ title, params: [p] });
+  }
+  return out;
+}
+
+/**
  * Which channels carry settings of their own.
  *
  * The marker deliberately does not track one particular field: a channel has
@@ -314,7 +335,10 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                       ? ` Showing channel ${selectedKeys[0].replace(':', ', channel ')}.`
                       : ` Editing ${selectedKeys.length} channels — fields they disagree on show "Mixed", and changing one sets it for all of them.`)}
               </p>
-              {groupForLayout(selected.params).map((row, ri) => (
+              {sectionsOf(selected.params).map((sec, si) => (
+                <section key={si} className={sec.title ? 'param-section' : undefined}>
+                  {sec.title && <h3 className="param-section-title">{sec.title}</h3>}
+                  {groupForLayout(sec.params).map((row, ri) => (
                 <div key={ri} className={row.wide ? 'field-full' : 'field-grid'}>
                   {row.items.map((p) => (
                 <Field
@@ -349,7 +373,9 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                   }}
                 />
                   ))}
-                </div>
+                    </div>
+                  ))}
+                </section>
               ))}
             </div>
           </div>

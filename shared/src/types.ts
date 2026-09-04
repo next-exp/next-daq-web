@@ -19,7 +19,19 @@ export type Target =
    */
   | 'feBoard';
 
-export type ParamSpec =
+/**
+ * Optional grouping for the console. Parameters carrying the same `section` are
+ * rendered together under that heading, so related settings stay together instead
+ * of flowing into whatever row the declaration order produces — a panel with
+ * per-trigger copies of the same field is unreadable otherwise.
+ */
+export interface ParamSection {
+  section?: string;
+}
+
+export type ParamSpec = ParamSpec_ & ParamSection;
+
+type ParamSpec_ =
   | { name: string; label: string; kind: 'bool'; default?: boolean; help?: string }
   | {
       name: string;

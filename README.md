@@ -145,6 +145,20 @@ of its own" rather than tracking one particular field — singling out, say, the
 trigger-1 enable would misrepresent the other nineteen. Clicking a row selects
 that channel.
 
+Panels group their parameters into declared sections, rendered as labelled blocks.
+Without that, the fields flow in declaration order into whatever row fits, and a
+panel carrying per-trigger copies of the same nine settings interleaves them —
+"Trigger 1 pulse valid extension" ends up beside "Trigger 2 baseline deviation".
+The channel trigger reads as **Common / Trigger 1 / Trigger 2**, and the SiPM
+front-end as **Baseline (BS register) / Zero suppression (ZS register)**, matching
+the boxes the Swing tabs drew. Field labels drop the redundant prefix because the
+heading carries it; the channel table re-qualifies them since it has no heading.
+
+Note the two triggers are not equally constrained: trigger 1's time thresholds
+share their register words with other values and are 12 bits, while trigger 2's
+occupy whole words and are 16 bits, so the panel maxima differ (102,375 ns against
+1,638,375 ns).
+
 Forms pack several fields to a row, and Apply sits in the panel header rather than
 below the form, so a twenty-field panel stays on one screen and the button is
 reachable without scrolling.

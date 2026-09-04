@@ -61,8 +61,10 @@ export function ChannelTable({
           <tr>
             <th>Channel</th>
             {fields.map((f) => (
-              <th key={f.name} title={f.label}>
-                {f.label.replace(/^Trigger (\d) — /, 'T$1 ')}
+              // Labels are short because the form's section heading carries the
+              // trigger; the table has no such heading, so qualify them here.
+              <th key={f.name} title={f.section ? `${f.section} — ${f.label}` : f.label}>
+                {f.section ? `${f.section.replace(/^Trigger (\d)$/, 'T$1')} ${f.label}` : f.label}
               </th>
             ))}
           </tr>
