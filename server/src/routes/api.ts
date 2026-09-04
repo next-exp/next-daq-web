@@ -68,12 +68,26 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
     },
   );
 
-  /** Apply a panel: send every planned write in order. */
+  /**
+   * Apply a panel: send every planned write in order.
+   *
+   * A plan that includes a wait — the hard reset waits for the cards to reload
+   * from flash — is run detached and reported over the WebSocket, so the request
+   * does not hang for the duration.
+   */
   app.post<{ Body: { params?: Record<string, unknown> }; Params: { id: string } }>(
     '/api/actions/:id/apply',
     async (req, reply) => {
+      const params = (req.body?.params ?? {}) as never;
       try {
-        return await session.applyAction(req.params.id, (req.body?.params ?? {}) as never);
+        const waitMs = session.planWaitMs(req.params.id, params);
+        if (waitMs > 5_000) {
+          void session.applyAction(req.params.id, params).catch(() => {
+            // Reported over the WebSocket and recorded in the run log.
+          });
+          return { started: true, background: true, estimatedMs: waitMs };
+        }
+        return await session.applyAction(req.params.id, params);
       } catch (err) {
         return reply.code(400).send({ error: (err as Error).message });
       }

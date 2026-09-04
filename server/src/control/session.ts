@@ -7,6 +7,7 @@ import {
   planAction,
   type Params,
   type PlannedWrite,
+  type RegisterDef,
   type Topology,
 } from '@next-daq/shared';
 import { CardLink, type RxMessage } from '../net/link.js';
@@ -108,13 +109,14 @@ export class Session {
     id: string,
     params: Params,
     explicitHost?: string,
+    override: { target?: RegisterDef['target']; board?: number } = {},
   ): Promise<{ hexWords: string[]; targets: string[]; dryRun: boolean }> {
     const def = getRegister(id);
     const cmd = encode(def, params, this.nextSeq());
-    const targets = this.link.resolveTargets(def.target, {
+    const targets = this.link.resolveTargets(override.target ?? def.target, {
       host: explicitHost,
       port: def.port,
-      board: def.boardParam ? Number(params[def.boardParam]) : undefined,
+      board: override.board ?? (def.boardParam ? Number(params[def.boardParam]) : undefined),
     });
 
     if (!this.dryRun) {
@@ -154,10 +156,10 @@ export class Session {
           ...w,
           hexWords: cmd.hexWords,
           targets: this.link
-            .resolveTargets(def.target, {
+            .resolveTargets(w.target ?? def.target, {
               host: w.host,
               port: def.port,
-              board: def.boardParam ? Number(w.params[def.boardParam]) : undefined,
+              board: w.board ?? (def.boardParam ? Number(w.params[def.boardParam]) : undefined),
             })
             .map((t) => `${t.host}:${t.port}`),
         };
@@ -190,8 +192,30 @@ export class Session {
 
     for (const w of writes) {
       try {
-        const res = await this.sendRegister(w.register, w.params, w.host);
+        const res = await this.sendRegister(w.register, w.params, w.host, {
+          target: w.target,
+          board: w.board,
+        });
         applied.push({ register: w.register, hexWords: res.hexWords, targets: res.targets });
+        this.publish({
+          type: 'action',
+          action: id,
+          step: applied.length,
+          total: writes.length,
+          note: w.note,
+        });
+
+        if (w.waitAfterMs && w.waitAfterMs > 0 && !this.dryRun) {
+          this.publish({
+            type: 'action',
+            action: id,
+            step: applied.length,
+            total: writes.length,
+            note: `Waiting ${Math.round(w.waitAfterMs / 1000)} s for the cards to return`,
+            waitingMs: w.waitAfterMs,
+          });
+          await new Promise((resolve) => setTimeout(resolve, w.waitAfterMs));
+        }
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         await this.log.error('action_failed', {
@@ -201,6 +225,13 @@ export class Session {
           total: writes.length,
           message,
         });
+        this.publish({
+          type: 'action',
+          action: id,
+          step: applied.length,
+          total: writes.length,
+          error: message,
+        });
         throw new Error(
           `${id}: failed on ${w.register} after ${applied.length} of ${writes.length} writes: ${message}`,
         );
@@ -208,7 +239,13 @@ export class Session {
     }
 
     await this.log.info('action_completed', { action: id, writes: applied.length });
+    this.publish({ type: 'action', action: id, step: writes.length, total: writes.length, done: true });
     return { applied, dryRun: this.dryRun };
+  }
+
+  /** Total time a plan will spend waiting, used to decide whether to detach it. */
+  planWaitMs(id: string, params: Params): number {
+    return planAction(getAction(id), params).reduce((t, w) => t + (w.waitAfterMs ?? 0), 0);
   }
 
   startFlash(opts: FlashOptions, mcsText: string): FlashSession {
@@ -274,4 +311,14 @@ export type ServerEvent =
   | { type: 'state'; snapshot: ReturnType<RunControl['snapshot']> }
   | { type: 'rx'; card?: string; address: string; statusAddr: number; data: number[]; at: number }
   | { type: 'rejected'; reason: string; address: string; port: number; length: number }
-  | { type: 'flash'; progress: FlashProgress };
+  | { type: 'flash'; progress: FlashProgress }
+  | {
+      type: 'action';
+      action: string;
+      step: number;
+      total: number;
+      note?: string;
+      waitingMs?: number;
+      error?: string;
+      done?: boolean;
+    };

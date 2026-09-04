@@ -6,7 +6,7 @@ import { Setup } from './panels/Setup';
 import { Config } from './panels/Config';
 import { Flash } from './panels/Flash';
 import { LogView } from './panels/LogView';
-import type { FlashProgress, Status } from './types';
+import type { ActionProgress, FlashProgress, Status } from './types';
 
 const TABS = [
   ['overview', 'Overview'],
@@ -31,6 +31,7 @@ export function App() {
   const [tab, setTab] = useState<Tab>('setup');
   const [status, setStatus] = useState<Status>();
   const [flash, setFlash] = useState<FlashProgress>();
+  const [actionProgress, setActionProgress] = useState<ActionProgress>();
   const [connected, setConnected] = useState(false);
 
   const refresh = useCallback(() => {
@@ -58,6 +59,7 @@ export function App() {
       const msg = JSON.parse(ev.data);
       if (msg.type === 'hello') setStatus(msg.status);
       else if (msg.type === 'flash') setFlash(msg.progress);
+      else if (msg.type === 'action') setActionProgress(msg);
       else if (msg.type === 'state' || msg.type === 'rx' || msg.type === 'rejected') refresh();
     };
 
@@ -97,7 +99,7 @@ export function App() {
 
       <main>
         {tab === 'overview' && <Overview status={status} onChanged={refresh} />}
-        {tab === 'setup' && <Setup status={status} />}
+        {tab === 'setup' && <Setup status={status} progress={actionProgress} />}
         {tab === 'registers' && <Registers status={status} />}
         {tab === 'config' && <Config />}
         {tab === 'flash' && <Flash status={status} progress={flash} />}

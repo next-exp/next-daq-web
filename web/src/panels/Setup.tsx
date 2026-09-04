@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
 import { Field, defaultsFor } from '../components/Fields';
-import type { ActionInfo, ParamValues, Status } from '../types';
+import type { ActionInfo, ActionProgress, ParamValues, Status } from '../types';
 
 const SECTION_ORDER = ['run', 'trigger', 'pmt', 'bf', 'sipm', 'fec', 'test'];
 
@@ -13,7 +13,7 @@ const SECTION_ORDER = ['run', 'trigger', 'pmt', 'bf', 'sipm', 'fec', 'test'];
  * sequence of register writes, the way the Swing tabs' "Config Registers" buttons
  * did. Unlike the original, the exact writes are shown before anything is sent.
  */
-export function Setup({ status }: { status?: Status }) {
+export function Setup({ status, progress }: { status?: Status; progress?: ActionProgress }) {
   const [actions, setActions] = useState<ActionInfo[]>([]);
   const [sections, setSections] = useState<Record<string, string>>({});
   const [selectedId, setSelectedId] = useState<string>();
@@ -88,11 +88,19 @@ export function Setup({ status }: { status?: Status }) {
     setResult(undefined);
     try {
       const res = await api.applyAction(selected.id, values);
-      setResult(
-        `${res.dryRun ? 'Dry run — nothing transmitted. ' : ''}${res.applied.length} register write${
-          res.applied.length === 1 ? '' : 's'
-        } ${res.dryRun ? 'planned' : 'sent'}.`,
-      );
+      if ('background' in res && res.background) {
+        setResult(
+          `Running in the background — about ${Math.round((res.estimatedMs ?? 0) / 1000)} s. ` +
+            'Progress is shown below.',
+        );
+      } else {
+        const applied = res.applied ?? [];
+        setResult(
+          `${res.dryRun ? 'Dry run — nothing transmitted. ' : ''}${applied.length} register write${
+            applied.length === 1 ? '' : 's'
+          } ${res.dryRun ? 'planned' : 'sent'}.`,
+        );
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -145,6 +153,21 @@ export function Setup({ status }: { status?: Status }) {
             <div className="body">
               {error && <div className="error-box">{error}</div>}
               {result && <div className="ok-box">{result}</div>}
+
+              {progress && progress.action === selected.id && !progress.done && (
+                <div className="ok-box">
+                  <div style={{ marginBottom: 6 }}>
+                    Step {progress.step} of {progress.total}
+                    {progress.note ? ` — ${progress.note}` : ''}
+                  </div>
+                  <div className="progress">
+                    <div style={{ width: `${(progress.step / progress.total) * 100}%` }} />
+                  </div>
+                </div>
+              )}
+              {progress && progress.action === selected.id && progress.error && (
+                <div className="error-box">{progress.error}</div>
+              )}
 
               {plan.length === 0 && !error && (
                 <p className="note">

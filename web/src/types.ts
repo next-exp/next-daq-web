@@ -100,3 +100,14 @@ export interface ActionInfo {
   origin?: string;
   params: ParamSpec[];
 }
+
+/** Progress of a multi-step panel apply, pushed over the WebSocket. */
+export interface ActionProgress {
+  action: string;
+  step: number;
+  total: number;
+  note?: string;
+  waitingMs?: number;
+  error?: string;
+  done?: boolean;
+}

@@ -1,4 +1,4 @@
-import type { Group, ParamAccess, ParamSpec, Params } from '../types.js';
+import type { Group, ParamAccess, ParamSpec, Params, Target } from '../types.js';
 
 /**
  * An operator task: a coherent set of parameters that expands into a sequence of
@@ -20,6 +20,19 @@ export interface PlannedWrite {
   note?: string;
   /** Overrides the register's own target, e.g. to address one specific card. */
   host?: string;
+  /**
+   * Overrides the register's declared target class. `ProgCmd` is the case that
+   * needs this: the original sent it broadcast for a full reload, to individual
+   * card addresses per plane, and to front-end boards.
+   */
+  target?: Target;
+  /** For a `feBoard` target, the board this write addresses. */
+  board?: number;
+  /**
+   * Pause after this write before the next one. The hard reset waits for the
+   * cards to reprogram themselves from flash and come back.
+   */
+  waitAfterMs?: number;
 }
 
 export interface ConfigAction {

@@ -27,7 +27,12 @@ export const api = {
     ),
 
   applyAction: (id: string, params: ParamValues) =>
-    json<{ applied: { register: string; hexWords: string[]; targets: string[] }[]; dryRun: boolean }>(
+    json<{
+      applied?: { register: string; hexWords: string[]; targets: string[] }[];
+      dryRun?: boolean;
+      background?: boolean;
+      estimatedMs?: number;
+    }>(
       `/api/actions/${encodeURIComponent(id)}/apply`,
       { method: 'POST', body: JSON.stringify({ params }) },
     ),

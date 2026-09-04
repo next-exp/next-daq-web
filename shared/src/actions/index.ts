@@ -5,6 +5,7 @@ import { RUN_ACTIONS } from './run.js';
 import { BF_ACTIONS, PMT_ACTIONS } from './planes.js';
 import { SIPM_ACTIONS } from './sipm.js';
 import { FEC_ACTIONS, TEST_ACTIONS } from './fec.js';
+import { RESET_ACTIONS } from './reset.js';
 
 export const ALL_ACTIONS: ConfigAction[] = [
   ...RUN_ACTIONS,
@@ -13,6 +14,7 @@ export const ALL_ACTIONS: ConfigAction[] = [
   ...SIPM_ACTIONS,
   ...FEC_ACTIONS,
   ...TEST_ACTIONS,
+  ...RESET_ACTIONS,
 ];
 
 const byId = new Map(ALL_ACTIONS.map((a) => [a.id, a]));
@@ -31,6 +33,7 @@ export * from './run.js';
 export * from './planes.js';
 export * from './sipm.js';
 export * from './fec.js';
+export * from './reset.js';
 
 /**
  * Expand a configuration action into the register writes it performs.

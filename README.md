@@ -79,6 +79,26 @@ Ranges come from the original labels, which carried the real operating limits �
 "Circular Buffer Size (us) [20-3200]", "Coincidence Window Size (25 ns Tbin)
 [1-63]", "# Events for trigger [1-40]".
 
+### Reset and recovery
+
+The main window's three reset buttons are separate panels, because they are
+genuinely different operations:
+
+| Panel | What it does | Original |
+|---|---|---|
+| **Soft reset** (Run) | Stops acquisition with the reset bit set (`AcqCmd` with `on_off=0, rst=1`) and clears the configured state | RST SOFT |
+| **Recover — reload cards from flash** (Cards & links) | `ProgCmd` with `flash_sel` and `prog_on` set, so cards reload their FPGA image. Scoped to all cards, one plane, or selected front-end boards | Ext PMT / SiPM / FEBs RCV windows |
+| **Hard reset** (Run) | Soft reset → broadcast reload → wait for the cards → second soft reset | RST HARD |
+
+The hard reset's wait was a blocking `manymasec(60000)` on the Swing event
+thread, which froze the interface for a minute with nothing shown. Here a plan
+can carry a `waitAfterMs`, and any plan that waits more than five seconds runs
+detached with per-step progress pushed over the WebSocket; the wait is also
+adjustable for a slower crate.
+
+Recovery never sets the flash write-enable bit — it reloads an existing image
+rather than putting the card into a writable state. That is asserted by test.
+
 ### SiPM front-end addressing
 
 The ten SiPM front-end registers do not share one destination, and this matters
@@ -215,7 +235,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 206 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 217 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.
