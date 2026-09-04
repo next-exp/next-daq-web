@@ -19,6 +19,27 @@ export type SettingsMap = Record<string, Params>;
 
 export class SettingsStore {
   private settings: SettingsMap = {};
+  /**
+   * The values last successfully applied, per panel.
+   *
+   * Edits are recorded as you type, so "what is in the panel" and "what the cards
+   * were last told" are different things. Keeping both lets the console show which
+   * channels are actually enabled and flag a panel whose edits have not been sent.
+   *
+   * This is the last commanded state, not a hardware readback — a card that was
+   * power-cycled since will not reflect it.
+   */
+  private applied: SettingsMap = {};
+  private appliedAt: Record<string, string> = {};
+
+  /**
+   * Per-channel overrides for grid panels, keyed by panel then "cardIndex:channel".
+   *
+   * Channels are configured independently — the Swing UI gave each one its own row
+   * of spinners — so a panel-level value is only a starting point that individual
+   * channels override.
+   */
+  private channels: Record<string, Record<string, Params>> = {};
 
   constructor(private readonly dataDir: string) {}
 
@@ -36,6 +57,10 @@ export class SettingsStore {
         out[spec.name] = stored[spec.name];
       } else if (spec.kind === 'mask') {
         out[spec.name] = new Array(spec.count).fill(false);
+      } else if (spec.kind === 'grid') {
+        // Rows depend on the configured topology, so an unset grid is empty and
+        // the console fills it in once it knows the card list.
+        out[spec.name] = [];
       } else if (spec.kind === 'coefArray') {
         out[spec.name] = [0, 0];
       } else if (spec.kind === 'bool') {
@@ -56,6 +81,48 @@ export class SettingsStore {
     this.settings[actionId] = { ...this.settings[actionId], ...params };
   }
 
+  /** Stored overrides for one panel, keyed "cardIndex:channel". */
+  channelValues(actionId: string): Record<string, Params> {
+    return this.channels[actionId] ?? {};
+  }
+
+  /** Values in force for one channel: the panel defaults with its overrides applied. */
+  channelValue(actionId: string, key: string): Params {
+    return { ...this.get(actionId), ...(this.channels[actionId]?.[key] ?? {}) };
+  }
+
+  /** Apply an edit to every named channel. */
+  setChannels(actionId: string, keys: string[], params: Params): void {
+    getAction(actionId);
+    const map = (this.channels[actionId] ??= {});
+    for (const key of keys) {
+      if (!/^\d+:\d+$/.test(key)) throw new Error(`Invalid channel key "${key}"`);
+      map[key] = { ...map[key], ...params };
+    }
+  }
+
+  /** Record the values that actually reached the cards. */
+  markApplied(actionId: string, params: Params): void {
+    getAction(actionId);
+    this.applied[actionId] = { ...params };
+    this.appliedAt[actionId] = new Date().toISOString();
+  }
+
+  /** Values last applied for one panel, or undefined if it has never been applied. */
+  getApplied(actionId: string): { params: Params; at: string } | undefined {
+    const params = this.applied[actionId];
+    return params ? { params, at: this.appliedAt[actionId] } : undefined;
+  }
+
+  /** Panels whose current values differ from what was last applied. */
+  pendingPanels(): string[] {
+    return ALL_ACTIONS.filter((a) => {
+      const applied = this.applied[a.id];
+      if (!applied) return Object.keys(this.settings[a.id] ?? {}).length > 0;
+      return JSON.stringify(this.get(a.id)) !== JSON.stringify({ ...this.get(a.id), ...applied });
+    }).map((a) => a.id);
+  }
+
   replaceAll(settings: SettingsMap): void {
     this.settings = {};
     for (const [id, params] of Object.entries(settings)) {
@@ -71,7 +138,16 @@ export class SettingsStore {
 
   async loadFromDisk(): Promise<void> {
     try {
-      this.settings = JSON.parse(await fs.readFile(this.file, 'utf8')) as SettingsMap;
+      const raw = JSON.parse(await fs.readFile(this.file, 'utf8')) as Record<string, unknown>;
+      // Older files held the settings map directly, with no applied history.
+      if (raw && typeof raw === 'object' && 'settings' in raw) {
+        this.settings = (raw.settings as SettingsMap) ?? {};
+        this.applied = (raw.applied as SettingsMap) ?? {};
+        this.appliedAt = (raw.appliedAt as Record<string, string>) ?? {};
+        this.channels = (raw.channels as Record<string, Record<string, Params>>) ?? {};
+      } else {
+        this.settings = (raw as SettingsMap) ?? {};
+      }
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
     }
@@ -80,7 +156,13 @@ export class SettingsStore {
   async saveToDisk(): Promise<void> {
     await fs.mkdir(this.dataDir, { recursive: true });
     const tmp = `${this.file}.tmp`;
-    await fs.writeFile(tmp, JSON.stringify(this.settings, null, 2), 'utf8');
+    const payload = {
+      settings: this.settings,
+      applied: this.applied,
+      appliedAt: this.appliedAt,
+      channels: this.channels,
+    };
+    await fs.writeFile(tmp, JSON.stringify(payload, null, 2), 'utf8');
     await fs.rename(tmp, this.file);
   }
 
@@ -102,7 +184,7 @@ export class SettingsStore {
         let text: string;
         if (Array.isArray(v)) {
           text =
-            spec.kind === 'mask'
+            spec.kind === 'mask' || spec.kind === 'grid'
               ? (v as boolean[]).map((b) => (b ? '1' : '0')).join('')
               : (v as number[]).join(',');
         } else if (typeof v === 'boolean') {
@@ -130,7 +212,13 @@ export class SettingsStore {
         const raw = entries.get(keyFor(action.id, spec.name));
         if (raw === undefined) continue;
 
-        if (spec.kind === 'mask') {
+        if (spec.kind === 'grid') {
+          if (!/^[01]*$/.test(raw)) {
+            skipped.push(`${keyFor(action.id, spec.name)}: not a 0/1 grid`);
+            continue;
+          }
+          params[spec.name] = [...raw].map((c) => c === '1');
+        } else if (spec.kind === 'mask') {
           if (!/^[01]*$/.test(raw)) {
             skipped.push(`${keyFor(action.id, spec.name)}: not a 0/1 mask`);
             continue;

@@ -265,7 +265,9 @@ function pulseGenerator(
         const period = p.int('timeperiod');
         w.push(flag(p.bool('on'), 0x8000) | ((dly >> 4) << 12) | p.int('chH'));
         w.push((dly << 12) | p.int('chL'));
-        w.push(p.int('timepulse'), period >> 16, period);
+        // Arithmetic rather than `>>`: JavaScript's shift operators are signed
+        // 32-bit, so a period above 2^31 would sign-extend.
+        w.push(p.int('timepulse'), Math.floor(period / 0x10000), period);
       },
     },
   ];

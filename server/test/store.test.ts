@@ -1,4 +1,5 @@
 import { promises as fs } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -12,7 +13,12 @@ import {
 import { RunLog } from '../src/store/log.js';
 import { DEFAULT_TOPOLOGY, TopologyError, validateTopology } from '@next-daq/shared';
 
-const REAL = '/Users/roberto/java/Envio_Comandos_NEXT_JULIETT_vDHDALL';
+/**
+ * Fixtures are trimmed excerpts of the real detector files, committed so the suite
+ * runs anywhere. Absolute paths into a developer's home directory made three of
+ * these tests fail on every other machine.
+ */
+const FIXTURES = fileURLToPath(new URL('./fixtures/', import.meta.url));
 const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'next-daq-'));
 afterAll(() => fs.rm(tmp, { recursive: true, force: true }));
 
@@ -35,19 +41,16 @@ describe('config format', () => {
   });
 
   it('round-trips the real Config.txt without losing entries', async () => {
-    const text = await fs.readFile(path.join(REAL, 'Config.txt'), 'utf8');
+    const text = await fs.readFile(path.join(FIXTURES, 'Config.txt'), 'utf8');
     const first = parseConfig(text);
-    expect(first.entries.size).toBeGreaterThan(50);
+    expect(first.entries.size).toBeGreaterThan(20);
     expect(first.malformed).toEqual([]);
     const second = parseConfig(serialiseConfig(first.entries));
     expect(second.entries).toEqual(first.entries);
   });
 
   it('round-trips the ATCA config.txt', async () => {
-    const text = await fs.readFile(
-      '/Users/roberto/java/ATCAFlashProgramming_v1/config.txt',
-      'utf8',
-    );
+    const text = await fs.readFile(path.join(FIXTURES, 'atca-config.txt'), 'utf8');
     const first = parseConfig(text);
     expect(first.malformed).toEqual([]);
     expect(parseConfig(serialiseConfig(first.entries)).entries).toEqual(first.entries);
@@ -71,7 +74,7 @@ describe('ConfigStore', () => {
 
 describe('gains', () => {
   it('parses the real gains.txt', async () => {
-    const rows = parseGains(await fs.readFile(path.join(REAL, 'gains.txt'), 'utf8'));
+    const rows = parseGains(await fs.readFile(path.join(FIXTURES, 'gains.txt'), 'utf8'));
     expect(rows.length).toBeGreaterThan(0);
     expect(rows[0]).toEqual({ minRun: 0, sensorId: 0, elecId: 0, gain: 24.75 });
   });

@@ -160,6 +160,7 @@ describe('header word count', () => {
    */
   const DECLARED_NW: Record<string, number> = {
     GenConfReg0: 0x05,
+    GenConfReg0J: 0x07,
     GenConfReg2: 0x07,
     TrgConfReg1: 0x02,
     TrgConfReg3: 0x0a,

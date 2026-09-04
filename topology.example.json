@@ -1,17 +1,77 @@
 {
-  "ports": { "java": 6009, "fec": 6022, "fe": 6038 },
+  "ports": {
+    "java": 6009,
+    "fec": 6022,
+    "fe": 6038,
+    "feCmd": 6039
+  },
   "broadcastAddress": "10.0.255.255",
   "cards": [
-    { "id": "TRG",   "label": "Trigger FEC", "host": "10.0.0.3",  "plane": "trg" },
-    { "id": "PMT1",  "label": "PMT FEC 1",   "host": "10.0.86.2", "plane": "pmt" },
-    { "id": "BF1",   "label": "BF FEC 1",    "host": "10.0.88.2", "plane": "bf" },
-    { "id": "BF2",   "label": "BF FEC 2",    "host": "10.0.66.2", "plane": "bf" },
-    { "id": "BF3",   "label": "BF FEC 3",    "host": "10.0.74.2", "plane": "bf" },
-    { "id": "SIPM1", "label": "SiPM FEC 1",  "host": "10.0.90.2", "plane": "sipm" },
-    { "id": "SIPM2", "label": "SiPM FEC 2",  "host": "10.0.68.2", "plane": "sipm" }
+    {
+      "id": "TRG",
+      "label": "Trigger FEC",
+      "host": "10.0.0.3",
+      "plane": "trg"
+    },
+    {
+      "id": "PMT1",
+      "label": "PMT FEC 1",
+      "host": "10.0.86.2",
+      "plane": "pmt"
+    },
+    {
+      "id": "BF1",
+      "label": "BF FEC 1",
+      "host": "10.0.88.2",
+      "plane": "bf"
+    },
+    {
+      "id": "BF2",
+      "label": "BF FEC 2",
+      "host": "10.0.66.2",
+      "plane": "bf"
+    },
+    {
+      "id": "BF3",
+      "label": "BF FEC 3",
+      "host": "10.0.74.2",
+      "plane": "bf"
+    },
+    {
+      "id": "SIPM1",
+      "label": "SiPM FEC 1",
+      "host": "10.0.90.2",
+      "plane": "sipm"
+    },
+    {
+      "id": "SIPM2",
+      "label": "SiPM FEC 2",
+      "host": "10.0.68.2",
+      "plane": "sipm"
+    }
   ],
-  "counts": { "fecPmt": 1, "fecBf": 3, "fecSipm": 2, "feb": 13 },
-  "slowControl": { "host": "10.0.1.50", "port": 61557 },
-  "paths": { "dataDir": "./data", "runNumberFile": "/tmp/date_runnumber.txt" },
-  "timing": { "ackTimeoutMs": 2000, "maxRetries": 3, "powerUpMs": 400 }
+  "counts": {
+    "fecPmt": 1,
+    "fecBf": 3,
+    "fecSipm": 2,
+    "feb": 13
+  },
+  "slowControl": {
+    "host": "10.0.1.50",
+    "port": 61557
+  },
+  "paths": {
+    "dataDir": "./data",
+    "runNumberFile": "/tmp/date_runnumber.txt"
+  },
+  "timing": {
+    "ackTimeoutMs": 2000,
+    "maxRetries": 3,
+    "powerUpMs": 400
+  },
+  "feBoards": {
+    "template": "10.0.{}.1",
+    "offset": 128,
+    "maxBoard": 55
+  }
 }

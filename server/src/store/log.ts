@@ -22,6 +22,8 @@ export interface LogEntry {
 
 export class RunLog {
   private queue: Promise<void> = Promise.resolve();
+  /** Consecutive failed writes, so repeated failures are not reported repeatedly. */
+  private writeErrors = 0;
 
   constructor(
     private readonly dataDir: string,
@@ -39,9 +41,23 @@ export class RunLog {
   append(level: LogLevel, event: string, detail?: Record<string, unknown>, runNumber?: number): Promise<void> {
     const entry: LogEntry = { at: new Date().toISOString(), level, event, runNumber, detail };
     const line = JSON.stringify(entry) + '\n';
+    // The chain tip must always settle successfully. `.then(fn)` on a rejected
+    // promise skips fn entirely, so one failed write would silently disable
+    // logging for the life of the process — the very failure mode this class
+    // exists to avoid.
     this.queue = this.queue.then(async () => {
-      await fs.mkdir(this.dataDir, { recursive: true });
-      await fs.appendFile(this.file, line, 'utf8');
+      try {
+        await fs.mkdir(this.dataDir, { recursive: true });
+        await fs.appendFile(this.file, line, 'utf8');
+        this.writeErrors = 0;
+      } catch (err) {
+        this.writeErrors++;
+        // Report the first failure of a run loudly, then stay quiet so a full disk
+        // cannot itself become a flood.
+        if (this.writeErrors === 1) {
+          process.emitWarning(`Run log write failed: ${(err as Error).message}`);
+        }
+      }
     });
     return this.queue;
   }
@@ -66,6 +82,11 @@ export class RunLog {
       if ((err as NodeJS.ErrnoException).code === 'ENOENT') return [];
       throw err;
     }
+  }
+
+  /** Number of consecutive failed writes; 0 when the log is healthy. */
+  get failing(): number {
+    return this.writeErrors;
   }
 
   /** Flush pending appends; call before shutting down. */

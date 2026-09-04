@@ -201,7 +201,8 @@ export const TEST_ACTIONS: ConfigAction[] = [
     params: [
       bool('gen1_on', 'Generator 1 on'),
       bool('gen2_on', 'Generator 2 on'),
-      int('period_us', 'Period', 107_000_000, 0, { unit: 'µs' }),
+      // timeperiod is a 30-bit field in samples, so the panel caps at 0x3FFFFFFF/40.
+      int('period_us', 'Period', 26_843_545, 0, { unit: 'µs' }),
       int('timepulse_us', 'Time pulse', 1600, 0, { unit: 'µs' }),
       int('chH', 'Channel H value', 4095, 0, { unit: 'counts' }),
       int('chL', 'Channel L value', 4095, 0, { unit: 'counts' }),

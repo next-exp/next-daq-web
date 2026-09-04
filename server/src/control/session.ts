@@ -109,7 +109,7 @@ export class Session {
     id: string,
     params: Params,
     explicitHost?: string,
-    override: { target?: RegisterDef['target']; board?: number } = {},
+    override: { target?: RegisterDef['target']; board?: number; cardIndex?: number } = {},
   ): Promise<{ hexWords: string[]; targets: string[]; dryRun: boolean }> {
     const def = getRegister(id);
     const cmd = encode(def, params, this.nextSeq());
@@ -117,6 +117,7 @@ export class Session {
       host: explicitHost,
       port: def.port,
       board: override.board ?? (def.boardParam ? Number(params[def.boardParam]) : undefined),
+      cardIndex: override.cardIndex,
     });
 
     if (!this.dryRun) {
@@ -145,7 +146,12 @@ export class Session {
     writes: (PlannedWrite & { hexWords: string[]; targets: string[] })[];
   } {
     const action = getAction(id);
-    const writes = planAction(action, params, this.settings.all());
+    const writes = planAction(
+      action,
+      params,
+      this.settings.all(),
+      this.settings.channelValues(id),
+    );
     return {
       writes: writes.map((w) => {
         const def = getRegister(w.register);
@@ -160,6 +166,7 @@ export class Session {
               host: w.host,
               port: def.port,
               board: w.board ?? (def.boardParam ? Number(w.params[def.boardParam]) : undefined),
+              cardIndex: w.cardIndex,
             })
             .map((t) => `${t.host}:${t.port}`),
         };
@@ -180,7 +187,12 @@ export class Session {
     const action = getAction(id);
     // Store first, so a plan reading this panel's own values sees what was just set.
     this.settings.set(id, params);
-    const writes = planAction(action, params, this.settings.all());
+    const writes = planAction(
+      action,
+      params,
+      this.settings.all(),
+      this.settings.channelValues(id),
+    );
     if (writes.length === 0) {
       throw new Error(`${id}: nothing to send — no channels or targets selected`);
     }
@@ -194,6 +206,7 @@ export class Session {
         const res = await this.sendRegister(w.register, w.params, w.host, {
           target: w.target,
           board: w.board,
+          cardIndex: w.cardIndex,
         });
         applied.push({ register: w.register, hexWords: res.hexWords, targets: res.targets });
         this.publish({
@@ -237,6 +250,9 @@ export class Session {
       }
     }
 
+    // Only now is this the state the cards were actually told.
+    this.settings.markApplied(id, params);
+    await this.settings.saveToDisk();
     await this.log.info('action_completed', { action: id, writes: applied.length });
     this.publish({ type: 'action', action: id, step: writes.length, total: writes.length, done: true });
     return { applied, dryRun: this.dryRun };
@@ -244,7 +260,12 @@ export class Session {
 
   /** Total time a plan will spend waiting, used to decide whether to detach it. */
   planWaitMs(id: string, params: Params): number {
-    return planAction(getAction(id), params, this.settings.all()).reduce(
+    return planAction(
+      getAction(id),
+      params,
+      this.settings.all(),
+      this.settings.channelValues(id),
+    ).reduce(
       (t, w) => t + (w.waitAfterMs ?? 0),
       0,
     );

@@ -6,6 +6,26 @@ import type { ActionInfo, ActionProgress, ParamValues, Status } from '../types';
 const SECTION_ORDER = ['run', 'trigger', 'pmt', 'bf', 'sipm', 'fec', 'test'];
 
 /**
+ * Which channels are enabled according to their own stored settings, so the grid
+ * shows per-channel state rather than only what is ticked for the next write.
+ */
+function channelEnabledMask(
+  action: ActionInfo | undefined,
+  channels: Record<string, ParamValues>,
+  cols: number,
+  spec: { kind: string; rows?: { id: string }[] },
+): boolean[] | undefined {
+  if (!action || !cols || !spec.rows) return undefined;
+  // The field that means "this channel is on" differs between panels.
+  const onField = action.params.find((p) => ['on1', 'on'].includes(p.name))?.name;
+  if (!onField) return undefined;
+  return Array.from({ length: spec.rows.length * cols }, (_, i) => {
+    const key = `${Math.floor(i / cols)}:${i % cols}`;
+    return Boolean(channels[key]?.[onField]);
+  });
+}
+
+/**
  * Operator configuration panels.
  *
  * Each panel gathers parameters in the units the detector is actually discussed
@@ -21,6 +41,9 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
   const [plan, setPlan] = useState<
     { register: string; note?: string; hexWords: string[]; targets: string[] }[]
   >([]);
+  const [applied, setApplied] = useState<{ params: ParamValues | null; at: string | null }>();
+  /** Per-channel values, keyed "cardIndex:channel", for grid panels. */
+  const [channels, setChannels] = useState<Record<string, ParamValues>>({});
   const [error, setError] = useState<string>();
   const [result, setResult] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -48,6 +71,14 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
       .settings(selected.id)
       .then((v) => !cancelled && setValues(v))
       .catch(() => !cancelled && setValues(defaultsFor(selected.params)));
+    api
+      .appliedSettings(selected.id)
+      .then((a) => !cancelled && setApplied(a))
+      .catch(() => !cancelled && setApplied(undefined));
+    api
+      .channelSettings(selected.id)
+      .then((c) => !cancelled && setChannels(c))
+      .catch(() => !cancelled && setChannels({}));
     return () => {
       cancelled = true;
     };
@@ -65,6 +96,40 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
       cancelled = true;
     };
   }, [selected, values]);
+
+  const gridSpec = selected?.params.find((p) => p.kind === 'grid');
+  const cols = gridSpec && 'cols' in gridSpec ? gridSpec.cols : 0;
+
+  /** Keys of the currently ticked channels, as "cardIndex:channel". */
+  const selectedKeys = useMemo(() => {
+    if (!gridSpec) return [];
+    const bits = (values[gridSpec.name] as boolean[] | undefined) ?? [];
+    const out: string[] = [];
+    bits.forEach((on, i) => {
+      if (on) out.push(`${Math.floor(i / cols)}:${i % cols}`);
+    });
+    return out;
+  }, [gridSpec, values, cols]);
+
+  /**
+   * The value each field should show for the current selection: the shared value
+   * when the channels agree, otherwise a "mixed" marker.
+   */
+  const channelView = useMemo(() => {
+    if (!selected || selectedKeys.length === 0) return { values: {}, mixed: new Set<string>() };
+    const view: ParamValues = {};
+    const mixed = new Set<string>();
+    for (const spec of selected.params) {
+      if (spec.kind === 'grid') continue;
+      const seen = selectedKeys.map((k) =>
+        JSON.stringify(channels[k]?.[spec.name] ?? values[spec.name]),
+      );
+      const first = seen[0];
+      if (seen.every((v) => v === first)) view[spec.name] = JSON.parse(first ?? 'null');
+      else mixed.add(spec.name);
+    }
+    return { values: view, mixed };
+  }, [selected, selectedKeys, channels, values]);
 
   const grouped = useMemo(() => {
     const out: Record<string, ActionInfo[]> = {};
@@ -103,6 +168,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
       }
     } catch (e) {
       setError((e as Error).message);
+      api.appliedSettings(selected.id).then(setApplied).catch(() => undefined);
     } finally {
       setBusy(false);
     }
@@ -135,12 +201,43 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
             <h2>{selected.title}</h2>
             <div className="body">
               {selected.description && <p className="note">{selected.description}</p>}
+              <p className="note">
+                {applied?.at
+                  ? `Last sent to the cards ${new Date(applied.at).toLocaleString()}.`
+                  : 'Never sent to the cards from this console.'}
+                {gridSpec &&
+                  (selectedKeys.length === 0
+                    ? ' Select channels to see and edit their settings.'
+                    : selectedKeys.length === 1
+                      ? ` Showing channel ${selectedKeys[0].replace(':', ', channel ')}.`
+                      : ` Editing ${selectedKeys.length} channels — fields they disagree on show "Mixed", and changing one sets it for all of them.`)}
+              </p>
               {selected.params.map((p) => (
                 <Field
                   key={p.name}
                   spec={p}
-                  value={values[p.name]}
-                  onChange={(v) => setValues((s) => ({ ...s, [p.name]: v }))}
+                  value={
+                    p.kind !== 'grid' && selectedKeys.length > 0
+                      ? channelView.values[p.name]
+                      : values[p.name]
+                  }
+                  mixed={p.kind !== 'grid' && channelView.mixed.has(p.name)}
+                  applied={
+                    p.kind === 'grid' ? channelEnabledMask(selected, channels, cols, p) : undefined
+                  }
+                  onChange={(v) => {
+                    setValues((s) => ({ ...s, [p.name]: v }));
+                    if (p.kind !== 'grid' && selectedKeys.length > 0) {
+                      // The edit belongs to the ticked channels, not the panel.
+                      setChannels((c) => {
+                        const next = { ...c };
+                        for (const k of selectedKeys) next[k] = { ...next[k], [p.name]: v };
+                        return next;
+                      });
+                      api.setChannelSettings(selected.id, selectedKeys, { [p.name]: v })
+                        .catch(() => undefined);
+                    }
+                  }}
                 />
               ))}
             </div>

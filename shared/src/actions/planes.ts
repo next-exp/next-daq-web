@@ -1,6 +1,6 @@
 import { nsToTbins, usToSamples } from '../units.js';
-import { bool, choice, int, mask, uint } from '../registers/spec.js';
-import type { ConfigAction, PlannedWrite } from './types.js';
+import { bool, choice, grid, int, mask, uint } from '../registers/spec.js';
+import type { ConfigAction, PlanContext, PlannedWrite } from './types.js';
 import type { ParamAccess } from '../types.js';
 
 /**
@@ -13,9 +13,13 @@ import type { ParamAccess } from '../types.js';
  */
 
 /** Threshold parameters shared by the A, B and external channel-trigger panels. */
-function triggerThresholdParams(channels: number, itemLabel: string) {
+function triggerThresholdParams(
+  plane: 'pmt' | 'bf',
+  channels: number,
+  itemLabel: string,
+) {
   return [
-    mask('channels', 'Channels selected to trigger', channels, 'high', itemLabel),
+    grid('channels', 'Channels selected to trigger', plane, channels, itemLabel),
     bool('on1', 'Trigger 1 on'),
     bool('on2', 'Trigger 2 on'),
     bool('pol', 'Invert polarity'),
@@ -25,11 +29,14 @@ function triggerThresholdParams(channels: number, itemLabel: string) {
 
     int('athr1', 'Trigger 1 — baseline deviation', 4095, 0, { unit: 'counts' }),
     int('athr2', 'Trigger 1 — max amplitude', 4095, 0, { unit: 'counts' }),
-    int('tthr1_ns', 'Trigger 1 — min time threshold', 1_600_000, 0, { unit: 'ns' }),
-    int('tthr2_ns', 'Trigger 1 — max time threshold', 1_600_000, 0, { unit: 'ns' }),
+    // tthr1/tthr2 are 12-bit register fields packed beside other values, so the
+    // panel maximum is 4095 time bins. tthr3/tthr4 below are 16-bit and can go higher.
+    int('tthr1_ns', 'Trigger 1 — min time threshold', 102_375, 0, { unit: 'ns' }),
+    int('tthr2_ns', 'Trigger 1 — max time threshold', 102_375, 0, { unit: 'ns' }),
     int('qthr1', 'Trigger 1 — Q min', 4_194_303, 0, { unit: 'counts acc.' }),
     int('qthr2', 'Trigger 1 — Q max', 134_217_727, 0, { unit: 'counts acc.' }),
-    int('maskthr1', 'Trigger 1 — pulse valid extension', 10_000, 0, { unit: 'ns' }),
+    // Packed as (maskthr1 << 8) | maskthr2: two 8-bit fields, so 255 time bins each.
+    int('maskthr1', 'Trigger 1 — pulse valid extension', 6_375, 0, { unit: 'ns' }),
 
     int('athr3', 'Trigger 2 — baseline deviation', 4095, 0, { unit: 'counts' }),
     int('athr4', 'Trigger 2 — max amplitude', 4095, 0, { unit: 'counts' }),
@@ -37,42 +44,53 @@ function triggerThresholdParams(channels: number, itemLabel: string) {
     int('tthr4_ns', 'Trigger 2 — max time threshold', 1_600_000, 0, { unit: 'ns' }),
     int('qthr4', 'Trigger 2 — Q min', 4_194_303, 0, { unit: 'counts acc.' }),
     int('qthr5', 'Trigger 2 — Q max', 134_217_727, 0, { unit: 'counts acc.' }),
-    int('maskthr2', 'Trigger 2 — pulse valid extension', 10_000, 0, { unit: 'ns' }),
+    int('maskthr2', 'Trigger 2 — pulse valid extension', 6_375, 0, { unit: 'ns' }),
   ];
 }
 
-/** One write per selected channel, mirroring the original's per-channel loop. */
-function planChannelTrigger(register: string, count: number) {
-  return (p: ParamAccess): PlannedWrite[] => {
+/**
+ * One write per selected (card, channel), addressed to that card.
+ *
+ * The original looped over the cards explicitly — `AdjustBFTRGAChannels` called
+ * `BFDaqConfReg4_19` twelve times each for DAQ_card1, DAQ_card2 and DAQ_card3, so
+ * the energy plane has 3 x 12 trigger channels rather than a single flat list.
+ */
+function planChannelTrigger(register: string, cols: number) {
+  return (p: ParamAccess, ctx: PlanContext): PlannedWrite[] => {
     const selected = p.mask('channels');
     const writes: PlannedWrite[] = [];
-    for (let ch = 0; ch < count; ch++) {
-      if (!selected[ch]) continue;
+    for (let i = 0; i < selected.length; i++) {
+      if (!selected[i]) continue;
+      const cardIndex = Math.floor(i / cols);
+      const ch = i % cols;
+      // Each channel carries its own thresholds.
+      const v = ctx.channel(cardIndex, ch);
       writes.push({
         register,
-        note: `Channel ${ch}`,
+        cardIndex,
+        note: `Card ${cardIndex + 1}, channel ${ch}`,
         params: {
           ch_num: ch,
-          on1: p.bool('on1'),
-          on2: p.bool('on2'),
-          pol: p.bool('pol'),
-          chtrg_type: p.bool('chtrg_type'),
-          rf1: p.bool('rf1'),
-          rf2: p.bool('rf2'),
-          athr1: p.int('athr1'),
-          athr2: p.int('athr2'),
-          athr3: p.int('athr3'),
-          athr4: p.int('athr4'),
-          tthr1: nsToTbins(p.int('tthr1_ns')),
-          tthr2: nsToTbins(p.int('tthr2_ns')),
-          tthr3: nsToTbins(p.int('tthr3_ns')),
-          tthr4: nsToTbins(p.int('tthr4_ns')),
-          qthr1: p.int('qthr1'),
-          qthr2: p.int('qthr2'),
-          qthr4: p.int('qthr4'),
-          qthr5: p.int('qthr5'),
-          maskthr1: nsToTbins(p.int('maskthr1')),
-          maskthr2: nsToTbins(p.int('maskthr2')),
+          on1: v.bool('on1'),
+          on2: v.bool('on2'),
+          pol: v.bool('pol'),
+          chtrg_type: v.bool('chtrg_type'),
+          rf1: v.bool('rf1'),
+          rf2: v.bool('rf2'),
+          athr1: v.int('athr1'),
+          athr2: v.int('athr2'),
+          athr3: v.int('athr3'),
+          athr4: v.int('athr4'),
+          tthr1: nsToTbins(v.int('tthr1_ns')),
+          tthr2: nsToTbins(v.int('tthr2_ns')),
+          tthr3: nsToTbins(v.int('tthr3_ns')),
+          tthr4: nsToTbins(v.int('tthr4_ns')),
+          qthr1: v.int('qthr1'),
+          qthr2: v.int('qthr2'),
+          qthr4: v.int('qthr4'),
+          qthr5: v.int('qthr5'),
+          maskthr1: nsToTbins(v.int('maskthr1')),
+          maskthr2: nsToTbins(v.int('maskthr2')),
         },
       });
     }
@@ -87,10 +105,10 @@ export const PMT_ACTIONS: ConfigAction[] = [
     group: 'PMT',
     title: 'Channel trigger configuration',
     description:
-      'Per-channel amplitude, time and charge thresholds. The settings are written to ' +
-      'every selected channel.',
+      'Per-channel amplitude, time and charge thresholds, written to every selected ' +
+      'channel on every selected card.',
     origin: 'CH TRG Conf A / B / Ext tabs',
-    params: triggerThresholdParams(12, 'PMT'),
+    params: triggerThresholdParams('pmt', 12, 'PMT'),
     plan: planChannelTrigger('PMTDaqConfReg4_19', 12),
   },
   {
@@ -101,7 +119,7 @@ export const PMT_ACTIONS: ConfigAction[] = [
     description: 'Baseline restoration and high-pass filter settings, per channel.',
     origin: 'BLR Conf tab',
     params: [
-      mask('channels', 'Channels', 12, 'high', 'PMT'),
+      grid('channels', 'Channels', 'pmt', 12, 'PMT'),
       bool('on', 'ON'),
       bool('rst', 'RST'),
       bool('dm', 'DM'),
@@ -128,36 +146,40 @@ export const PMT_ACTIONS: ConfigAction[] = [
       int('lineslope_index', 'Line slope index', 4095, 0),
       int('line_index', 'Line index', 15, 0),
     ],
-    plan: (p): PlannedWrite[] => {
+    plan: (p, ctx): PlannedWrite[] => {
       const selected = p.mask('channels');
       const writes: PlannedWrite[] = [];
-      for (let ch = 0; ch < 12; ch++) {
-        if (!selected[ch]) continue;
+      for (let i = 0; i < selected.length; i++) {
+        if (!selected[i]) continue;
+        const cardIndex = Math.floor(i / 12);
+        const ch = i % 12;
+        const v = ctx.channel(cardIndex, ch);
         writes.push({
           register: 'PMTDaqConfReg21_36',
-          note: `Channel ${ch}`,
+          cardIndex,
+          note: `Card ${cardIndex + 1}, channel ${ch}`,
           params: {
             ch_num: ch,
-            on: p.bool('on'),
-            rst: p.bool('rst'),
-            dm: p.bool('dm'),
-            trgm: p.bool('trgm'),
-            hpf: p.bool('hpf'),
-            dwi: p.bool('dwi'),
-            mau_size: p.int('mau_size'),
-            mau_thr: p.int('mau_thr'),
-            blr_thrh: p.int('blr_thrh'),
-            blr_thrl: p.int('blr_thrl'),
-            blr_coefL: p.int('blr_coefL'),
-            blr_coefH: p.int('blr_coefH'),
-            blr_dischcoefL: p.int('blr_dischcoefL'),
-            blr_dischcoefH: p.int('blr_dischcoefH'),
-            timetoabort: usToSamples(p.int('timetoabort_us')),
-            hpf_A1L: p.int('hpf_A1L'),
-            hpf_A1H: p.int('hpf_A1H'),
-            hpf_GL: p.int('hpf_GL'),
-            lineslope_index: p.int('lineslope_index'),
-            line_index: p.int('line_index'),
+            on: v.bool('on'),
+            rst: v.bool('rst'),
+            dm: v.bool('dm'),
+            trgm: v.bool('trgm'),
+            hpf: v.bool('hpf'),
+            dwi: v.bool('dwi'),
+            mau_size: v.int('mau_size'),
+            mau_thr: v.int('mau_thr'),
+            blr_thrh: v.int('blr_thrh'),
+            blr_thrl: v.int('blr_thrl'),
+            blr_coefL: v.int('blr_coefL'),
+            blr_coefH: v.int('blr_coefH'),
+            blr_dischcoefL: v.int('blr_dischcoefL'),
+            blr_dischcoefH: v.int('blr_dischcoefH'),
+            timetoabort: usToSamples(v.int('timetoabort_us')),
+            hpf_A1L: v.int('hpf_A1L'),
+            hpf_A1H: v.int('hpf_A1H'),
+            hpf_GL: v.int('hpf_GL'),
+            lineslope_index: v.int('lineslope_index'),
+            line_index: v.int('line_index'),
           },
         });
       }
@@ -265,35 +287,51 @@ export const BF_ACTIONS: ConfigAction[] = [
     group: 'BF',
     title: 'Channel trigger configuration',
     description:
-      'Per-channel thresholds for the energy plane, written to every selected channel.',
+      'Per-channel thresholds for the energy plane. Each FEC carries twelve trigger ' +
+      'channels and is configured independently.',
     origin: 'CH TRG Conf A tab — Internal BF Trigger Configuration',
-    params: triggerThresholdParams(16, 'BF'),
-    plan: planChannelTrigger('BFDaqConfReg4_19', 16),
+    params: triggerThresholdParams('bf', 12, 'BF'),
+    plan: planChannelTrigger('BFDaqConfReg4_19', 12),
   },
   {
-    id: 'bf.dataChannels',
+    id: 'bf.triggerSum',
     section: 'bf',
     group: 'BF',
-    title: 'Data memory channels',
-    origin: 'BF Conf tab',
+    title: 'Trigger sum / data channels',
+    description:
+      'Enables the trigger sum and selects which channels take part, per FEC. This is ' +
+      'what "Activate TRG SUM" did: it wrote BFDaqConfReg16 to each selected FEC in turn.',
+    origin: 'BF Conf tab + CH TRG Conf A — Activate TRG SUM',
     params: [
-      mask('channels', 'BF channels enabled', 12, 'high', 'BF'),
-      bool('on', 'Enabled'),
+      grid('channels', 'Channels in the sum', 'bf', 12, 'BF'),
+      bool('on', 'Trigger sum on'),
       bool('data_send', 'Send data'),
-      bool('lg_hg', 'High gain (off = low gain)'),
+      bool('lg_hg', 'Sum high gain (off = low gain)'),
     ],
-    plan: (p): PlannedWrite[] => [
-      {
-        register: 'BFDaqConfReg16',
-        note: 'BF data channel enables and gain selection',
-        params: {
-          channels: p.mask('channels'),
-          on: p.bool('on'),
-          data_send: p.bool('data_send'),
-          lg_hg: p.bool('lg_hg'),
-        },
-      },
-    ],
+    plan: (p): PlannedWrite[] => {
+      const selected = p.mask('channels');
+      const cols = 12;
+      const cards = Math.ceil(selected.length / cols);
+      const writes: PlannedWrite[] = [];
+
+      // One write per card, carrying that card's twelve channel bits.
+      for (let card = 0; card < cards; card++) {
+        const channels = selected.slice(card * cols, card * cols + cols);
+        if (!channels.some(Boolean)) continue;
+        writes.push({
+          register: 'BFDaqConfReg16',
+          cardIndex: card,
+          note: `Card ${card + 1} — ${channels.filter(Boolean).length} channel(s) in the sum`,
+          params: {
+            channels,
+            on: p.bool('on'),
+            data_send: p.bool('data_send'),
+            lg_hg: p.bool('lg_hg'),
+          },
+        });
+      }
+      return writes;
+    },
   },
   {
     id: 'bf.triggerSelect',

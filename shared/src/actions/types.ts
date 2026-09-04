@@ -29,6 +29,11 @@ export interface PlannedWrite {
   /** For a `feBoard` target, the board this write addresses. */
   board?: number;
   /**
+   * Index of the card within its plane, for writes that must reach exactly one
+   * card rather than the whole plane.
+   */
+  cardIndex?: number;
+  /**
    * Pause after this write before the next one. The hard reset waits for the
    * cards to reprogram themselves from flash and come back.
    */
@@ -47,6 +52,15 @@ export interface PlannedWrite {
 export interface PlanContext {
   /** Current values of another panel, with its declared defaults applied. */
   panel(id: string): ParamAccess;
+  /**
+   * Values stored for one channel of a per-card grid panel.
+   *
+   * Channel settings are per channel, not per panel: the Swing UI gave every
+   * channel its own row of spinners, so two channels can carry different
+   * thresholds. Falls back to the panel-level values for anything the channel has
+   * not overridden.
+   */
+  channel(cardIndex: number, channel: number): ParamAccess;
 }
 
 export interface ConfigAction {

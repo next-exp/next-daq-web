@@ -100,6 +100,7 @@ interface PendingBlock {
 export function parseMcs(text: string): McsImage {
   const pending: PendingBlock[] = [];
   let upper = 0;
+  let segmentBase = 0;
   let totalBytes = 0;
   let recordCount = 0;
   let sawEof = false;
@@ -115,7 +116,7 @@ export function parseMcs(text: string): McsImage {
 
     switch (rec.type) {
       case RECORD_DATA: {
-        const address = upper * 0x10000 + rec.address;
+        const address = upper * 0x10000 + segmentBase + rec.address;
         const prev = pending[pending.length - 1];
         // Merge with the previous block when the data is contiguous.
         if (prev && prev.address + prev.length === address) {
@@ -135,12 +136,16 @@ export function parseMcs(text: string): McsImage {
           throw new McsParseError('extended linear address record must hold 2 bytes', i + 1);
         }
         upper = (rec.data[0] << 8) | rec.data[1];
+        segmentBase = 0;
         break;
       case RECORD_EXT_SEGMENT:
         if (rec.data.length !== 2) {
           throw new McsParseError('extended segment address record must hold 2 bytes', i + 1);
         }
-        upper = ((rec.data[0] << 8) | rec.data[1]) >> 12;
+        // A segment record means base = S << 4 bytes, not a whole 64K page. Shifting
+        // right by 12 first would discard the low 12 bits of S.
+        segmentBase = ((rec.data[0] << 8) | rec.data[1]) << 4;
+        upper = 0;
         break;
       default:
         throw new McsParseError(`unsupported record type 0x${rec.type.toString(16)}`, i + 1);
@@ -188,6 +193,7 @@ export interface McsDataRecord {
 export function parseMcsRecords(text: string): McsDataRecord[] {
   const out: McsDataRecord[] = [];
   let upper = 0;
+  let segmentBase = 0;
   let sawEof = false;
   const lines = text.split(/\r?\n/);
 
@@ -199,7 +205,7 @@ export function parseMcsRecords(text: string): McsDataRecord[] {
     switch (rec.type) {
       case RECORD_DATA:
         out.push({
-          address: upper * 0x10000 + rec.address,
+          address: upper * 0x10000 + segmentBase + rec.address,
           data: Buffer.from(rec.data),
           checksum: rec.checksum,
         });
@@ -209,9 +215,11 @@ export function parseMcsRecords(text: string): McsDataRecord[] {
         break;
       case RECORD_EXT_LINEAR:
         upper = (rec.data[0] << 8) | rec.data[1];
+        segmentBase = 0;
         break;
       case RECORD_EXT_SEGMENT:
-        upper = ((rec.data[0] << 8) | rec.data[1]) >> 12;
+        segmentBase = ((rec.data[0] << 8) | rec.data[1]) << 4;
+        upper = 0;
         break;
       default:
         throw new McsParseError(`unsupported record type 0x${rec.type.toString(16)}`, i + 1);

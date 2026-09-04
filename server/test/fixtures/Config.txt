@@ -1,0 +1,49 @@
+FE0:SiPM sensor connected mask:1111111111111111111111111111111111111111111111111111111111111111:1
+
+FE0:SiPM sensor 0 connected:1
+
+FE0:SiPM sensor 1 connected:1
+
+FE0:SiPM sensor 2 connected:1
+
+FE0:SiPM sensor 3 connected:1
+
+FE0:SiPM sensor 4 connected:1
+
+FE0:SiPM sensor 5 connected:1
+
+FE0:SiPM sensor 6 connected:1
+
+FE0:SiPM sensor 7 connected:1
+
+FE0:SiPM sensor 8 connected:1
+
+FE0:SiPM sensor 9 connected:1
+
+FE0:SiPM sensor 10 connected:1
+
+FE0:SiPM sensor 11 connected:1
+
+FE0:SiPM sensor 12 connected:1
+
+FE0:SiPM sensor 13 connected:1
+
+FE0:SiPM sensor 14 connected:1
+
+FE0:SiPM sensor 15 connected:1
+
+FE0:SiPM sensor 16 connected:1
+
+FE0:SiPM sensor 17 connected:1
+
+FE0:SiPM sensor 18 connected:1
+
+FE0:SiPM sensor 19 connected:1
+
+FE0:SiPM sensor 20 connected:1
+
+FE0:SiPM sensor 21 connected:1
+
+FE0:SiPM sensor 22 connected:1
+
+FE0:SiPM sensor connected mask:1111111111111111111111111111111111111111111111111111111111111111:1

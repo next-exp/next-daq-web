@@ -63,6 +63,23 @@ export const api = {
   /** Stored values for one panel. */
   settings: (id: string) => json<ParamValues>(`/api/settings/${encodeURIComponent(id)}`),
 
+  /** What this panel last actually sent to the cards. */
+  appliedSettings: (id: string) =>
+    json<{ params: ParamValues | null; at: string | null }>(
+      `/api/settings/${encodeURIComponent(id)}/applied`,
+    ),
+
+  /** Per-channel values for a grid panel, keyed "cardIndex:channel". */
+  channelSettings: (id: string) =>
+    json<Record<string, ParamValues>>(`/api/settings/${encodeURIComponent(id)}/channels`),
+
+  /** Apply an edit to every named channel. */
+  setChannelSettings: (id: string, keys: string[], params: ParamValues) =>
+    json<{ updated: number }>(`/api/settings/${encodeURIComponent(id)}/channels`, {
+      method: 'PUT',
+      body: JSON.stringify({ keys, params }),
+    }),
+
   /** Remember edited panel values without sending anything. */
   saveSettings: (id: string, params: ParamValues) =>
     json<{ saved: string }>(`/api/settings/${encodeURIComponent(id)}`, {

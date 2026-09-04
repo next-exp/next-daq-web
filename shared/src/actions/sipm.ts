@@ -111,8 +111,9 @@ export const SIPM_ACTIONS: ConfigAction[] = [
       const calon = p.bool('calon');
 
       // Scale factors from the original handler: trainfreq = 40 x value, and
-      // pulsefreq = (40/8) x value because the FPGA multiplies by 8 again. Both are
-      // sent one less than the computed value.
+      // pulsefreq = (40/8) x value because the FPGA multiplies by 8 again.
+      // SendFE5Cmd passed `trg_mask - 1` and `trainfreq - 1` but `pulsefreq`
+      // undecremented; that asymmetry is deliberate and preserved below.
       const trainfreq = 40 * p.int('train_freq_hz');
       const pulsefreq = Math.trunc(40 / 8) * p.int('pulse_freq_hz');
       let trgMask = usToSamples(p.int('pulse_period_us'));

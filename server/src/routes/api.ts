@@ -52,7 +52,18 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
       title: a.title,
       description: a.description,
       origin: a.origin,
-      params: a.params,
+      // Grid parameters get their rows from the configured cards, so a crate with
+      // a different number of FECs needs no code change.
+      params: a.params.map((p) =>
+        p.kind === 'grid'
+          ? {
+              ...p,
+              rows: session.topology.cards
+                .filter((c) => c.plane === p.plane)
+                .map((c) => ({ id: c.id, label: c.label })),
+            }
+          : p,
+      ),
     })),
   }));
 
@@ -154,6 +165,19 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
     }
   });
 
+  /**
+   * What this panel last sent to the cards, so the console can show which channels
+   * are enabled rather than only which are selected for the next write.
+   */
+  app.get<{ Params: { id: string } }>('/api/settings/:id/applied', async (req, reply) => {
+    try {
+      session.settings.get(req.params.id); // validates the id
+      return session.settings.getApplied(req.params.id) ?? { params: null, at: null };
+    } catch (err) {
+      return reply.code(404).send({ error: (err as Error).message });
+    }
+  });
+
   /** Remember edited panel values without sending anything to the detector. */
   app.put<{ Params: { id: string }; Body: { params?: Record<string, unknown> } }>(
     '/api/settings/:id',
@@ -167,6 +191,31 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
       }
     },
   );
+
+  /** Per-channel values for a grid panel, keyed "cardIndex:channel". */
+  app.get<{ Params: { id: string } }>('/api/settings/:id/channels', async (req, reply) => {
+    try {
+      session.settings.get(req.params.id);
+      return session.settings.channelValues(req.params.id);
+    } catch (err) {
+      return reply.code(404).send({ error: (err as Error).message });
+    }
+  });
+
+  /** Apply an edit to every named channel. */
+  app.put<{
+    Params: { id: string };
+    Body: { keys?: string[]; params?: Record<string, unknown> };
+  }>('/api/settings/:id/channels', async (req, reply) => {
+    try {
+      const keys = req.body?.keys ?? [];
+      session.settings.setChannels(req.params.id, keys, (req.body?.params ?? {}) as never);
+      await session.settings.saveToDisk();
+      return { updated: keys.length };
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
 
   /* ---------------------------------------------------------------- configs */
 

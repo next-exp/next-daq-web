@@ -49,7 +49,26 @@ export type ParamSpec =
       itemLabel?: string;
       help?: string;
     }
-  | { name: string; label: string; kind: 'coefArray'; help?: string };
+  | { name: string; label: string; kind: 'coefArray'; help?: string }
+  /**
+   * A per-card channel selection: one row of `cols` channels for each card of
+   * `plane`. Stored flat, row-major, so the value stays a plain boolean array.
+   *
+   * The trigger planes are addressed this way in hardware — the energy plane has
+   * three FECs of twelve trigger channels each, and every write goes to one card
+   * with a channel number inside it. A flat channel list cannot express that.
+   */
+  | {
+      name: string;
+      label: string;
+      kind: 'grid';
+      plane: 'trg' | 'pmt' | 'bf' | 'sipm';
+      cols: number;
+      /** Filled in from the configured topology when the catalogue is served. */
+      rows?: { id: string; label: string }[];
+      colLabel?: string;
+      help?: string;
+    };
 
 export type Params = Record<string, number | boolean | boolean[] | number[]>;
 

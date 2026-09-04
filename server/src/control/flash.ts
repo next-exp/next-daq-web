@@ -134,6 +134,23 @@ export class FlashSession extends EventEmitter<{
     reject: (e: Error) => void;
   }[] = [];
 
+  /**
+   * Acknowledgements that arrived before anything was waiting for them.
+   *
+   * The datagram is sent before the waiter is armed, so that a send failure cannot
+   * strand a promise whose timer later rejects it unhandled. That leaves a window
+   * where a fast reply would be dropped, so an early ACK latches here and the next
+   * wait for that kind consumes it.
+   */
+  private pendingAcks = { erase: false, write: false };
+
+  /**
+   * A fault that arrived before anything was waiting — a checksum error from the
+   * card, or an operator cancelling. Latched for the same reason as `pendingAcks`,
+   * so the next wait fails immediately instead of running to its timeout.
+   */
+  private fatal?: Error;
+
   constructor(
     private readonly link: CardLink,
     private readonly opts: FlashOptions,
@@ -153,14 +170,24 @@ export class FlashSession extends EventEmitter<{
       this.settleAll(new FlashError('Card reported a checksum error'));
       return;
     }
+    let matchedErase = false;
+    let matchedWrite = false;
     for (const waiter of this.waiters.splice(0)) {
-      if ((waiter.kind === 'erase' && ack.eraseAck) || (waiter.kind === 'write' && ack.writeAck)) {
+      if (waiter.kind === 'erase' && ack.eraseAck) {
+        matchedErase = true;
+        waiter.resolve();
+      } else if (waiter.kind === 'write' && ack.writeAck) {
+        matchedWrite = true;
         waiter.resolve();
       } else {
         // Not the acknowledgement we are waiting for; keep waiting.
         this.waiters.push(waiter);
       }
     }
+
+    // Latch an acknowledgement nothing was waiting for yet.
+    if (ack.eraseAck && !matchedErase) this.pendingAcks.erase = true;
+    if (ack.writeAck && !matchedWrite) this.pendingAcks.write = true;
   }
 
   cancel(): void {
@@ -169,11 +196,19 @@ export class FlashSession extends EventEmitter<{
   }
 
   private settleAll(err: Error): void {
+    this.fatal = err;
     for (const waiter of this.waiters.splice(0)) waiter.reject(err);
   }
 
   /** Wait for an acknowledgement, or reject once the deadline passes. */
   private waitForAck(kind: 'erase' | 'write', timeoutMs: number): Promise<void> {
+    // A fault already reported wins over any pending acknowledgement.
+    if (this.fatal) return Promise.reject(this.fatal);
+    // Consume an acknowledgement that already arrived.
+    if (this.pendingAcks[kind]) {
+      this.pendingAcks[kind] = false;
+      return Promise.resolve();
+    }
     return new Promise<void>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.waiters = this.waiters.filter((x) => x !== entry);
@@ -234,10 +269,13 @@ export class FlashSession extends EventEmitter<{
         { prog_on: true, prog_wron: true, flash_sel: flashSelect },
         this.seqCnt++,
       );
-      const ackPromise = this.waitForAck('erase', eraseTimeoutMs);
+      // Send first, then arm the wait. Arming beforehand leaves an orphaned promise
+      // if the send throws: nothing ever awaits it, and its timer later rejects it
+      // as an unhandled rejection, which terminates the process under Node's
+      // default policy.
       this.entered = true;
       await this.link.send(enter.bytes, this.opts.host, this.opts.port);
-      await ackPromise;
+      await this.waitForAck('erase', eraseTimeoutMs);
 
       this.phase = 'writing';
       this.report('Erase acknowledged, writing image');
@@ -294,9 +332,11 @@ export class FlashSession extends EventEmitter<{
       if (this.cancelled) throw new FlashError('Cancelled by operator');
       const { bytes } = buildFlashFrame(batch, this.seqCnt++);
       try {
-        const ack = this.waitForAck('write', timeoutMs);
+        // Same ordering as the erase step: no waiter is armed for a datagram that
+        // never left the host.
+        this.pendingAcks.write = false;
         await this.link.send(bytes, this.opts.host, this.opts.port);
-        await ack;
+        await this.waitForAck('write', timeoutMs);
         return;
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));

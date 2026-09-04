@@ -31,7 +31,17 @@ export type ParamSpec =
       itemLabel?: string;
       help?: string;
     }
-  | { kind: 'coefArray'; name: string; label: string; help?: string };
+  | { kind: 'coefArray'; name: string; label: string; help?: string }
+  | {
+      kind: 'grid';
+      name: string;
+      label: string;
+      plane: string;
+      cols: number;
+      rows?: { id: string; label: string }[];
+      colLabel?: string;
+      help?: string;
+    };
 
 export interface RegisterInfo {
   id: string;

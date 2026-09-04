@@ -27,8 +27,19 @@ export async function loadTopology(file?: string): Promise<Topology> {
     throw new Error(`Configuration "${path}" is not valid JSON: ${(err as Error).message}`);
   }
 
-  // Merge over the defaults so a config need only state what it changes.
-  const merged = { ...DEFAULT_TOPOLOGY, ...(parsed as Partial<Topology>) } as Topology;
+  // Merge over the defaults so a config need only state what it changes. The
+  // nested groups are merged one level deep too: a plain spread would let
+  // `{"ports": {"java": 6010}}` drop every other port and fail validation.
+  const partial = (parsed ?? {}) as Partial<Topology>;
+  const merged: Topology = {
+    ...DEFAULT_TOPOLOGY,
+    ...partial,
+    ports: { ...DEFAULT_TOPOLOGY.ports, ...(partial.ports ?? {}) },
+    feBoards: { ...DEFAULT_TOPOLOGY.feBoards, ...(partial.feBoards ?? {}) },
+    counts: { ...DEFAULT_TOPOLOGY.counts, ...(partial.counts ?? {}) },
+    paths: { ...DEFAULT_TOPOLOGY.paths, ...(partial.paths ?? {}) },
+    timing: { ...DEFAULT_TOPOLOGY.timing, ...(partial.timing ?? {}) },
+  };
   return validateTopology(merged);
 }
 

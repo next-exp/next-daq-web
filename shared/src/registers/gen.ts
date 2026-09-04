@@ -39,6 +39,56 @@ export const GEN_REGISTERS: RegisterDef[] = [
       );
       w.push(pre, buff, p.int('mhit_size'));
     },
+    notes:
+      'Single-buffer variant. The original defines it but never calls it \u2014 the live ' +
+      'path is GenConfReg0J. Kept for completeness and for older firmware.',
+  },
+  {
+    id: 'GenConfReg0J',
+    group: 'GEN',
+    title: 'Memory buffer configuration (dual buffer)',
+    regAddr: 0x0000,
+    cmdCode: CMD_CONFIG,
+    target: 'broadcast',
+    params: [
+      int('pretrigger', 'Pre-trigger, TRG1/Ext', 0x1ffff, 26000, { unit: 'samples' }),
+      int('buff_size', 'Buffer size, TRG1/Ext', 0x1ffff, 52000, { unit: 'samples' }),
+      int('pretrigger1', 'Pre-trigger, TRG2', 0x1ffff, 26000, { unit: 'samples' }),
+      int('buff_size1', 'Buffer size, TRG2', 0x1ffff, 52000, { unit: 'samples' }),
+      bool('dm_on', 'Data mode on'),
+      bool('testmem_on1', 'Test memory (PMT)'),
+      bool('testmem_on2', 'Test memory (SiPM)'),
+      bool('bs2_on', 'Same buffer for writing'),
+      uint('mode', 'Mode of operation', 4, 1),
+      uint('run_code', 'Run code', 4),
+    ],
+    payload: (p, w) => {
+      const buff = p.int('buff_size');
+      const pre = p.int('pretrigger');
+      const buff1 = p.int('buff_size1');
+      const pre1 = p.int('pretrigger1');
+      // Bit 16 of each 17-bit value rides in the flags word.
+      w.push(
+        ((buff >> 16) << 15) |
+          ((pre >> 16) << 14) |
+          ((buff1 >> 16) << 13) |
+          ((pre1 >> 16) << 12) |
+          (p.int('run_code') << 4) |
+          flag(p.bool('dm_on'), 0x0008) |
+          p.int('mode'),
+      );
+      // The TRG2 pair is transmitted before the TRG1 pair.
+      w.push(pre1, buff1, pre, buff);
+      w.push(
+        flag(p.bool('bs2_on'), 0x8000) |
+          flag(p.bool('testmem_on1'), 0x0002) |
+          flag(p.bool('testmem_on2'), 0x0001),
+      );
+    },
+    notes:
+      'This is the variant the original actually sent; GenConfReg0 has no call site. It ' +
+      'carries separate buffer and pre-trigger values for TRG1/Ext and TRG2, and its ' +
+      'test-memory bits are 0x0002/0x0001 rather than GenConfReg0\u2019s 0x0800/0x0400.',
   },
   {
     id: 'GenConfReg2',

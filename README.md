@@ -92,6 +92,28 @@ Ranges come from the original labels, which carried the real operating limits �
 "Circular Buffer Size (us) [20-3200]", "Coincidence Window Size (25 ns Tbin)
 [1-63]", "# Events for trigger [1-40]".
 
+### Per-channel state
+
+Trigger and BLR channels are configured independently — the Swing UI gave each
+channel its own row of spinners. The console keeps per-channel values, keyed by
+card and channel, so:
+
+- Selecting one channel shows **that channel's** settings.
+- Selecting several shows the values they share, and **Mixed** for any field they
+  disagree on. Editing a field sets it for every selected channel.
+- The grid marks channels that are enabled according to their own stored state, so
+  you can see at a glance which are on rather than only which are ticked for the
+  next write.
+- Values persist across reloads and restarts, and are included in a saved
+  configuration.
+
+An earlier version applied one shared threshold set to every ticked channel, which
+silently overwrote per-channel configuration and could display values belonging to
+no channel at all.
+
+The marker reflects the last configuration this console sent, not a hardware
+readback — a card power-cycled since will not be reflected.
+
 ### Values owned by one panel
 
 A plan can read another panel's values, so a setting lives in exactly one place.
@@ -258,7 +280,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 223 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 250 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

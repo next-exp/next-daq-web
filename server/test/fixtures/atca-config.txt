@@ -1,0 +1,39 @@
+GEN:Mode of Operation:0
+
+GEN:Buffer Size:800
+
+GEN:Pretrigger:400
+
+GEN:Number of Triggers:0
+
+GEN:Config GEN:1
+
+TRG:FEC 0 connected:1
+
+TRG:External Trigger ON/OFF:0
+
+TRG:Double Trigger ON/OFF:0
+
+TRG:Calibration Trigger ON/OFF:0
+
+TRG:Trigger Mask ON/OFF:0
+
+TRG:Trigger freq:15
+
+TRG:Internal Trg per calibration:256
+
+TRG:External Trg per calibration:192
+
+TRG:Max Time Trg A and B:0
+
+TRG:CW size Trg A:1
+
+TRG:CW size Trg B:1
+
+TRG:Events for Trg A:1
+
+TRG:Events for Trg B:1
+
+TRG:Config TRG:1
+
+PMT FEC 0:PMT 0 connected:1

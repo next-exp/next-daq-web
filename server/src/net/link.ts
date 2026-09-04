@@ -151,7 +151,13 @@ export class CardLink extends EventEmitter<CardLinkEvents> {
    */
   resolveTargets(
     target: RegisterDef['target'] | string,
-    opts: { host?: string; board?: number; port?: RegisterDef['port'] } = {},
+    opts: {
+      host?: string;
+      board?: number;
+      port?: RegisterDef['port'];
+      /** Select one card of the plane rather than all of them. */
+      cardIndex?: number;
+    } = {},
   ): { host: string; port: number }[] {
     const { ports, broadcastAddress, cards, feBoards } = this.topology;
     const port =
@@ -185,6 +191,18 @@ export class CardLink extends EventEmitter<CardLinkEvents> {
     if (plane.length === 0) {
       throw new Error(`No cards of type "${target}" are configured`);
     }
+
+    if (opts.cardIndex !== undefined) {
+      const card = plane[opts.cardIndex];
+      if (!card) {
+        throw new Error(
+          `Card ${opts.cardIndex + 1} of plane "${target}" is not configured ` +
+            `(${plane.length} present)`,
+        );
+      }
+      return [{ host: card.host, port }];
+    }
+
     return plane.map((c) => ({ host: c.host, port }));
   }
 

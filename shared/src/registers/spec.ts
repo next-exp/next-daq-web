@@ -52,3 +52,17 @@ export const choice = (
   options: options.map(([value, l]) => ({ value, label: l })),
   default: def ?? options[0][0],
 });
+
+/**
+ * A per-card channel selection. Rows are filled in from the configured topology
+ * when the action catalogue is served, so a crate with more cards needs no code
+ * change.
+ */
+export const grid = (
+  name: string,
+  label: string,
+  plane: 'trg' | 'pmt' | 'bf' | 'sipm',
+  cols: number,
+  colLabel = 'CH',
+  help?: string,
+): ParamSpec => ({ kind: 'grid', name, label, plane, cols, colLabel, help });

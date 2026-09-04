@@ -14,13 +14,25 @@ export function makeAccess(p: Params, specs: readonly ParamSpec[], label: string
     const spec = specs.find((s) => s.name === name);
     if (spec && 'default' in spec && spec.default !== undefined) return spec.default;
     if (spec?.kind === 'mask') return new Array<boolean>(spec.count).fill(false);
+    if (spec?.kind === 'grid') return [] as boolean[];
     if (spec?.kind === 'bool') return false;
     if (spec?.kind === 'coefArray') return [0, 0];
     if (spec) return 0;
     throw new Error(`${label}: unknown parameter "${name}"`);
   };
   return {
-    int: (n) => Math.trunc(Number(get(n))) || 0,
+    /**
+     * Rejects anything that is not a finite number. Coercing to 0 would turn a
+     * mistyped value into a valid-looking command — `on_off: "start"` would encode
+     * as Stop and still return success.
+     */
+    int: (n) => {
+      const v = Math.trunc(Number(get(n)));
+      if (!Number.isFinite(v)) {
+        throw new Error(`${label}: parameter "${n}" is not a finite number`);
+      }
+      return v;
+    },
     bool: (n) => Boolean(get(n)),
     mask: (n) => get(n) as boolean[],
     arr: (n) => get(n) as number[],
