@@ -82,7 +82,16 @@ function channelConfiguredMask(
  * sequence of register writes, the way the Swing tabs' "Config Registers" buttons
  * did. Unlike the original, the exact writes are shown before anything is sent.
  */
-export function Setup({ status, progress }: { status?: Status; progress?: ActionProgress }) {
+export function Setup({
+  status,
+  progress,
+  onStatusChanged,
+}: {
+  status?: Status;
+  progress?: ActionProgress;
+  /** Refreshes the status, which carries the list of panels with unsent edits. */
+  onStatusChanged?: () => void;
+}) {
   const [actions, setActions] = useState<ActionInfo[]>([]);
   const [sections, setSections] = useState<Record<string, string>>({});
   const [selectedId, setSelectedId] = useState<string>();
@@ -171,6 +180,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
    */
   const perChannel =
     !!gridSpec && 'selects' in gridSpec && gridSpec.selects !== 'mask';
+  const isPending = !!selectedId && (status?.pending ?? []).includes(selectedId);
 
   /** Keys of the currently ticked channels, as "cardIndex:channel". */
   const selectedKeys = useMemo(() => {
@@ -213,7 +223,10 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
   useEffect(() => {
     if (!selected || Object.keys(values).length === 0) return;
     const t = setTimeout(() => {
-      api.saveSettings(selected.id, values).catch(() => undefined);
+      api
+        .saveSettings(selected.id, values)
+        .then(() => onStatusChanged?.())
+        .catch(() => undefined);
     }, 400);
     return () => clearTimeout(t);
   }, [selected, values]);
@@ -234,7 +247,10 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
       if (Object.keys(edits).length === 0) return;
       api
         .setChannelSettings(selected.id, selectedKeys, edits)
-        .then(() => setChannelRev((n) => n + 1))
+        .then(() => {
+          setChannelRev((n) => n + 1);
+          onStatusChanged?.();
+        })
         .catch((e) => setError((e as Error).message));
     }, 250);
   };
@@ -276,9 +292,12 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
       }
     } catch (e) {
       setError((e as Error).message);
-      api.appliedSettings(selected.id).then(setApplied).catch(() => undefined);
     } finally {
       setBusy(false);
+      // Refresh on both paths: a failed apply may still have sent some writes, so
+      // "last sent" and the unapplied-changes marks have to be re-read either way.
+      api.appliedSettings(selected.id).then(setApplied).catch(() => undefined);
+      onStatusChanged?.();
     }
   };
 
@@ -296,6 +315,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
             }))}
             itemId={(a) => a.id}
             selectedId={selectedId}
+            pendingIds={status?.pending ?? []}
             onSelect={(a) => setSelectedId(a.id)}
             renderItem={(a) => (
               <>
@@ -315,7 +335,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
             <div className="panel-head">
               <h2>{selected.title}</h2>
               <button
-                className="action primary"
+                className={`action primary${isPending ? ' attention' : ''}`}
                 onClick={apply}
                 disabled={busy || plan.length === 0 || !!error}
               >
@@ -329,6 +349,15 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
             <div className="body">
               {error && <div className="error-box">{error}</div>}
               {result && <div className="ok-box">{result}</div>}
+              {isPending && (
+                <div className="unapplied-box">
+                  <span className="dot" />
+                  <span>
+                    This panel has changes that have not been sent to the cards. Apply to send
+                    them.
+                  </span>
+                </div>
+              )}
               {selected.description && <p className="note">{selected.description}</p>}
               <p className="note">
                 {applied?.at

@@ -254,7 +254,7 @@ export class Session {
     }
 
     // Only now is this the state the cards were actually told.
-    this.settings.markApplied(id, params);
+    this.settings.markApplied(id);
     await this.settings.saveToDisk();
     // A reset clears the cards' configured state, so previously applied panels no
     // longer describe the hardware and the run interlock must be re-satisfied.
@@ -361,6 +361,8 @@ export class Session {
       dryRun: this.dryRun,
       registerCount: ALL_REGISTERS.length,
       actionCount: ALL_ACTIONS.length,
+      /** Panels holding edits that have not been sent. */
+      pending: this.settings.pendingPanels(),
     };
   }
 

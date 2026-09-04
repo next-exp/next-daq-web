@@ -356,3 +356,27 @@ button.link:hover { color: var(--accent); }
   background: var(--accent); border-color: var(--accent); color: #fff;
 }
 .state-step.current.err { background: var(--err); border-color: var(--err); }
+
+/* Panels holding edits that have not been sent to the cards. */
+.reg-list button.pending { position: relative; }
+.reg-list button.pending::after {
+  content: ''; position: absolute; right: 10px; top: 50%;
+  width: 6px; height: 6px; margin-top: -3px; border-radius: 50%;
+  background: var(--warn);
+}
+.list-group-pending {
+  font: 600 10px var(--mono); color: #fff; background: var(--warn);
+  border-radius: 999px; padding: 1px 6px;
+}
+.unapplied-box {
+  display: flex; align-items: center; gap: 10px;
+  background: color-mix(in srgb, var(--warn) 12%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--warn) 45%, var(--border));
+  border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 13px;
+}
+.unapplied-box .dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--warn); flex: none;
+}
+button.action.primary.attention {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--warn) 55%, transparent);
+}

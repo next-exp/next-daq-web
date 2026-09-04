@@ -23,6 +23,8 @@ interface Props<T> {
   selectedId?: string;
   renderItem: (item: T) => React.ReactNode;
   onSelect: (item: T) => void;
+  /** Entries holding unsent edits, marked here and counted on their category. */
+  pendingIds?: string[];
 }
 
 function loadCollapsed(key: string): Set<string> {
@@ -41,6 +43,7 @@ export function SectionList<T>({
   selectedId,
   renderItem,
   onSelect,
+  pendingIds = [],
 }: Props<T>) {
   const [collapsed, setCollapsed] = useState<Set<string>>(() => loadCollapsed(storageKey));
 
@@ -78,6 +81,8 @@ export function SectionList<T>({
         // from search or a link never leaves it hidden.
         const holdsSelection = group.items.some((i) => itemId(i) === selectedId);
         const isOpen = !collapsed.has(group.id) || holdsSelection;
+        // Surfaced on the header so a collapsed category still shows it has work.
+        const pendingHere = group.items.filter((i) => pendingIds.includes(itemId(i))).length;
 
         return (
           <div key={group.id} className="list-group">
@@ -89,6 +94,11 @@ export function SectionList<T>({
             >
               <span className={`chev${isOpen ? ' open' : ''}`} aria-hidden="true" />
               <span className="list-group-title">{group.title}</span>
+              {pendingHere > 0 && (
+                <span className="list-group-pending" title={`${pendingHere} not applied`}>
+                  {pendingHere}
+                </span>
+              )}
               <span className="list-group-count">{group.items.length}</span>
             </button>
 
@@ -97,6 +107,7 @@ export function SectionList<T>({
                 <button
                   key={itemId(item)}
                   aria-selected={itemId(item) === selectedId}
+                  className={pendingIds.includes(itemId(item)) ? 'pending' : undefined}
                   onClick={() => onSelect(item)}
                 >
                   {renderItem(item)}

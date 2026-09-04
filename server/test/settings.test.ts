@@ -142,3 +142,73 @@ describe('persistence across restarts', () => {
     expect(s.get('run.general').buffer_us).toBe(1300);
   });
 });
+
+/** A fresh store per assertion, so one test cannot leak state into another. */
+const store = () => new SettingsStore(tmp);
+
+describe('unapplied changes', () => {
+  /**
+   * A panel can be edited without being sent, and nothing in the console said so.
+   * "Pending" is the difference between what the panel holds and what was last
+   * applied — including its per-channel values.
+   */
+  it('is not pending before anything is edited', () => {
+    // Otherwise every panel would be flagged from startup.
+    expect(store().isPending('run.general')).toBe(false);
+  });
+
+  it('is pending once edited but never applied', () => {
+    const s = store();
+    s.set('run.general', { buffer_us: 2000 });
+    expect(s.isPending('run.general')).toBe(true);
+  });
+
+  it('clears once applied', () => {
+    const s = store();
+    s.set('run.general', { buffer_us: 2000 });
+    s.markApplied('run.general');
+    expect(s.isPending('run.general')).toBe(false);
+  });
+
+  it('becomes pending again on a later edit', () => {
+    const s = store();
+    s.set('run.general', { buffer_us: 2000 });
+    s.markApplied('run.general');
+    s.set('run.general', { buffer_us: 2400 });
+    expect(s.isPending('run.general')).toBe(true);
+  });
+
+  it('is not pending when an edit restores the applied value', () => {
+    const s = store();
+    s.set('run.general', { buffer_us: 2000 });
+    s.markApplied('run.general');
+    s.set('run.general', { buffer_us: 2400 });
+    s.set('run.general', { buffer_us: 2000 });
+    expect(s.isPending('run.general')).toBe(false);
+  });
+
+  it('notices a per-channel edit, not only panel values', () => {
+    const s = store();
+    s.markApplied('pmt.channelTrigger');
+    expect(s.isPending('pmt.channelTrigger')).toBe(false);
+    s.setChannels('pmt.channelTrigger', ['0:0'], { athr1: 5 });
+    expect(s.isPending('pmt.channelTrigger')).toBe(true);
+  });
+
+  it('lists every pending panel and nothing else', () => {
+    const s = store();
+    s.set('run.general', { buffer_us: 2000 });
+    s.set('trigger.config', { frequency_hz: 20 });
+    s.markApplied('trigger.config');
+    expect(s.pendingPanels()).toEqual(['run.general']);
+  });
+
+  it('marks applied panels pending again after the applied state is cleared', () => {
+    // A reset means the cards no longer hold what the panel was told to send.
+    const s = store();
+    s.set('run.general', { buffer_us: 2000 });
+    s.markApplied('run.general');
+    s.clearApplied();
+    expect(s.isPending('run.general')).toBe(true);
+  });
+});

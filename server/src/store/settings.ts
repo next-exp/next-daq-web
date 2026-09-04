@@ -31,6 +31,8 @@ export class SettingsStore {
    */
   private applied: SettingsMap = {};
   private appliedAt: Record<string, string> = {};
+  /** Per-channel values as they were when the panel was last applied. */
+  private appliedChannels: Record<string, Record<string, Params>> = {};
 
   /**
    * Per-channel overrides for grid panels, keyed by panel then "cardIndex:channel".
@@ -101,10 +103,17 @@ export class SettingsStore {
     }
   }
 
-  /** Record the values that actually reached the cards. */
-  markApplied(actionId: string, params: Params): void {
+  /**
+   * Record the values that actually reached the cards.
+   *
+   * The resolved values are stored rather than the raw request, so "what was
+   * applied" and "what the panel holds now" are directly comparable and an
+   * unapplied edit can be detected.
+   */
+  markApplied(actionId: string): void {
     getAction(actionId);
-    this.applied[actionId] = { ...params };
+    this.applied[actionId] = this.get(actionId);
+    this.appliedChannels[actionId] = structuredClone(this.channels[actionId] ?? {});
     this.appliedAt[actionId] = new Date().toISOString();
   }
 
@@ -118,6 +127,7 @@ export class SettingsStore {
   clearApplied(): void {
     this.applied = {};
     this.appliedAt = {};
+    this.appliedChannels = {};
   }
 
   /** Values last applied for one panel, or undefined if it has never been applied. */
@@ -126,13 +136,31 @@ export class SettingsStore {
     return params ? { params, at: this.appliedAt[actionId] } : undefined;
   }
 
+  /**
+   * Whether a panel holds edits that have not been sent.
+   *
+   * A panel that has never been applied counts as pending only once it has been
+   * edited — otherwise every panel in the console would be flagged from startup.
+   */
+  isPending(actionId: string): boolean {
+    const applied = this.applied[actionId];
+    const channels = this.channels[actionId] ?? {};
+
+    if (!applied) {
+      return (
+        Object.keys(this.settings[actionId] ?? {}).length > 0 ||
+        Object.keys(channels).length > 0
+      );
+    }
+    return (
+      JSON.stringify(this.get(actionId)) !== JSON.stringify(applied) ||
+      JSON.stringify(channels) !== JSON.stringify(this.appliedChannels[actionId] ?? {})
+    );
+  }
+
   /** Panels whose current values differ from what was last applied. */
   pendingPanels(): string[] {
-    return ALL_ACTIONS.filter((a) => {
-      const applied = this.applied[a.id];
-      if (!applied) return Object.keys(this.settings[a.id] ?? {}).length > 0;
-      return JSON.stringify(this.get(a.id)) !== JSON.stringify({ ...this.get(a.id), ...applied });
-    }).map((a) => a.id);
+    return ALL_ACTIONS.filter((a) => this.isPending(a.id)).map((a) => a.id);
   }
 
   replaceAll(settings: SettingsMap): void {
@@ -157,6 +185,8 @@ export class SettingsStore {
         this.applied = (raw.applied as SettingsMap) ?? {};
         this.appliedAt = (raw.appliedAt as Record<string, string>) ?? {};
         this.channels = (raw.channels as Record<string, Record<string, Params>>) ?? {};
+        this.appliedChannels =
+          (raw.appliedChannels as Record<string, Record<string, Params>>) ?? {};
       } else {
         this.settings = (raw as SettingsMap) ?? {};
       }
@@ -173,6 +203,7 @@ export class SettingsStore {
       applied: this.applied,
       appliedAt: this.appliedAt,
       channels: this.channels,
+      appliedChannels: this.appliedChannels,
     };
     await fs.writeFile(tmp, JSON.stringify(payload, null, 2), 'utf8');
     await fs.rename(tmp, this.file);

@@ -273,6 +273,23 @@ STOPPING settles straight back to READY: the cards are told to stop, but nothing
 reports when they have drained, so the state does not wait on a signal that does
 not exist.
 
+## Unapplied changes
+
+A panel can be edited without being sent, so the console marks the difference
+between what a panel holds and what was last applied to the cards:
+
+- an amber dot beside the panel in the navigator,
+- a count on its category, so a collapsed category still shows it has work,
+- a banner in the panel itself and a highlighted Apply button,
+- and "last sent to the cards" with the time, or a note that it never has been.
+
+The comparison covers per-channel values too, and an edit that restores the
+applied value clears the mark rather than leaving it stuck. A panel that has never
+been applied is marked only once it has been edited — otherwise every panel would
+be flagged from startup. Resets clear the applied record, so everything that was
+configured shows as unapplied again, which is accurate: the cards no longer hold
+it.
+
 ## Before starting a run
 
 The Swing application would not enable Start Run until the operator had pressed
@@ -396,7 +413,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 508 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 516 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

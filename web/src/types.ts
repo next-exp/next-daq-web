@@ -95,6 +95,8 @@ export interface Status {
   dryRun: boolean;
   registerCount: number;
   actionCount?: number;
+  /** Panels holding edits that have not been sent to the cards. */
+  pending?: string[];
 }
 
 export type ParamValue = number | boolean | boolean[] | number[];

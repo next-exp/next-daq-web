@@ -33,16 +33,16 @@ describe('run readiness', () => {
 
   it('becomes ready once both required panels are applied', () => {
     const s = store();
-    s.markApplied('run.general', {});
+    s.markApplied('run.general');
     expect(computeReadiness(s, DEFAULT_TOPOLOGY).ready).toBe(false);
-    s.markApplied('trigger.config', {});
+    s.markApplied('trigger.config');
     expect(computeReadiness(s, DEFAULT_TOPOLOGY).ready).toBe(true);
   });
 
   it('does not block on the advisory plane panels', () => {
     const s = store();
-    s.markApplied('run.general', {});
-    s.markApplied('trigger.config', {});
+    s.markApplied('run.general');
+    s.markApplied('trigger.config');
     const r = computeReadiness(s, DEFAULT_TOPOLOGY);
     expect(r.ready).toBe(true);
     // The plane panels are listed but not required.
@@ -61,7 +61,7 @@ describe('run readiness', () => {
 
   it('reports when each panel was applied', () => {
     const s = store();
-    s.markApplied('run.general', {});
+    s.markApplied('run.general');
     const item = computeReadiness(s, DEFAULT_TOPOLOGY).items.find((i) => i.id === 'run.general');
     expect(item?.applied).toBe(true);
     expect(Date.parse(item!.at!)).not.toBeNaN();
@@ -70,8 +70,8 @@ describe('run readiness', () => {
   /** A reset returns the cards to a state the console's record no longer describes. */
   it('is no longer ready after the applied state is cleared', () => {
     const s = store();
-    s.markApplied('run.general', {});
-    s.markApplied('trigger.config', {});
+    s.markApplied('run.general');
+    s.markApplied('trigger.config');
     expect(computeReadiness(s, DEFAULT_TOPOLOGY).ready).toBe(true);
 
     s.clearApplied();
@@ -83,7 +83,7 @@ describe('run readiness', () => {
     // A reset invalidates what the cards were told, not what the operator set up.
     const s = store();
     s.set('run.general', { buffer_us: 2000 });
-    s.markApplied('run.general', { buffer_us: 2000 });
+    s.markApplied('run.general');
     s.clearApplied();
     expect(s.get('run.general').buffer_us).toBe(2000);
   });

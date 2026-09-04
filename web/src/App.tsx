@@ -101,7 +101,9 @@ export function App() {
         {tab === 'overview' && (
           <Overview status={status} progress={actionProgress} onChanged={refresh} />
         )}
-        {tab === 'setup' && <Setup status={status} progress={actionProgress} />}
+        {tab === 'setup' && (
+          <Setup status={status} progress={actionProgress} onStatusChanged={refresh} />
+        )}
         {tab === 'registers' && <Registers status={status} />}
         {tab === 'config' && <Config />}
         {tab === 'flash' && <Flash status={status} progress={flash} />}
