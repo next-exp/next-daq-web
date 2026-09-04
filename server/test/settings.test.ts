@@ -212,3 +212,45 @@ describe('unapplied changes', () => {
     expect(s.isPending('run.general')).toBe(true);
   });
 });
+
+describe('opening a panel is not an edit', () => {
+  /**
+   * Selecting a panel loads its values and the console writes them back. Asking
+   * whether anything is stored therefore marked every panel the operator merely
+   * opened as having unapplied changes.
+   */
+  it('is not pending after its own values are stored unchanged', () => {
+    const s = store();
+    s.set('run.general', s.get('run.general'));
+    expect(s.isPending('run.general')).toBe(false);
+  });
+
+  it('is not pending when the stored values equal the declared defaults', () => {
+    const s = store();
+    s.set('run.general', s.defaults('run.general'));
+    expect(s.isPending('run.general')).toBe(false);
+  });
+
+  it('still notices a real edit made after opening', () => {
+    const s = store();
+    s.set('run.general', s.get('run.general'));
+    expect(s.isPending('run.general')).toBe(false);
+    s.set('run.general', { buffer_us: 2400 });
+    expect(s.isPending('run.general')).toBe(true);
+  });
+
+  it('is not pending when a channel map is stored but empty', () => {
+    const s = store();
+    s.setChannels('pmt.channelTrigger', ['0:0'], {});
+    expect(s.isPending('pmt.channelTrigger')).toBe(false);
+  });
+
+  it('leaves no panel marked on a freshly opened console', () => {
+    const s = store();
+    // Simulate the console loading every panel in turn.
+    for (const id of ['run.general', 'trigger.config', 'pmt.blr', 'sipm.led']) {
+      s.set(id, s.get(id));
+    }
+    expect(s.pendingPanels()).toEqual([]);
+  });
+});

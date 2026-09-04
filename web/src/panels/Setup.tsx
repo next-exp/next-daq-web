@@ -118,6 +118,14 @@ export function Setup({
    * write could land last and win. Edits are coalesced and sent once instead.
    */
   const pendingChannelEdits = useRef<ParamValues>({});
+  /**
+   * The values as loaded for the current panel.
+   *
+   * Selecting a panel sets `values`, which would otherwise trigger the debounced
+   * save and write them straight back — pointless traffic, and enough to mark a
+   * panel as edited that the operator only looked at.
+   */
+  const loadedValues = useRef<string>('');
   const [error, setError] = useState<string>();
   const [result, setResult] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -143,8 +151,17 @@ export function Setup({
     setError(undefined);
     api
       .settings(selected.id)
-      .then((v) => !cancelled && setValues(v))
-      .catch(() => !cancelled && setValues(defaultsFor(selected.params)));
+      .then((v) => {
+        if (cancelled) return;
+        loadedValues.current = JSON.stringify(v);
+        setValues(v);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        const d = defaultsFor(selected.params);
+        loadedValues.current = JSON.stringify(d);
+        setValues(d);
+      });
     api
       .appliedSettings(selected.id)
       .then((a) => !cancelled && setApplied(a))
@@ -222,6 +239,8 @@ export function Setup({
   // Persist edits so "save configuration" captures them even without applying.
   useEffect(() => {
     if (!selected || Object.keys(values).length === 0) return;
+    // Unchanged since it was loaded: nothing to save.
+    if (JSON.stringify(values) === loadedValues.current) return;
     const t = setTimeout(() => {
       api
         .saveSettings(selected.id, values)

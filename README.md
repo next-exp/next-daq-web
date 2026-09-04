@@ -284,9 +284,13 @@ between what a panel holds and what was last applied to the cards:
 - and "last sent to the cards" with the time, or a note that it never has been.
 
 The comparison covers per-channel values too, and an edit that restores the
-applied value clears the mark rather than leaving it stuck. A panel that has never
-been applied is marked only once it has been edited — otherwise every panel would
-be flagged from startup. Resets clear the applied record, so everything that was
+applied value clears the mark rather than leaving it stuck.
+
+A panel that has never been applied is compared against its declared defaults,
+not against whether anything is stored for it. Opening a panel loads its values
+and would otherwise write them straight back, marking every panel an operator
+merely looked at; the console also skips that write when nothing has changed since
+the load. Resets clear the applied record, so everything that was
 configured shows as unapplied again, which is accurate: the cards no longer hold
 it.
 
@@ -413,7 +417,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 516 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 521 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

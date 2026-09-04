@@ -49,10 +49,18 @@ export class SettingsStore {
     return path.join(this.dataDir, 'current-settings.json');
   }
 
+  /** A panel's declared defaults, with nothing stored applied over them. */
+  defaults(actionId: string): Params {
+    return this.resolve(actionId, {});
+  }
+
   /** Values for one panel, falling back to its declared defaults. */
   get(actionId: string): Params {
+    return this.resolve(actionId, this.settings[actionId] ?? {});
+  }
+
+  private resolve(actionId: string, stored: Params): Params {
     const action = getAction(actionId);
-    const stored = this.settings[actionId] ?? {};
     const out: Params = {};
     for (const spec of action.params) {
       if (spec.name in stored) {
@@ -147,9 +155,12 @@ export class SettingsStore {
     const channels = this.channels[actionId] ?? {};
 
     if (!applied) {
+      // Compare against the declared defaults rather than asking whether anything
+      // is stored: opening a panel writes its loaded values back, which would
+      // otherwise mark every panel the operator merely looked at.
       return (
-        Object.keys(this.settings[actionId] ?? {}).length > 0 ||
-        Object.keys(channels).length > 0
+        JSON.stringify(this.get(actionId)) !== JSON.stringify(this.defaults(actionId)) ||
+        Object.values(channels).some((c) => Object.keys(c).length > 0)
       );
     }
     return (
