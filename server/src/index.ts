@@ -16,6 +16,26 @@ async function main(): Promise<void> {
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? 'info' } });
   const session = new Session(topology, dryRun);
 
+  // Treat an empty JSON body as {}. Several endpoints take no parameters, and a
+  // client that sets the content-type anyway would otherwise get a 400 rather
+  // than performing the request.
+  app.addContentTypeParser(
+    'application/json',
+    { parseAs: 'string' },
+    (_req, body: string, done) => {
+      if (body === '' || body === undefined) return done(null, {});
+      try {
+        done(null, JSON.parse(body));
+      } catch {
+        // Malformed JSON is the caller's fault, so keep it a 400 rather than
+        // letting an unlabelled SyntaxError surface as a server error.
+        const err = new Error('Body is not valid JSON') as Error & { statusCode: number };
+        err.statusCode = 400;
+        done(err, undefined);
+      }
+    },
+  );
+
   await app.register(websocket);
   await registerApi(app, session);
 

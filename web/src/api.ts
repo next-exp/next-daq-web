@@ -8,10 +8,12 @@ import type {
 } from './types';
 
 async function json<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, {
-    ...init,
-    headers: { 'content-type': 'application/json', ...(init?.headers ?? {}) },
-  });
+  // Only declare a JSON body when there is one. Sending the content-type with an
+  // empty body is rejected outright, which broke every parameterless POST.
+  const headers = init?.body
+    ? { 'content-type': 'application/json', ...(init?.headers ?? {}) }
+    : init?.headers;
+  const res = await fetch(url, { ...init, headers });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`);
   return body as T;
