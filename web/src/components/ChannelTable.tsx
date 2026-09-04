@@ -1,3 +1,4 @@
+import { customisedChannels } from '../lib/channels';
 import type { ActionInfo, ParamValues } from '../types';
 
 /**
@@ -40,9 +41,11 @@ export function ChannelTable({
   onSelect,
 }: Props) {
   const fields = action.params.filter((p) => p.kind !== 'grid');
-  const configured = Object.keys(channels).filter((k) => Object.keys(channels[k]).length > 0);
+  // Only channels that actually differ from the panel; a field set back to the
+  // panel's own value is not a customisation.
+  const keys = customisedChannels(channels, base);
 
-  if (configured.length === 0) {
+  if (keys.length === 0) {
     return (
       <p className="note">
         No channel has its own settings yet. Select channels above and edit the fields to give
@@ -50,13 +53,6 @@ export function ChannelTable({
       </p>
     );
   }
-
-  // Sort by card then channel so the table reads in hardware order.
-  const keys = configured.sort((a, b) => {
-    const [ca, cha] = a.split(':').map(Number);
-    const [cb, chb] = b.split(':').map(Number);
-    return ca - cb || cha - chb;
-  });
 
   return (
     <div className="table-scroll">
@@ -89,6 +85,7 @@ export function ChannelTable({
                 {fields.map((f) => {
                   const own = channels[key]?.[f.name];
                   const value = own ?? base[f.name];
+                  // Highlight only a value that actually differs from the panel.
                   const differs = own !== undefined && format(own) !== format(base[f.name]);
                   return (
                     <td key={f.name} className={`mono${differs ? ' differs' : ''}`}>

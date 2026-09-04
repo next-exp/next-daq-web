@@ -135,7 +135,12 @@ earlier write could land last and win — and flushed before Apply.
 
 Below the form, a **Channel settings** table lists every channel that has its own
 values, one row each, with a column per parameter and differences from the panel
-value highlighted. The grid marker deliberately means "this channel has settings
+value highlighted. A channel counts as customised when its values actually **differ** from the panel's,
+not merely when it has something stored: toggling a flag on and then off again
+leaves the field stored with the panel's own value, and testing for presence would
+mark the channel forever while it is identical to every other one.
+
+The grid marker deliberately means "this channel has settings
 of its own" rather than tracking one particular field — singling out, say, the
 trigger-1 enable would misrepresent the other nineteen. Clicking a row selects
 that channel.
@@ -313,7 +318,7 @@ The rewrite addresses the findings in `java_daq_evaluation.md`.
 
 **Engineering findings**
 
-- 483 tests covering encoding, decoding, unit conversions, panel expansion, front-end
+- 491 tests covering encoding, decoding, unit conversions, panel expansion, front-end
   addressing, configuration round-tripping, the two
   fixed defects, the state machine, socket lifecycle, flash timeout/retry/cancel,
   and config round-tripping. The originals had none.

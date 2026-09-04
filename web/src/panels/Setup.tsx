@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
 import { Field, defaultsFor } from '../components/Fields';
 import { ChannelTable } from '../components/ChannelTable';
+import { differsFromPanel } from '../lib/channels';
 import type { ActionInfo, ActionProgress, ParamValues, Status } from '../types';
 
 const SECTION_ORDER = ['run', 'trigger', 'pmt', 'bf', 'sipm', 'fec', 'test'];
@@ -40,13 +41,14 @@ function groupForLayout(
  */
 function channelConfiguredMask(
   channels: Record<string, ParamValues>,
+  base: ParamValues,
   cols: number,
   spec: { rows?: { id: string }[] },
 ): boolean[] | undefined {
   if (!cols || !spec.rows) return undefined;
   return Array.from({ length: spec.rows.length * cols }, (_, i) => {
     const key = `${Math.floor(i / cols)}:${i % cols}`;
-    return Object.keys(channels[key] ?? {}).length > 0;
+    return differsFromPanel(channels[key], base);
   });
 }
 
@@ -326,7 +328,7 @@ export function Setup({ status, progress }: { status?: Status; progress?: Action
                   mixed={p.kind !== 'grid' && channelView.mixed.has(p.name)}
                   applied={
                     p.kind === 'grid' && perChannel
-                      ? channelConfiguredMask(channels, cols, p)
+                      ? channelConfiguredMask(channels, values, cols, p)
                       : undefined
                   }
                   onChange={(v) => {

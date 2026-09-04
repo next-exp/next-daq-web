@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api } from '../api';
-import type { ActionProgress, Status } from '../types';
+import type { ActionProgress, ParamValues, Status } from '../types';
 
 /**
  * The always-visible operator controls.
@@ -33,7 +33,7 @@ export function RunControls({ status, progress, onChanged }: Props) {
   const [error, setError] = useState<string>();
   const [confirming, setConfirming] = useState<string>();
 
-  const run = async (actionId: string, label: string, overrides: Record<string, unknown> = {}) => {
+  const run = async (actionId: string, label: string, overrides: ParamValues = {}) => {
     setBusy(actionId);
     setError(undefined);
     setMessage(undefined);
@@ -57,7 +57,7 @@ export function RunControls({ status, progress, onChanged }: Props) {
     }
   };
 
-  const click = (id: string, label: string, overrides?: Record<string, unknown>) => {
+  const click = (id: string, label: string, overrides?: ParamValues) => {
     if (NEEDS_CONFIRMATION[id] && confirming !== id) {
       setConfirming(id);
       return;
