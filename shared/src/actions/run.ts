@@ -1,5 +1,5 @@
 import { hzToTrgMask, nsToTbins, usToSamples } from '../units.js';
-import { bool, choice, int, mask, uint } from '../registers/spec.js';
+import { bool, choice, int, mask, section, uint } from '../registers/spec.js';
 import type { ConfigAction, PlannedWrite } from './types.js';
 
 /**
@@ -20,29 +20,37 @@ export const RUN_ACTIONS: ConfigAction[] = [
       '25 ns samples. TRG1/Ext and TRG2 have independent buffers.',
     origin: 'Starter JULIETT — General Configuration',
     params: [
-      uint('mode', 'Mode of operation', 4, 1),
-      uint('run_code', 'RUN code', 4, 0),
-      int('num_triggers', 'Number of triggers', 1_000_000, 0, {
-        help:
-          'Set to 0 for an unlimited number of triggers. Start Run, Stop Run and both ' +
-          'resets all use this value.',
-      }),
-      int('buffer_us', 'Circular buffer size, TRG1/Ext', 3200, 1300, { min: 20, unit: 'µs' }),
-      int('pretrigger_us', 'Pre-trigger, TRG1/Ext', 3200, 650, {
-        min: 10,
-        unit: 'µs',
-        help: 'Recommended value: half the circular buffer size. Must not exceed it.',
-      }),
-      int('buffer2_us', 'Circular buffer size, TRG2', 3200, 1300, {
-        min: 20,
-        unit: 'µs',
-        help: 'Must not exceed the TRG1/Ext buffer.',
-      }),
-      int('pretrigger2_us', 'Pre-trigger, TRG2', 3200, 650, { min: 10, unit: 'µs' }),
-      bool('same_buffer', 'Use the same buffer for writing'),
-      bool('dual_mode', 'Dual mode RAW/ZS on'),
-      bool('testmem_pmt', 'Ramp test — PMT memory'),
-      bool('testmem_sipm', 'Ramp test — SiPM memory'),
+      ...section('Run', [
+        uint('mode', 'Mode of operation', 4, 1),
+        uint('run_code', 'RUN code', 4, 0),
+        int('num_triggers', 'Number of triggers', 1_000_000, 0, {
+          help:
+            'Set to 0 for an unlimited number of triggers. Start Run, Stop Run and both ' +
+            'resets all use this value.',
+        }),
+      ]),
+      ...section('Buffer \u2014 TRG1 / Ext', [
+        int('buffer_us', 'Circular buffer size', 3200, 1300, { min: 20, unit: '\u00b5s' }),
+        int('pretrigger_us', 'Pre-trigger', 3200, 650, {
+          min: 10,
+          unit: '\u00b5s',
+          help: 'Recommended value: half the buffer. Must not exceed it.',
+        }),
+      ]),
+      ...section('Buffer \u2014 TRG2', [
+        int('buffer2_us', 'Circular buffer size', 3200, 1300, {
+          min: 20,
+          unit: '\u00b5s',
+          help: 'Must not exceed the TRG1/Ext buffer.',
+        }),
+        int('pretrigger2_us', 'Pre-trigger', 3200, 650, { min: 10, unit: '\u00b5s' }),
+        bool('same_buffer', 'Use the same buffer for writing'),
+      ]),
+      ...section('Test modes', [
+        bool('dual_mode', 'Dual mode RAW/ZS on'),
+        bool('testmem_pmt', 'Ramp test \u2014 PMT memory'),
+        bool('testmem_sipm', 'Ramp test \u2014 SiPM memory'),
+      ]),
     ],
     plan: (p): PlannedWrite[] => {
       // AdjustBuffer clamped these the same way: a pre-trigger cannot exceed its
@@ -113,30 +121,36 @@ export const RUN_ACTIONS: ConfigAction[] = [
       'Trigger tab, but both fed the same TrgConfReg3 write.',
     origin: 'Starter JULIETT — Trigger Configuration + Internal Trigger tab',
     params: [
-      bool('double_trigger', 'Double trigger on'),
-      uint('trg_code', 'Trigger code', 6, 0),
-      int('frequency_hz', 'Trigger frequency', 100, 10, { min: 1, unit: 'Hz' }),
-      bool('mask_on', 'Trigger mask on'),
-      bool('exttrg_on', 'External trigger on'),
-      bool('autoexttrg_on', 'Auto external trigger on'),
-      bool('ctrg_on', 'Calibration trigger on'),
-      // Trigger 1
-      int('cw_a1', 'TRG 1 — coincidence window A', 63, 1, { min: 1, unit: '× 25 ns Tbin' }),
-      int('nch_a1', 'TRG 1 — events for trigger A', 40, 1, { min: 1, unit: 'channels' }),
-      int('cw_b1', 'TRG 1 — coincidence window B', 63, 1, { min: 1, unit: '× 25 ns Tbin' }),
-      int('nch_b1', 'TRG 1 — events for trigger B', 40, 1, { min: 1, unit: 'channels' }),
-      int('tdif1_ns', 'TRG 1 — max time A to B', 1_600_000, 0, { unit: 'ns' }),
-      // Trigger 2
-      int('cw_a2', 'TRG 2 — coincidence window A', 63, 1, { min: 1, unit: '× 25 ns Tbin' }),
-      int('nch_a2', 'TRG 2 — events for trigger A', 40, 1, { min: 1, unit: 'channels' }),
-      int('cw_b2', 'TRG 2 — coincidence window B', 63, 1, { min: 1, unit: '× 25 ns Tbin' }),
-      int('nch_b2', 'TRG 2 — events for trigger B', 40, 1, { min: 1, unit: 'channels' }),
-      int('tdif2_ns', 'TRG 2 — max time A to B', 1_600_000, 0, { unit: 'ns' }),
-      bool('trgB1_on', 'Trigger B1 on'),
-      bool('trgB2_on', 'Trigger B2 on'),
-      bool('masktrg1lost_on', 'TRG1 lost mask on'),
-      bool('masktrg2lost_on', 'TRG2 lost mask on'),
-      bool('masktrg1_2lost_on', 'TRG1/2 lost mask on'),
+      ...section('Sources and rate', [
+        bool('exttrg_on', 'External trigger on'),
+        bool('autoexttrg_on', 'Auto external trigger on'),
+        bool('ctrg_on', 'Calibration trigger on'),
+        bool('mask_on', 'Trigger mask on'),
+        int('frequency_hz', 'Trigger frequency', 100, 10, { min: 1, unit: 'Hz' }),
+        uint('trg_code', 'Trigger code', 6, 0),
+      ]),
+      ...section('Trigger 1', [
+        int('cw_a1', 'Coincidence window A', 63, 1, { min: 1, unit: '\u00d7 25 ns Tbin' }),
+        int('nch_a1', 'Events for trigger A', 40, 1, { min: 1, unit: 'channels' }),
+        int('cw_b1', 'Coincidence window B', 63, 1, { min: 1, unit: '\u00d7 25 ns Tbin' }),
+        int('nch_b1', 'Events for trigger B', 40, 1, { min: 1, unit: 'channels' }),
+        int('tdif1_ns', 'Max time A to B', 1_600_000, 0, { unit: 'ns' }),
+        bool('trgB1_on', 'Trigger B1 on'),
+      ]),
+      ...section('Trigger 2', [
+        bool('double_trigger', 'Double trigger on', false, 'Enables trigger 2 on both planes.'),
+        int('cw_a2', 'Coincidence window A', 63, 1, { min: 1, unit: '\u00d7 25 ns Tbin' }),
+        int('nch_a2', 'Events for trigger A', 40, 1, { min: 1, unit: 'channels' }),
+        int('cw_b2', 'Coincidence window B', 63, 1, { min: 1, unit: '\u00d7 25 ns Tbin' }),
+        int('nch_b2', 'Events for trigger B', 40, 1, { min: 1, unit: 'channels' }),
+        int('tdif2_ns', 'Max time A to B', 1_600_000, 0, { unit: 'ns' }),
+        bool('trgB2_on', 'Trigger B2 on'),
+      ]),
+      ...section('Lost-trigger masks', [
+        bool('masktrg1lost_on', 'TRG1 lost mask on'),
+        bool('masktrg2lost_on', 'TRG2 lost mask on'),
+        bool('masktrg1_2lost_on', 'TRG1/2 lost mask on'),
+      ]),
     ],
     plan: (p): PlannedWrite[] => [
       {
