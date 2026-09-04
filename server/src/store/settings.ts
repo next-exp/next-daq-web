@@ -43,6 +43,13 @@ export class SettingsStore {
    */
   private channels: Record<string, Record<string, Params>> = {};
 
+  /**
+   * Per-card overrides for panels whose settings belong to one card, keyed by
+   * panel then card index. The energy-plane trigger sum is written to a single
+   * card and carries that card's own mask and flags.
+   */
+  private cards: Record<string, Record<string, Params>> = {};
+
   constructor(private readonly dataDir: string) {}
 
   private get file(): string {
@@ -156,13 +163,15 @@ export class SettingsStore {
     const applied = this.applied[actionId];
     const channels = this.channels[actionId] ?? {};
 
+    const cards = this.cards[actionId] ?? {};
     if (!applied) {
       // Compare against the declared defaults rather than asking whether anything
       // is stored: opening a panel writes its loaded values back, which would
       // otherwise mark every panel the operator merely looked at.
       return (
         JSON.stringify(this.get(actionId)) !== JSON.stringify(this.defaults(actionId)) ||
-        Object.values(channels).some((c) => Object.keys(c).length > 0)
+        Object.values(channels).some((c) => Object.keys(c).length > 0) ||
+        Object.values(cards).some((c) => Object.keys(c).length > 0)
       );
     }
     return (
@@ -175,6 +184,26 @@ export class SettingsStore {
   replaceChannels(actionId: string, values: Record<string, Params>): void {
     getAction(actionId);
     this.channels[actionId] = { ...(this.channels[actionId] ?? {}), ...values };
+  }
+
+  /** Stored overrides for one per-card panel, keyed by card index. */
+  cardValues(actionId: string): Record<string, Params> {
+    return this.cards[actionId] ?? {};
+  }
+
+  /** Values in force for one card: the panel values with that card's overrides. */
+  cardValue(actionId: string, cardIndex: number): Params {
+    return { ...this.get(actionId), ...(this.cards[actionId]?.[String(cardIndex)] ?? {}) };
+  }
+
+  /** Apply an edit to one card. */
+  setCard(actionId: string, cardIndex: number, params: Params): void {
+    getAction(actionId);
+    if (!Number.isInteger(cardIndex) || cardIndex < 0) {
+      throw new Error(`Invalid card index ${cardIndex}`);
+    }
+    const map = (this.cards[actionId] ??= {});
+    map[String(cardIndex)] = { ...map[String(cardIndex)], ...params };
   }
 
   /** Panels whose current values differ from what was last applied. */
@@ -206,6 +235,7 @@ export class SettingsStore {
         this.channels = (raw.channels as Record<string, Record<string, Params>>) ?? {};
         this.appliedChannels =
           (raw.appliedChannels as Record<string, Record<string, Params>>) ?? {};
+        this.cards = (raw.cards as Record<string, Record<string, Params>>) ?? {};
       } else {
         this.settings = (raw as SettingsMap) ?? {};
       }
@@ -223,6 +253,7 @@ export class SettingsStore {
       appliedAt: this.appliedAt,
       channels: this.channels,
       appliedChannels: this.appliedChannels,
+      cards: this.cards,
     };
     await fs.writeFile(tmp, JSON.stringify(payload, null, 2), 'utf8');
     await fs.rename(tmp, this.file);

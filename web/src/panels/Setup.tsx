@@ -110,6 +110,8 @@ export function Setup({
    * the preview would not re-run and would show stale packets.
    */
   const [channelRev, setChannelRev] = useState(0);
+  /** Per-card values, keyed by card index, for per-card panels. */
+  const [cards, setCards] = useState<Record<string, ParamValues>>({});
   /**
    * Per-channel edits waiting to be stored.
    *
@@ -170,6 +172,10 @@ export function Setup({
       .channelSettings(selected.id)
       .then((c) => !cancelled && setChannels(c))
       .catch(() => !cancelled && setChannels({}));
+    api
+      .cardSettings(selected.id)
+      .then((c) => !cancelled && setCards(c))
+      .catch(() => !cancelled && setCards({}));
     return () => {
       cancelled = true;
     };
@@ -198,6 +204,15 @@ export function Setup({
   const perChannel =
     !!gridSpec && 'selects' in gridSpec && gridSpec.selects !== 'mask';
   const isPending = !!selectedId && (status?.pending ?? []).includes(selectedId);
+
+  /**
+   * The card whose values this panel is showing. On a per-card panel the settings
+   * belong to the selected FEC, so switching the selector switches the values.
+   */
+  const cardParam = selected?.params.find((p) => p.kind === 'card');
+  const perCard = !!selected?.perCard && !!cardParam;
+  const cardIndex = cardParam ? Number(values[cardParam.name] ?? 0) : 0;
+  const cardValues = perCard ? (cards[String(cardIndex)] ?? {}) : {};
 
   /** Keys of the currently ticked channels, as "cardIndex:channel". */
   const selectedKeys = useMemo(() => {
@@ -382,6 +397,11 @@ export function Setup({
                 {applied?.at
                   ? `Last sent to the cards ${new Date(applied.at).toLocaleString()}.`
                   : 'Never sent to the cards from this console.'}
+                {perCard && (
+                  <>
+                    {' '}Showing the settings for the selected FEC; each card keeps its own.
+                  </>
+                )}
                 {gridSpec &&
                   perChannel &&
                   (selectedKeys.length === 0
@@ -402,7 +422,9 @@ export function Setup({
                   value={
                     p.kind !== 'grid' && selectedKeys.length > 0
                       ? channelView.values[p.name]
-                      : values[p.name]
+                      : perCard && p.kind !== 'card'
+                        ? (cardValues[p.name] ?? values[p.name])
+                        : values[p.name]
                   }
                   mixed={p.kind !== 'grid' && channelView.mixed.has(p.name)}
                   applied={
@@ -422,6 +444,19 @@ export function Setup({
                       });
                       pendingChannelEdits.current[p.name] = v;
                       queueChannelSave();
+                    } else if (perCard && p.kind !== 'card') {
+                      // The edit belongs to the selected FEC, not to the panel.
+                      setCards((c) => ({
+                        ...c,
+                        [String(cardIndex)]: { ...c[String(cardIndex)], [p.name]: v },
+                      }));
+                      api
+                        .setCardSettings(selected.id, cardIndex, { [p.name]: v })
+                        .then(() => {
+                          setChannelRev((n) => n + 1);
+                          onStatusChanged?.();
+                        })
+                        .catch(() => undefined);
                     } else {
                       setValues((s) => ({ ...s, [p.name]: v }));
                     }

@@ -127,6 +127,8 @@ export interface ActionInfo {
   title: string;
   description?: string;
   origin?: string;
+  /** True when the panel's parameters belong to the card its selector names. */
+  perCard?: boolean;
   params: ParamSpec[];
 }
 

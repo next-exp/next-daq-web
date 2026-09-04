@@ -48,6 +48,8 @@ export function planAction(
   allSettings: Record<string, Params> = {},
   /** Per-channel overrides for grid panels, keyed "cardIndex:channel". */
   channelSettings: Record<string, Params> = {},
+  /** Per-card overrides for per-card panels, keyed by card index. */
+  cardSettings: Record<string, Params> = {},
 ): PlannedWrite[] {
   const access = makeAccess(params, action.params, action.id);
   const ctx: PlanContext = {
@@ -55,6 +57,12 @@ export function planAction(
       const other = getAction(id);
       return makeAccess(allSettings[id] ?? {}, other.params, id);
     },
+    card: (cardIndex) =>
+      makeAccess(
+        { ...params, ...(cardSettings[String(cardIndex)] ?? {}) },
+        action.params,
+        `${action.id}[card ${cardIndex}]`,
+      ),
     channel: (cardIndex, channel) =>
       makeAccess(
         { ...params, ...(channelSettings[`${cardIndex}:${channel}`] ?? {}) },

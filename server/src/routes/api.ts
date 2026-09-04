@@ -10,7 +10,7 @@ import {
 } from '@next-daq/shared';
 import type { Session } from '../control/session.js';
 import { ConfigStore, parseGains, serialiseConfig } from '../store/config.js';
-import { importLegacyConfig, looksLegacy } from '../store/legacy.js';
+import { cardsPerPlane, importLegacyConfig, looksLegacy } from '../store/legacy.js';
 
 /**
  * HTTP API.
@@ -53,6 +53,7 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
       title: a.title,
       description: a.description,
       origin: a.origin,
+      perCard: a.perCard ?? false,
       // Grid parameters get their rows from the configured cards, so a crate with
       // a different number of FECs needs no code change.
       params: a.params.map((p) => {
@@ -240,6 +241,31 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
     }
   });
 
+  /** Per-card values for a per-card panel, keyed by card index. */
+  app.get<{ Params: { id: string } }>('/api/settings/:id/cards', async (req, reply) => {
+    try {
+      session.settings.get(req.params.id);
+      return session.settings.cardValues(req.params.id);
+    } catch (err) {
+      return reply.code(404).send({ error: (err as Error).message });
+    }
+  });
+
+  /** Apply an edit to one card. */
+  app.put<{
+    Params: { id: string };
+    Body: { card?: number; params?: Record<string, unknown> };
+  }>('/api/settings/:id/cards', async (req, reply) => {
+    try {
+      const card = Number(req.body?.card ?? 0);
+      session.settings.setCard(req.params.id, card, (req.body?.params ?? {}) as never);
+      await session.settings.saveToDisk();
+      return { updated: card };
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
+
   /* ---------------------------------------------------------------- configs */
 
   /** Write the current panel values to a named configuration file. */
@@ -264,12 +290,17 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
       // Files written by the DATE-era application key settings by description
       // rather than by panel, so they are translated rather than read directly.
       if (looksLegacy(parsed)) {
-        const imported = importLegacyConfig(parsed);
+        const imported = importLegacyConfig(parsed, cardsPerPlane(session.topology));
         for (const [id, params] of Object.entries(imported.settings)) {
           session.settings.set(id, params);
         }
         for (const [id, byChannel] of Object.entries(imported.channels)) {
           session.settings.replaceChannels(id, byChannel);
+        }
+        for (const [id, byCard] of Object.entries(imported.cards)) {
+          for (const [card, params] of Object.entries(byCard)) {
+            session.settings.setCard(id, Number(card), params);
+          }
         }
         await session.settings.saveToDisk();
         await session.log.info('configuration_imported', {
@@ -282,6 +313,7 @@ export async function registerApi(app: FastifyInstance, session: Session): Promi
           file: req.params.name,
           format: 'legacy',
           applied: imported.imported,
+          skippedCards: imported.skippedCards,
           panels: Object.keys(imported.settings).length,
           skipped: [],
           unrecognised: imported.unrecognised,

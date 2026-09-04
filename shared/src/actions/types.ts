@@ -50,6 +50,16 @@ export interface PlannedWrite {
  * owning panel keeps it and the others read it from here.
  */
 export interface PlanContext {
+  /**
+   * Values stored for one card of a per-card panel.
+   *
+   * Some registers are written to a single card and carry that card's own mask
+   * and flags — the energy-plane trigger sum is one — so those settings belong to
+   * the card, not to the panel. Falls back to the panel values for anything the
+   * card has not overridden.
+   */
+  card(cardIndex: number): ParamAccess;
+
   /** Current values of another panel, with its declared defaults applied. */
   panel(id: string): ParamAccess;
   /**
@@ -75,8 +85,12 @@ export interface ConfigAction {
   params: ParamSpec[];
   /** Expand the operator parameters into the register writes to perform. */
   plan: (p: ParamAccess, ctx: PlanContext) => PlannedWrite[];
-  /** Named after the corresponding tab in the Swing application. */
   origin?: string;
+  /**
+   * True when the panel's parameters belong to the card its `card` selector names,
+   * rather than to the panel as a whole. Each card then keeps its own values.
+   */
+  perCard?: boolean;
 }
 
 export type ActionSection =

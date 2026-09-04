@@ -471,3 +471,53 @@ describe('trigger sum addresses one card', () => {
     expect(writes[0].params.on).toBe(false);
   });
 });
+
+describe('per-card panel settings', () => {
+  /**
+   * BFDaqConfReg16 is written to one card and carries that card's own mask and
+   * flags, so the settings belong to the card. Sharing them across the plane would
+   * mean configuring one FEC silently changed what the others would be sent.
+   */
+  const mask = (...on: number[]) => {
+    const m = new Array(12).fill(false);
+    for (const i of on) m[i] = true;
+    return m;
+  };
+
+  it('sends each card its own mask', () => {
+    const cards = {
+      '0': { channels: mask(0, 1) },
+      '1': { channels: mask(5) },
+    };
+    for (const [card, expected] of [[0, 2], [1, 1]] as const) {
+      const [w] = planAction(getAction('bf.triggerSum'), { card }, {}, {}, cards);
+      expect((w.params.channels as boolean[]).filter(Boolean)).toHaveLength(expected);
+    }
+  });
+
+  it('keeps each card’s flags separate', () => {
+    const cards = { '0': { on: true, lg_hg: true }, '2': { on: false, lg_hg: false } };
+    const a = planAction(getAction('bf.triggerSum'), { card: 0 }, {}, {}, cards)[0];
+    const c = planAction(getAction('bf.triggerSum'), { card: 2 }, {}, {}, cards)[0];
+    expect(a.params).toMatchObject({ on: true, lg_hg: true });
+    expect(c.params).toMatchObject({ on: false, lg_hg: false });
+  });
+
+  it('falls back to the panel values for a card with no overrides', () => {
+    const [w] = planAction(
+      getAction('bf.triggerSum'),
+      { card: 1, on: true, channels: mask(3) },
+      {},
+      {},
+      { '0': { on: false } },
+    );
+    expect(w.params.on).toBe(true);
+    expect((w.params.channels as boolean[])[3]).toBe(true);
+  });
+
+  it('declares itself per-card so the console routes edits to the FEC', () => {
+    expect(getAction('bf.triggerSum').perCard).toBe(true);
+    // The channel-trigger panel is per-channel, not per-card.
+    expect(getAction('bf.channelTrigger').perCard ?? false).toBe(false);
+  });
+});

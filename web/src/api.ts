@@ -99,6 +99,17 @@ export const api = {
       body: JSON.stringify({ keys, params }),
     }),
 
+  /** Per-card values for a per-card panel, keyed by card index. */
+  cardSettings: (id: string) =>
+    json<Record<string, ParamValues>>(`/api/settings/${encodeURIComponent(id)}/cards`),
+
+  /** Apply an edit to one card. */
+  setCardSettings: (id: string, card: number, params: ParamValues) =>
+    json<{ updated: number }>(`/api/settings/${encodeURIComponent(id)}/cards`, {
+      method: 'PUT',
+      body: JSON.stringify({ card, params }),
+    }),
+
   /** Remember edited panel values without sending anything. */
   saveSettings: (id: string, params: ParamValues) =>
     json<{ saved: string }>(`/api/settings/${encodeURIComponent(id)}`, {
@@ -122,6 +133,7 @@ export const api = {
       panels?: number;
       skipped: string[];
       unrecognised?: { shape: string; count: number; example: string }[];
+      skippedCards?: { plane: string; cards: number; settings: number }[];
     }>(
       `/api/configs/${encodeURIComponent(name)}/restore`,
       { method: 'POST' },

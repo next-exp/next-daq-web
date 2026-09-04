@@ -155,6 +155,7 @@ export class Session {
       params,
       this.settings.all(),
       this.settings.channelValues(id),
+      this.settings.cardValues(id),
     );
     return {
       writes: writes.map((w) => {
@@ -196,6 +197,7 @@ export class Session {
       params,
       this.settings.all(),
       this.settings.channelValues(id),
+      this.settings.cardValues(id),
     );
     if (writes.length === 0) {
       throw new Error(`${id}: nothing to send — no channels or targets selected`);
@@ -339,6 +341,7 @@ export class Session {
       params,
       this.settings.all(),
       this.settings.channelValues(id),
+      this.settings.cardValues(id),
     ).reduce(
       (t, w) => t + (w.waitAfterMs ?? 0),
       0,

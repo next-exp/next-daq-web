@@ -341,6 +341,9 @@ export const BF_ACTIONS: ConfigAction[] = [
       'flags, so the original configured one FEC at a time through a drop-down; ' +
       '"Activate TRG SUM" then repeated it for each selected FEC.',
     origin: 'BF Conf tab + CH TRG Conf A — Activate TRG SUM',
+    // The register carries each card's own mask and flags, so the settings below
+    // belong to the selected FEC rather than to the panel.
+    perCard: true,
     params: [
       card('card', 'FEC', 'bf'),
       mask('channels', 'Channels in the sum', 12, 'high', 'BF'),
@@ -348,18 +351,19 @@ export const BF_ACTIONS: ConfigAction[] = [
       bool('data_send', 'Send data'),
       bool('lg_hg', 'Sum high gain (off = low gain)'),
     ],
-    plan: (p): PlannedWrite[] => {
+    plan: (p, ctx): PlannedWrite[] => {
       const cardIndex = p.int('card');
+      const v = ctx.card(cardIndex);
       return [
         {
           register: 'BFDaqConfReg16',
           cardIndex,
           note: `Card ${cardIndex + 1}`,
           params: {
-            channels: p.mask('channels'),
-            on: p.bool('on'),
-            data_send: p.bool('data_send'),
-            lg_hg: p.bool('lg_hg'),
+            channels: v.mask('channels'),
+            on: v.bool('on'),
+            data_send: v.bool('data_send'),
+            lg_hg: v.bool('lg_hg'),
           },
         },
       ];

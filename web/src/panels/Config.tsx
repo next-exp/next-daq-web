@@ -76,6 +76,15 @@ export function Config() {
       );
       setSkipped(r.skipped);
       setUnrecognised(r.unrecognised ?? []);
+      const skippedForCards = r.skippedCards ?? [];
+      if (skippedForCards.length > 0) {
+        // A file from a larger detector names cards this crate does not have.
+        setMessage((m) =>
+          `${m ?? ''} Skipped ${skippedForCards
+            .map((s) => `${s.settings} settings for ${s.cards} ${s.plane.toUpperCase()} card(s) this detector does not have`)
+            .join('; ')}.`.trim(),
+        );
+      }
     } catch (e) {
       setError((e as Error).message);
     }

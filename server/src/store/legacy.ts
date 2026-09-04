@@ -1,4 +1,4 @@
-import type { Params } from '@next-daq/shared';
+import type { Params, Topology } from '@next-daq/shared';
 import type { ParsedConfig } from './config.js';
 
 /**
@@ -20,8 +20,22 @@ const asBool: Convert = (raw) => raw.trim() === '1' || raw.trim().toLowerCase() 
 /** Throughput is written in bytes per second; the panel is in MBytes/s. */
 const asMBytes: Convert = (raw) => Math.round(Number(raw) / 1_000_000) || 0;
 
+/** How many cards of each plane this crate actually has. */
+export type CardLimits = Partial<Record<'trg' | 'pmt' | 'bf' | 'sipm', number>>;
+
+export const cardsPerPlane = (t: Topology): CardLimits => ({
+  trg: t.cards.filter((c) => c.plane === 'trg').length,
+  pmt: t.cards.filter((c) => c.plane === 'pmt').length,
+  bf: t.cards.filter((c) => c.plane === 'bf').length,
+  sipm: t.cards.filter((c) => c.plane === 'sipm').length,
+});
+
 interface Rule {
   match: RegExp;
+  /** Plane whose card count bounds this rule, when it names a card. */
+  plane?: 'trg' | 'pmt' | 'bf' | 'sipm';
+  /** The card index a match refers to, checked against the crate's card count. */
+  cardIndex?: (m: RegExpMatchArray) => number;
   action: string;
   /** Parameter name, or a function of the regex captures. */
   param: string | ((m: RegExpMatchArray) => string);
@@ -30,6 +44,8 @@ interface Rule {
   channel?: (m: RegExpMatchArray) => string;
   /** For channel selections: the index to set in a boolean mask or grid. */
   bit?: (m: RegExpMatchArray) => number;
+  /** For per-card panels: the card index this setting belongs to. */
+  card?: (m: RegExpMatchArray) => number;
   /** Width of that mask, so it can be created at the right size. */
   bitCount?: number;
 }
@@ -99,6 +115,8 @@ const RULES: Rule[] = [
   {
     match: /^PMT FEC (\d+) PMTs TRG [AB]:CH\s*(\d+)\s+PMT\s+\S+\s+selected TRG ([12])$/,
     action: 'pmt.channelTrigger',
+    plane: 'pmt',
+    cardIndex: (m) => Number(m[1]) - 1,
     param: (m) => `on${m[3]}`,
     convert: asBool,
     channel: (m) => `${Number(m[1]) - 1}:${m[2]}`,
@@ -106,6 +124,8 @@ const RULES: Rule[] = [
   {
     match: /^BF FEC (\d+) BFs TRG [AB]:CH\s*(\d+)\s+BF\s+\S+\s+selected TRG ([12])$/,
     action: 'bf.channelTrigger',
+    plane: 'bf',
+    cardIndex: (m) => Number(m[1]) - 1,
     param: (m) => `on${m[3]}`,
     convert: asBool,
     channel: (m) => `${Number(m[1]) - 1}:${m[2]}`,
@@ -153,33 +173,18 @@ const RULES: Rule[] = [
   {
     match: /^PMT FEC (\d+) PMTs BLR:CH\s*(\d+)\s+PMT\s+\S+\s+selected BLR$/,
     action: 'pmt.blr',
+    plane: 'pmt',
+    cardIndex: (m) => Number(m[1]) - 1,
     param: 'channels',
     convert: asBool,
     bit: (m) => (Number(m[1]) - 1) * 12 + Number(m[2]),
     bitCount: 12,
   },
-  // Per-channel BLR coefficients.
-  {
-    match: /^PMT FEC (\d+) PMTs BLR:CH\s*(\d+)\s+PMT\s+\S+\s+BLR coefficient$/,
-    action: 'pmt.blr',
-    param: 'blr_coefL',
-    convert: asInt,
-    channel: (m) => `${Number(m[1]) - 1}:${m[2]}`,
-  },
-  {
-    match: /^PMT FEC (\d+) PMTs BLR:CH\s*(\d+)\s+PMT\s+\S+\s+BLR HPF A1$/,
-    action: 'pmt.blr',
-    param: 'hpf_A1L',
-    convert: asInt,
-    channel: (m) => `${Number(m[1]) - 1}:${m[2]}`,
-  },
-  {
-    match: /^PMT FEC (\d+) PMTs BLR:CH\s*(\d+)\s+PMT\s+\S+\s+BLR HPF G$/,
-    action: 'pmt.blr',
-    param: 'hpf_GL',
-    convert: asInt,
-    channel: (m) => `${Number(m[1]) - 1}:${m[2]}`,
-  },
+  // The per-channel "BLR coefficient", "BLR HPF A1" and "BLR HPF G" entries hold
+  // the physical coefficients as displayed (e.g. 0.9999976), not the fixed-point
+  // values the register carries. The conversion between the two is not established
+  // here, and importing them as integers would silently write 0 or 1 into the
+  // baseline restorer, so they are left unmapped and reported instead.
 
   /* ------------------------------------------------------ cards connected */
   // Written as "disconnected", so the sense is inverted for a connected mask.
@@ -219,16 +224,10 @@ const RULES: Rule[] = [
   { match: /^BF FECs TRG:MAU Size$/, action: 'bf.baseline', param: 'mau_sz', convert: asInt },
 
   /* ------------------------------------------------ channel-connected masks */
-  // The trigger-sum panel configures one FEC at a time, so only the first card's
-  // mask can be imported into it; the rest are reported.
-  {
-    match: /^BF FEC 1:CH\s*(\d+)\s+BF\s+\S+\s+connected$/,
-    action: 'bf.triggerSum',
-    param: 'channels',
-    convert: asBool,
-    bit: (m) => Number(m[1]),
-    bitCount: 12,
-  },
+  // "BF FEC 1:CH 0..23 connected" is the 24-channel sensor mask, which is a
+  // different thing from the 12-bit trigger-sum mask and has no register in this
+  // set to carry it. It is reported rather than forced into a narrower field.
+
   {
     match: /^PMT FEC \d+:CH\s*(\d+)\s+PMT\s+\S+\s+connected$/,
     action: 'pmt.dataChannels',
@@ -239,12 +238,24 @@ const RULES: Rule[] = [
   },
   // The high-gain trigger selector picks which BF channels feed the trigger.
   {
-    match: /^BF FEC \d+ TRG HG:CH(\d+) connected:?$/,
+    match: /^BF FEC (\d+) TRG HG:CH(\d+) connected:?$/,
     action: 'bf.triggerSelect',
     param: 'trgsel',
     convert: asBool,
-    bit: (m) => Number(m[1]),
+    bit: (m) => Number(m[2]),
     bitCount: 12,
+  },
+  // The same selection is what the trigger sum sends, and it is per card.
+  {
+    match: /^BF FEC (\d+) TRG HG:CH(\d+) connected:?$/,
+    action: 'bf.triggerSum',
+    plane: 'bf',
+    cardIndex: (m) => Number(m[1]) - 1,
+    param: 'channels',
+    convert: asBool,
+    bit: (m) => Number(m[2]),
+    bitCount: 12,
+    card: (m) => Number(m[1]) - 1,
   },
   {
     match: /^BF FEC \d+ BFs TRG A:Trigger ([12]) FT on fall$/,
@@ -259,12 +270,20 @@ export interface LegacyImport {
   settings: Record<string, Params>;
   /** Per-channel values, keyed by action id then "cardIndex:channel". */
   channels: Record<string, Record<string, Params>>;
+  /** Per-card values, keyed by action id then card index. */
+  cards: Record<string, Record<string, Params>>;
   imported: number;
   /**
    * Settings that matched no rule, grouped by shape with an example, so a long
    * file does not produce hundreds of near-identical lines.
    */
   unrecognised: { shape: string; count: number; example: string }[];
+  /**
+   * Settings for cards this crate does not have, by plane. A file written for a
+   * larger detector would otherwise configure cards that are not there, and the
+   * resulting writes fail when the plan tries to address them.
+   */
+  skippedCards: { plane: string; cards: number; settings: number }[];
 }
 
 /**
@@ -274,10 +293,16 @@ export interface LegacyImport {
  * wrote to record that a panel had been applied — are skipped rather than
  * reported, since they carry no setting.
  */
-export function importLegacyConfig(parsed: ParsedConfig): LegacyImport {
+export function importLegacyConfig(
+  parsed: ParsedConfig,
+  /** Cards present per plane; entries naming a card beyond these are skipped. */
+  limits: CardLimits = {},
+): LegacyImport {
   const settings: Record<string, Params> = {};
   const channels: Record<string, Record<string, Params>> = {};
+  const cards: Record<string, Record<string, Params>> = {};
   const unmapped = new Map<string, { count: number; example: string }>();
+  const skipped = new Map<string, { cards: Set<number>; settings: number }>();
   let imported = 0;
 
   for (const [key, value] of parsed.entries) {
@@ -289,27 +314,49 @@ export function importLegacyConfig(parsed: ParsedConfig): LegacyImport {
       const m = key.match(rule.match);
       if (!m) continue;
 
+      // A file from a larger detector names cards this crate does not have.
+      if (rule.plane && rule.cardIndex) {
+        const index = rule.cardIndex(m);
+        const available = limits[rule.plane];
+        if (available !== undefined && index >= available) {
+          const bucket = skipped.get(rule.plane) ?? { cards: new Set<number>(), settings: 0 };
+          bucket.cards.add(index);
+          bucket.settings++;
+          skipped.set(rule.plane, bucket);
+          matched = true;
+          continue;
+        }
+      }
+
       const param = typeof rule.param === 'function' ? rule.param(m) : rule.param;
       const converted = rule.convert(value);
 
       if (rule.bit) {
-        const bag = (settings[rule.action] ??= {});
+        // A per-card mask lives with its card; a panel-level one with the panel.
+        const bag = rule.card
+          ? ((cards[rule.action] ??= {})[String(rule.card(m))] ??= {})
+          : (settings[rule.action] ??= {});
         const width = rule.bitCount ?? 12;
         const index = rule.bit(m);
         const bits = Array.isArray(bag[param]) ? (bag[param] as boolean[]).slice() : [];
         while (bits.length <= Math.max(index, width - 1)) bits.push(false);
         bits[index] = Boolean(converted);
         bag[param] = bits;
+      } else if (rule.card) {
+        ((cards[rule.action] ??= {})[String(rule.card(m))] ??= {})[param] = converted;
       } else if (rule.channel) {
         const ch = rule.channel(m);
         ((channels[rule.action] ??= {})[ch] ??= {})[param] = converted;
       } else {
         (settings[rule.action] ??= {})[param] = converted;
       }
-      imported++;
+      // A key may legitimately feed more than one panel — the high-gain trigger
+      // selection is both the selector and what the trigger sum sends — so keep
+      // matching rather than stopping at the first.
       matched = true;
-      break;
     }
+    // Counted per setting in the file, not per panel it reached.
+    if (matched) imported++;
     if (!matched) {
       const shape = key.replace(/\b\d+\b/g, 'N');
       const seen = unmapped.get(shape);
@@ -322,7 +369,13 @@ export function importLegacyConfig(parsed: ParsedConfig): LegacyImport {
     .map(([shape, v]) => ({ shape, ...v }))
     .sort((a, b) => b.count - a.count);
 
-  return { settings, channels, imported, unrecognised };
+  const skippedCards = [...skipped.entries()].map(([plane, v]) => ({
+    plane,
+    cards: v.cards.size,
+    settings: v.settings,
+  }));
+
+  return { settings, channels, cards, imported, unrecognised, skippedCards };
 }
 
 /** True when a file looks like a legacy configuration rather than one of ours. */
